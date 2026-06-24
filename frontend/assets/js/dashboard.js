@@ -826,7 +826,99 @@ document.querySelectorAll('.sidebar-item[data-nav]').forEach((item) => {
   });
 });
 
+/* ---------- ANÁLISES ---------- */
+const STATUS_FUNIL_ORDEM = ['novo', 'em_contato', 'proposta_enviada', 'fechado'];
+
+async function carregarAnalises() {
+  try {
+    const [origem, funil, faturamento] = await Promise.all([
+      Api.relatorios.leadsPorOrigem(),
+      Api.relatorios.funilConversao(),
+      Api.relatorios.faturamento({ agrupamento: 'dia' }),
+    ]);
+    renderOrigem(origem);
+    renderFunil(funil);
+    renderFaturamento(faturamento);
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+}
+
+function renderOrigem(dados) {
+  const container = document.getElementById('chart-origem');
+
+  if (dados.length === 0) {
+    container.innerHTML = '<div class="empty-state" style="padding:1.5rem;">Sem leads ainda</div>';
+    return;
+  }
+
+  const max = Math.max(...dados.map((d) => d.total));
+  container.innerHTML = dados.map((d) => `
+    <div class="barlist-row">
+      <div class="barlist-top"><span>${escapeHtml(d.origem)}</span><strong>${d.total}</strong></div>
+      <div class="barlist-track"><div class="barlist-fill" style="width:${(d.total / max) * 100}%"></div></div>
+    </div>
+  `).join('');
+}
+
+function renderFunil(dados) {
+  const container = document.getElementById('chart-funil');
+  const { porStatus, totalGeral, taxaConversao } = dados;
+
+  if (!totalGeral) {
+    container.innerHTML = '<div class="empty-state" style="padding:1.5rem;">Sem leads ainda</div>';
+    return;
+  }
+
+  container.innerHTML = STATUS_FUNIL_ORDEM.map((status) => {
+    const total = porStatus[status] || 0;
+    return `
+      <div class="barlist-row">
+        <div class="barlist-top"><span>${STATUS_LABELS[status]}</span><strong>${total}</strong></div>
+        <div class="barlist-track"><div class="barlist-fill" style="width:${(total / totalGeral) * 100}%"></div></div>
+      </div>
+    `;
+  }).join('') + `<div class="funil-resumo">${taxaConversao}% dos leads chegam a fechar</div>`;
+}
+
+function renderFaturamento(dados) {
+  const dias = 30;
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+  const valores = new Array(dias).fill(0);
+
+  dados.forEach((d) => {
+    const data = new Date(d.periodo);
+    data.setHours(0, 0, 0, 0);
+    const diff = Math.round((hoje - data) / 86400000);
+    if (diff >= 0 && diff < dias) valores[dias - 1 - diff] = Number(d.total);
+  });
+
+  const max = Math.max(1, ...valores);
+  const w = 560, h = 120, pad = 6;
+  const stepX = w / (dias - 1);
+  const pontos = valores.map((v, i) => [i * stepX, h - pad - (v / max) * (h - pad * 2)]);
+
+  const linePath = pontos.map((p, i) => `${i === 0 ? 'M' : 'L'}${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
+  const areaPath = `${linePath} L${w},${h} L0,${h} Z`;
+
+  document.getElementById('faturamento-chart').innerHTML = `
+    <defs>
+      <linearGradient id="fatFill" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#34D399" stop-opacity="0.35"/>
+        <stop offset="100%" stop-color="#34D399" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <path d="${areaPath}" fill="url(#fatFill)" stroke="none"></path>
+    <path d="${linePath}" fill="none" stroke="#34D399" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"></path>
+  `;
+
+  const total = valores.reduce((a, b) => a + b, 0);
+  document.getElementById('faturamento-sub').textContent = `${formatMoeda(total) || 'R$ 0,00'} faturados`;
+}
+
 /* ---------- INIT ---------- */
 loadDashboard();
 loadLeads();
 loadTags();
+carregarAnalises();

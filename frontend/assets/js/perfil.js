@@ -5,10 +5,19 @@ async function carregarPerfil() {
     const usuario = await Api.auth.me();
     document.getElementById('perfil-nome').value = usuario.nome;
     document.getElementById('perfil-email').value = usuario.email;
+    document.getElementById('perfil-foto').value = usuario.foto_url || '';
+    document.getElementById('perfil-idade').value = usuario.idade ?? '';
+    document.getElementById('perfil-cpf').value = usuario.cpf || '';
+    document.getElementById('perfil-telefone').value = usuario.telefone || '';
+    document.getElementById('perfil-instagram').value = usuario.instagram || '';
+    document.getElementById('perfil-facebook').value = usuario.facebook || '';
   } catch (err) {
     showToast(err.message, 'error');
   }
 }
+
+document.getElementById('perfil-cpf').addEventListener('input', (e) => { e.target.value = mascararCpf(e.target.value); });
+document.getElementById('perfil-telefone').addEventListener('input', (e) => { e.target.value = mascararTelefone(e.target.value); });
 
 document.getElementById('form-perfil').addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -32,6 +41,38 @@ document.getElementById('form-perfil').addEventListener('submit', async (e) => {
   } finally {
     btn.disabled = false;
     label.textContent = 'Salvar alterações';
+  }
+});
+
+document.getElementById('form-pessoal').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const idadeRaw = document.getElementById('perfil-idade').value;
+  const dados = {
+    foto_url: document.getElementById('perfil-foto').value.trim() || null,
+    idade: idadeRaw === '' ? null : Number(idadeRaw),
+    cpf: document.getElementById('perfil-cpf').value.trim() || null,
+    telefone: document.getElementById('perfil-telefone').value.trim() || null,
+    instagram: document.getElementById('perfil-instagram').value.trim() || null,
+    facebook: document.getElementById('perfil-facebook').value.trim() || null,
+  };
+
+  const btn = document.getElementById('pessoal-submit');
+  const label = document.getElementById('pessoal-submit-label');
+  btn.disabled = true;
+  label.innerHTML = '<span class="spinner"></span>';
+
+  try {
+    const usuario = await Api.auth.atualizarMe(dados);
+    const sessao = Auth.getUsuario();
+    Auth.setSession(Auth.getToken(), { ...sessao, foto_url: usuario.foto_url });
+    renderUsuario();
+    showToast('Informações salvas com sucesso', 'success');
+  } catch (err) {
+    showToast(err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    label.textContent = 'Salvar informações';
   }
 });
 

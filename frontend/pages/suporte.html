@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Suporte — Zync</title>
+<link rel="stylesheet" href="../assets/css/app.css">
+</head>
+<body>
+
+<div class="app-shell">
+  <aside class="app-sidebar">
+    <div class="sidebar-logo">Zy<span>nc</span></div>
+
+    <nav class="sidebar-nav">
+      <a href="dashboard.html#stats" class="sidebar-item">📊 Visão geral</a>
+      <a href="dashboard.html#analises" class="sidebar-item">📈 Análises</a>
+      <a href="dashboard.html#kanban" class="sidebar-item">👥 Leads</a>
+      <a href="agenda.html" class="sidebar-item">📅 Agenda</a>
+      <a href="perfil.html" class="sidebar-item">👤 Perfil</a>
+      <a href="suporte.html" class="sidebar-item active">💬 Suporte</a>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" id="user-avatar">--</div>
+      <div class="sidebar-user-info">
+        <div class="sidebar-user-name" id="user-name">—</div>
+        <div class="sidebar-user-email" id="user-email">—</div>
+      </div>
+      <button class="sidebar-logout" id="logout-btn" title="Sair">⏻</button>
+    </div>
+  </aside>
+
+  <main class="app-main">
+    <div class="app-topbar">
+      <div>
+        <div class="app-title">Suporte</div>
+        <div class="app-title-sub">Fale direto com a gente, ou mande uma mensagem que respondemos por aqui.</div>
+      </div>
+    </div>
+
+    <section class="features-grid" style="margin-bottom: 2rem;">
+      <div class="feat-card">
+        <div class="feat-icon">📧</div>
+        <div class="feat-title">E-mail</div>
+        <div class="feat-desc">Resposta em até 1 dia útil.</div>
+        <a href="mailto:contato@zync.com.br" class="btn btn-secondary btn-sm" style="display:inline-block; margin-top:1rem;">contato@zync.com.br</a>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📞</div>
+        <div class="feat-title">Telefone</div>
+        <div class="feat-desc">Atendimento por voz.</div>
+        <span class="k-tag" style="display:inline-block; margin-top:1rem;">Em breve</span>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">💬</div>
+        <div class="feat-title">WhatsApp</div>
+        <div class="feat-desc">Resposta rápida no celular.</div>
+        <span class="k-tag" style="display:inline-block; margin-top:1rem;">Em breve</span>
+      </div>
+    </section>
+
+    <section class="chart-card" style="max-width: 620px;">
+      <div class="chart-card-header">
+        <div class="chart-title">Mande sua mensagem pra gente</div>
+      </div>
+      <p style="color:var(--cinza); font-size:0.85rem; margin-bottom:1.2rem;">
+        Tem um problema, dúvida ou sugestão? Conta pra gente aqui. Se quiser mostrar exatamente o que está
+        acontecendo, grave um vídeo (no celular, Loom, Google Drive etc.) e cole o link abaixo — ajuda muito.
+      </p>
+      <form id="suporte-form" novalidate>
+        <div class="field">
+          <label for="suporte-mensagem">Sua mensagem</label>
+          <textarea id="suporte-mensagem" rows="4" placeholder="Descreva o que está acontecendo…" required></textarea>
+        </div>
+        <div class="field">
+          <label for="suporte-video">Link de vídeo (opcional)</label>
+          <input type="url" id="suporte-video" placeholder="https://...">
+        </div>
+        <button type="submit" class="btn btn-primary" id="suporte-submit">
+          <span id="suporte-submit-label">Enviar mensagem</span>
+        </button>
+      </form>
+    </section>
+
+    <div class="kanban-header" style="margin-top:2.2rem;">
+      <div class="app-title" style="font-size:1.15rem;">Suas mensagens anteriores</div>
+    </div>
+    <div class="agenda-list" id="suporte-historico">
+      <div class="empty-state"><span class="spinner"></span></div>
+    </div>
+  </main>
+</div>
+
+<script src="../assets/js/api.js"></script>
+<script src="../assets/js/app-shell.js"></script>
+<script src="../assets/js/suporte.js"></script>
+
+</body>
+</html>

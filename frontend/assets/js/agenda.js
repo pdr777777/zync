@@ -39,6 +39,49 @@ function popularSelectLeads(leads) {
   select.innerHTML = '<option value="">Selecione um lead…</option>' + leads.map((l) => `<option value="${l.id}">${escapeHtml(l.nome)}</option>`).join('');
 }
 
+function agruparPorPeriodo(agendamentos) {
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+  const grupos = { atrasados: [], hoje: [], proximos: [] };
+
+  agendamentos.forEach((a) => {
+    const diaAgendamento = new Date(a.data_hora);
+    diaAgendamento.setHours(0, 0, 0, 0);
+
+    if (diaAgendamento.getTime() === hoje.getTime()) {
+      grupos.hoje.push(a);
+    } else if (diaAgendamento < hoje) {
+      grupos.atrasados.push(a);
+    } else {
+      grupos.proximos.push(a);
+    }
+  });
+
+  return grupos;
+}
+
+function renderItemAgenda(a) {
+  const { data, hora } = formatDataHora(a.data_hora);
+  const nomeLead = leadsMap.get(a.lead_id) || `Lead #${a.lead_id}`;
+
+  return `
+    <div class="agenda-row" data-id="${a.id}">
+      <div class="agenda-date">${data}<div class="agenda-date-sub">${hora}</div></div>
+      <div class="agenda-info">
+        <div class="agenda-lead">${escapeHtml(nomeLead)}</div>
+        <div class="agenda-servico">${escapeHtml(a.servico || 'Sem serviço especificado')}</div>
+      </div>
+      <div class="agenda-actions">
+        <span class="badge badge-${a.status}">${STATUS_AGENDAMENTO_LABELS[a.status] || a.status}</span>
+        <select aria-label="Mudar status" data-action="status" data-id="${a.id}">
+          ${Object.entries(STATUS_AGENDAMENTO_LABELS).map(([v, label]) => `<option value="${v}" ${v === a.status ? 'selected' : ''}>${label}</option>`).join('')}
+        </select>
+        <button class="btn btn-danger btn-sm" data-action="excluir" data-id="${a.id}">Excluir</button>
+      </div>
+    </div>
+  `;
+}
+
 function renderAgenda() {
   const container = document.getElementById('agenda-list');
 
@@ -47,27 +90,19 @@ function renderAgenda() {
     return;
   }
 
-  container.innerHTML = agendamentosCache.map((a) => {
-    const { data, hora } = formatDataHora(a.data_hora);
-    const nomeLead = leadsMap.get(a.lead_id) || `Lead #${a.lead_id}`;
+  const grupos = agruparPorPeriodo(agendamentosCache);
+  const secoes = [
+    { chave: 'atrasados', titulo: '⚠️ Atrasados' },
+    { chave: 'hoje', titulo: '📍 Hoje' },
+    { chave: 'proximos', titulo: '📅 Próximos' },
+  ];
 
-    return `
-      <div class="agenda-row" data-id="${a.id}">
-        <div class="agenda-date">${data}<div class="agenda-date-sub">${hora}</div></div>
-        <div class="agenda-info">
-          <div class="agenda-lead">${escapeHtml(nomeLead)}</div>
-          <div class="agenda-servico">${escapeHtml(a.servico || 'Sem serviço especificado')}</div>
-        </div>
-        <div class="agenda-actions">
-          <span class="badge badge-${a.status}">${STATUS_AGENDAMENTO_LABELS[a.status] || a.status}</span>
-          <select aria-label="Mudar status" data-action="status" data-id="${a.id}">
-            ${Object.entries(STATUS_AGENDAMENTO_LABELS).map(([v, label]) => `<option value="${v}" ${v === a.status ? 'selected' : ''}>${label}</option>`).join('')}
-          </select>
-          <button class="btn btn-danger btn-sm" data-action="excluir" data-id="${a.id}">Excluir</button>
-        </div>
-      </div>
-    `;
-  }).join('');
+  container.innerHTML = secoes
+    .filter((s) => grupos[s.chave].length > 0)
+    .map((s) => `
+      <div class="agenda-section-title">${s.titulo} <span class="kanban-col-count" style="margin-left:0.5rem;">${grupos[s.chave].length}</span></div>
+      ${grupos[s.chave].map(renderItemAgenda).join('')}
+    `).join('');
 
   container.querySelectorAll('[data-action="status"]').forEach((select) => {
     select.addEventListener('change', async (e) => {

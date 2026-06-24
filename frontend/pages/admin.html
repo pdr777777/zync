@@ -16,8 +16,7 @@
       <a href="admin.html" class="sidebar-item active">🛠️ Admin do SaaS</a>
       <a href="dashboard.html" class="sidebar-item">📋 Minha conta (cliente)</a>
       <a href="perfil.html" class="sidebar-item">👤 Perfil</a>
-      <a href="../../index.html#contato" class="sidebar-item">💬 Suporte</a>
-      <a href="../../index.html" class="sidebar-item">🌐 Site</a>
+      <a href="suporte.html" class="sidebar-item">💬 Suporte</a>
     </nav>
 
     <div class="sidebar-user">
@@ -74,6 +73,13 @@
       <button class="btn btn-primary btn-sm" id="open-new-plano">+ Novo plano</button>
     </div>
     <div class="agenda-list" id="admin-planos-list">
+      <div class="empty-state"><span class="spinner"></span></div>
+    </div>
+
+    <div class="kanban-header" style="margin-top:2.2rem;">
+      <div class="app-title" style="font-size:1.15rem;">Mensagens de suporte</div>
+    </div>
+    <div class="agenda-list" id="admin-suporte-list">
       <div class="empty-state"><span class="spinner"></span></div>
     </div>
   </main>

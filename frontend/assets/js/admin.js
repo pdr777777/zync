@@ -175,12 +175,57 @@ document.getElementById('plano-form').addEventListener('submit', async (e) => {
   }
 });
 
+/* ---------- MENSAGENS DE SUPORTE ---------- */
+async function carregarSuporte() {
+  const lista = document.getElementById('admin-suporte-list');
+  try {
+    const itens = await Api.admin.suporte.listar();
+
+    if (itens.length === 0) {
+      lista.innerHTML = '<div class="empty-state"><div class="empty-state-icon">💬</div><h3>Nenhuma mensagem ainda</h3></div>';
+      return;
+    }
+
+    lista.innerHTML = itens.map((m) => `
+      <div class="agenda-row" data-id="${m.id}">
+        <div class="agenda-info">
+          <div class="agenda-lead">${escapeHtml(m.usuario_nome)} <span class="agenda-servico">(${escapeHtml(m.usuario_email)})</span></div>
+          <div class="agenda-servico">${escapeHtml(m.mensagem)}</div>
+          <div class="agenda-servico">
+            ${formatDataHoraCurta(m.criado_em)}
+            ${m.video_url ? ` · <a href="${escapeHtml(m.video_url)}" target="_blank" rel="noopener noreferrer" style="color:var(--roxo-claro);">ver vídeo</a>` : ''}
+          </div>
+        </div>
+        <div class="agenda-actions">
+          <span class="badge ${m.respondida ? 'badge-ativa' : 'badge-pendente'}">${m.respondida ? 'Respondida' : 'Pendente'}</span>
+          ${!m.respondida ? `<button class="btn btn-secondary btn-sm" data-action="marcar-respondida" data-id="${m.id}">Marcar como respondida</button>` : ''}
+        </div>
+      </div>
+    `).join('');
+
+    lista.querySelectorAll('[data-action="marcar-respondida"]').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        try {
+          await Api.admin.suporte.marcarRespondida(btn.dataset.id);
+          carregarSuporte();
+        } catch (err) {
+          showToast(err.message, 'error');
+        }
+      });
+    });
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+}
+
 document.getElementById('refresh-admin').addEventListener('click', () => {
   carregarMetricas();
   carregarUsuarios();
   carregarPlanos();
+  carregarSuporte();
 });
 
 carregarMetricas();
 carregarUsuarios();
 carregarPlanos();
+carregarSuporte();

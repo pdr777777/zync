@@ -111,9 +111,37 @@ const Api = {
       criar: (dados) => apiRequest('/admin/planos', { method: 'POST', body: dados }),
       atualizar: (id, dados) => apiRequest(`/admin/planos/${id}`, { method: 'PUT', body: dados }),
     },
+    suporte: {
+      listar: () => apiRequest('/admin/suporte'),
+      marcarRespondida: (id) => apiRequest(`/admin/suporte/${id}/respondida`, { method: 'PATCH' }),
+    },
   },
 
   dashboard: () => apiRequest('/dashboard'),
+
+  relatorios: {
+    leadsPorOrigem: () => apiRequest('/relatorios/leads-por-origem'),
+    funilConversao: () => apiRequest('/relatorios/funil-conversao'),
+    faturamento: (params = {}) => {
+      const qs = new URLSearchParams(params).toString();
+      return apiRequest(`/relatorios/faturamento${qs ? `?${qs}` : ''}`);
+    },
+  },
+
+  notificacoes: {
+    listar: (params = {}) => {
+      const qs = new URLSearchParams(params).toString();
+      return apiRequest(`/notificacoes${qs ? `?${qs}` : ''}`);
+    },
+    contagem: () => apiRequest('/notificacoes/contagem'),
+    marcarLida: (id) => apiRequest(`/notificacoes/${id}/lida`, { method: 'PATCH' }),
+    marcarTodasLidas: () => apiRequest('/notificacoes/lida-todas', { method: 'PATCH' }),
+  },
+
+  suporte: {
+    listar: () => apiRequest('/suporte'),
+    criar: (mensagem, videoUrl) => apiRequest('/suporte', { method: 'POST', body: { mensagem, videoUrl } }),
+  },
 
   leads: {
     listar: (tagId) => apiRequest(tagId ? `/leads?tagId=${encodeURIComponent(tagId)}` : '/leads'),

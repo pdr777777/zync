@@ -14,11 +14,11 @@
 
     <nav class="sidebar-nav">
       <a href="dashboard.html#stats" class="sidebar-item">📊 Visão geral</a>
+      <a href="dashboard.html#analises" class="sidebar-item">📈 Análises</a>
       <a href="dashboard.html#kanban" class="sidebar-item">👥 Leads</a>
       <a href="agenda.html" class="sidebar-item">📅 Agenda</a>
       <a href="perfil.html" class="sidebar-item active">👤 Perfil</a>
-      <a href="../../index.html#contato" class="sidebar-item">💬 Suporte</a>
-      <a href="../../index.html" class="sidebar-item">🌐 Site</a>
+      <a href="suporte.html" class="sidebar-item">💬 Suporte</a>
     </nav>
 
     <div class="sidebar-user">
@@ -39,21 +39,62 @@
       </div>
     </div>
 
-    <section class="chart-card" style="max-width: 480px;">
+    <section class="chart-card" style="max-width: 560px;">
       <div class="chart-card-header">
         <div class="chart-title">Informações da conta</div>
       </div>
       <form id="form-perfil" novalidate>
-        <div class="field">
-          <label for="perfil-nome">Nome</label>
-          <input type="text" id="perfil-nome" required>
-        </div>
-        <div class="field">
-          <label for="perfil-email">E-mail</label>
-          <input type="email" id="perfil-email" required>
+        <div class="field-row">
+          <div class="field">
+            <label for="perfil-nome">Nome</label>
+            <input type="text" id="perfil-nome" required>
+          </div>
+          <div class="field">
+            <label for="perfil-email">E-mail</label>
+            <input type="email" id="perfil-email" required>
+          </div>
         </div>
         <button type="submit" class="btn btn-primary" id="perfil-submit">
           <span id="perfil-submit-label">Salvar alterações</span>
+        </button>
+      </form>
+    </section>
+
+    <section class="chart-card" style="max-width: 560px;">
+      <div class="chart-card-header">
+        <div class="chart-title">Informações pessoais</div>
+      </div>
+      <form id="form-pessoal" novalidate>
+        <div class="field">
+          <label for="perfil-foto">URL da foto de perfil</label>
+          <input type="url" id="perfil-foto" placeholder="https://...">
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="perfil-idade">Idade</label>
+            <input type="number" id="perfil-idade" min="0" max="130">
+          </div>
+          <div class="field">
+            <label for="perfil-cpf">CPF</label>
+            <input type="text" id="perfil-cpf" inputmode="numeric" placeholder="000.000.000-00" maxlength="14">
+          </div>
+        </div>
+        <div class="field">
+          <label for="perfil-telefone">Telefone</label>
+          <input type="text" id="perfil-telefone" inputmode="numeric" placeholder="(11) 99999-9999" maxlength="15">
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="perfil-instagram">Instagram</label>
+            <input type="text" id="perfil-instagram" placeholder="@seuusuario">
+          </div>
+          <div class="field">
+            <label for="perfil-facebook">Facebook</label>
+            <input type="text" id="perfil-facebook" placeholder="facebook.com/seuusuario">
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary" id="pessoal-submit">
+          <span id="pessoal-submit-label">Salvar informações</span>
         </button>
       </form>
     </section>
