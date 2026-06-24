@@ -1,0 +1,137 @@
+Table usuarios {
+  id int [pk, increment]
+  nome varchar(120) [not null]
+  email varchar(160) [not null, unique]
+  senha_hash varchar(255) [not null]
+  criado_em timestamp
+}
+
+Table leads {
+  id int [pk, increment]
+  usuario_id int [not null]
+  nome varchar(120) [not null]
+  servico varchar(120)
+  origem varchar(60)
+  telefone varchar(20)
+  status varchar(20) [note: 'enum: novo, em_contato, proposta_enviada, fechado']
+  valor decimal(10,2)
+  criado_em timestamp
+
+  indexes {
+    (usuario_id, telefone) [unique, name: 'idx_leads_usuario_telefone']
+    (usuario_id, criado_em) [name: 'idx_leads_usuario_criado']
+  }
+}
+
+Table mensagens {
+  id int [pk, increment]
+  lead_id int [not null]
+  conteudo text [not null]
+  enviado_por varchar(20) [note: 'enum: ia, humano, cliente']
+  criado_em timestamp
+
+  indexes {
+    (lead_id, criado_em) [name: 'idx_mensagens_lead_criado']
+  }
+}
+
+Table tags {
+  id int [pk, increment]
+  usuario_id int [not null]
+  nome varchar(60) [not null]
+  criado_em timestamp
+
+  indexes {
+    (usuario_id, nome) [unique, name: 'idx_tags_usuario_nome']
+  }
+}
+
+Table lead_tags {
+  lead_id int [not null]
+  tag_id int [not null]
+
+  indexes {
+    (lead_id, tag_id) [pk]
+  }
+}
+
+Table agendamentos {
+  id int [pk, increment]
+  usuario_id int [not null]
+  lead_id int [not null]
+  servico varchar(120)
+  data_hora datetime [not null]
+  status varchar(20) [note: 'enum: agendado, confirmado, cancelado, concluido']
+  criado_em timestamp
+
+  indexes {
+    (usuario_id, data_hora) [name: 'idx_agendamentos_usuario_data']
+  }
+}
+
+Table logs_atividade {
+  id int [pk, increment]
+  usuario_id int [not null]
+  lead_id int
+  acao varchar(60) [not null]
+  detalhes json
+  criado_em timestamp
+
+  indexes {
+    (usuario_id, criado_em) [name: 'idx_logs_usuario_criado']
+  }
+}
+
+Table notificacoes {
+  id int [pk, increment]
+  usuario_id int [not null]
+  lead_id int
+  tipo varchar(40) [not null]
+  mensagem varchar(255) [not null]
+  lida boolean [not null, default: false]
+  criado_em timestamp
+
+  indexes {
+    (usuario_id, lida, criado_em) [name: 'idx_notificacoes_usuario_lida_criado']
+  }
+}
+
+Table planos {
+  id int [pk, increment]
+  nome varchar(60) [not null]
+  preco decimal(10,2) [not null]
+  intervalo_dias int [not null, default: 30]
+  ativo boolean [not null, default: true]
+  criado_em timestamp
+}
+
+Table assinaturas {
+  id int [pk, increment]
+  usuario_id int [not null]
+  plano_id int [not null]
+  status varchar(20) [note: 'enum: pendente, ativa, cancelada, expirada']
+  syncpay_identifier varchar(60)
+  pix_code text
+  valor decimal(10,2) [not null]
+  expira_em datetime
+  criado_em timestamp
+  atualizado_em timestamp
+
+  indexes {
+    (syncpay_identifier) [unique, name: 'idx_assinaturas_syncpay_identifier']
+  }
+}
+
+Ref: leads.usuario_id > usuarios.id
+Ref: mensagens.lead_id > leads.id
+Ref: tags.usuario_id > usuarios.id
+Ref: lead_tags.lead_id > leads.id
+Ref: lead_tags.tag_id > tags.id
+Ref: agendamentos.usuario_id > usuarios.id
+Ref: agendamentos.lead_id > leads.id
+Ref: logs_atividade.usuario_id > usuarios.id
+Ref: logs_atividade.lead_id > leads.id
+Ref: notificacoes.usuario_id > usuarios.id
+Ref: notificacoes.lead_id > leads.id
+Ref: assinaturas.usuario_id > usuarios.id
+Ref: assinaturas.plano_id > planos.id
