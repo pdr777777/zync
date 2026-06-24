@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Zync</title>
+<link rel="stylesheet" href="../assets/css/app.css">
+</head>
+<body>
+
+<div class="app-shell">
+  <aside class="app-sidebar">
+    <div class="sidebar-logo">Zy<span>nc</span></div>
+
+    <nav class="sidebar-nav">
+      <a href="admin.html" class="sidebar-item active">🛠️ Admin do SaaS</a>
+      <a href="dashboard.html" class="sidebar-item">📋 Minha conta (cliente)</a>
+      <a href="perfil.html" class="sidebar-item">👤 Perfil</a>
+      <a href="../../index.html#contato" class="sidebar-item">💬 Suporte</a>
+      <a href="../../index.html" class="sidebar-item">🌐 Site</a>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" id="user-avatar">--</div>
+      <div class="sidebar-user-info">
+        <div class="sidebar-user-name" id="user-name">—</div>
+        <div class="sidebar-user-email" id="user-email">—</div>
+      </div>
+      <button class="sidebar-logout" id="logout-btn" title="Sair">⏻</button>
+    </div>
+  </aside>
+
+  <main class="app-main">
+    <div class="app-topbar">
+      <div>
+        <div class="app-title">Painel administrativo do Zync</div>
+        <div class="app-title-sub">Visível só pra quem fundou isso — acesso restrito aos 3 e-mails da equipe.</div>
+      </div>
+    </div>
+
+    <section class="chart-card">
+      <div class="chart-card-header">
+        <div class="chart-title">⚠️ Ainda em construção</div>
+      </div>
+      <p style="color:var(--cinza); font-size:0.9rem; line-height:1.6;">
+        Hoje o backend só expõe dados por usuário (cada empresa só vê os próprios leads, mensagens e assinatura).
+        Pra esse painel mostrar algo de verdade — todas as empresas cadastradas, assinaturas ativas, receita total
+        recebida via SyncPay — precisa de endpoints novos no backend que só leem/agregam dados quando quem está
+        logado é um dos e-mails de administrador. Isso é trabalho de backend (pdr), ainda não existe.
+      </p>
+    </section>
+
+    <section class="chart-card">
+      <div class="chart-card-header">
+        <div class="chart-title">O que dá pra construir aqui quando o backend estiver pronto</div>
+      </div>
+      <ul class="checkout-features" style="margin-bottom:0;">
+        <li><div class="check">✓</div> Lista de todas as empresas/usuários cadastrados</li>
+        <li><div class="check">✓</div> Assinaturas ativas, pendentes e canceladas, com receita total (MRR)</li>
+        <li><div class="check">✓</div> Editar/criar planos sem precisar de migration manual</li>
+        <li><div class="check">✓</div> Conceder ou revogar acesso de administrador pra outras contas</li>
+      </ul>
+    </section>
+  </main>
+</div>
+
+<script src="../assets/js/api.js"></script>
+<script src="../assets/js/app-shell.js"></script>
+<script src="../assets/js/admin.js"></script>
+
+</body>
+</html>

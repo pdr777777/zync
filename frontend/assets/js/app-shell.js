@@ -14,6 +14,17 @@ function renderUsuario() {
   document.getElementById('user-avatar').textContent = iniciais(usuario.nome);
   document.getElementById('user-name').textContent = usuario.nome;
   document.getElementById('user-email').textContent = usuario.email;
+
+  const ehPaginaAdmin = window.location.pathname.endsWith('admin.html');
+  const nav = document.querySelector('.sidebar-nav');
+  if (Auth.isAdmin() && !ehPaginaAdmin && nav && !nav.querySelector('[data-admin-link]')) {
+    const link = document.createElement('a');
+    link.href = 'admin.html';
+    link.className = 'sidebar-item';
+    link.dataset.adminLink = 'true';
+    link.textContent = '🛠️ Admin do SaaS';
+    nav.appendChild(link);
+  }
 }
 
 document.getElementById('logout-btn').addEventListener('click', () => Auth.logout());

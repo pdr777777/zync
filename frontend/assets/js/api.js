@@ -6,6 +6,12 @@ const API_BASE = (() => {
   return 'https://zync-backend-production.up.railway.app/api';
 })();
 
+const ADMIN_EMAILS = [
+  'andre23mats@gmail.com',
+  'pedrohenriquesilvadeoliveira8@gmail.com',
+  'herosbritocandido.cg@gmail.com',
+];
+
 const Auth = {
   getToken() {
     return localStorage.getItem('zync_token');
@@ -25,6 +31,13 @@ const Auth = {
   isAuthenticated() {
     return !!this.getToken();
   },
+  isAdmin() {
+    const usuario = this.getUsuario();
+    return !!usuario && ADMIN_EMAILS.includes(usuario.email.toLowerCase());
+  },
+  destinoPosLogin() {
+    return this.isAdmin() ? 'admin.html' : 'dashboard.html';
+  },
   requireAuth() {
     if (!this.isAuthenticated()) {
       window.location.href = 'login.html';
@@ -32,7 +45,7 @@ const Auth = {
   },
   redirectIfAuthenticated() {
     if (this.isAuthenticated()) {
-      window.location.href = 'dashboard.html';
+      window.location.href = this.destinoPosLogin();
     }
   },
   logout() {

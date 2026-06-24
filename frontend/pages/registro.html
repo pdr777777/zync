@@ -84,7 +84,7 @@
       await Api.register(nome, email, senha);
       const { token, usuario } = await Api.login(email, senha);
       Auth.setSession(token, usuario);
-      window.location.href = 'dashboard.html';
+      window.location.href = Auth.destinoPosLogin();
     } catch (err) {
       showAlert(err.message);
       setLoading(false);
