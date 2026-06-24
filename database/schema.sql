@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS leads (
   status ENUM('novo', 'em_contato', 'proposta_enviada', 'fechado') DEFAULT 'novo',
   valor DECIMAL(10,2),
   criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  fechado_em DATETIME NULL,
   FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
   UNIQUE KEY idx_leads_usuario_telefone (usuario_id, telefone)
 );

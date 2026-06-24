@@ -1,6 +1,7 @@
 const planoModel = require('../models/planoModel');
 const assinaturaModel = require('../models/assinaturaModel');
 const syncpayService = require('../services/syncpayService');
+const logModel = require('../models/logModel');
 const asyncHandler = require('../utils/asyncHandler');
 const validators = require('../utils/validators');
 
@@ -54,7 +55,31 @@ async function atual(req, res) {
   res.json(assinatura || null);
 }
 
+async function historico(req, res) {
+  const assinaturas = await assinaturaModel.listarPorUsuario(req.usuario.id);
+  res.json(assinaturas);
+}
+
+async function cancelar(req, res) {
+  const assinatura = await assinaturaModel.buscarAtualPorUsuario(req.usuario.id);
+  if (!assinatura || assinatura.status !== 'ativa') {
+    return res.status(400).json({ error: 'Não há assinatura ativa para cancelar' });
+  }
+
+  await assinaturaModel.cancelar(assinatura.id, req.usuario.id);
+
+  await logModel.registrar({
+    usuarioId: req.usuario.id,
+    acao: 'assinatura_cancelada',
+    detalhes: { plano: assinatura.plano_nome },
+  });
+
+  res.status(204).send();
+}
+
 module.exports = {
   checkout: asyncHandler(checkout),
   atual: asyncHandler(atual),
+  historico: asyncHandler(historico),
+  cancelar: asyncHandler(cancelar),
 };

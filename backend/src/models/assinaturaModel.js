@@ -46,4 +46,31 @@ async function marcarFalha(identifier) {
   );
 }
 
-module.exports = { criar, buscarPorId, buscarPorIdentifier, buscarAtualPorUsuario, marcarAtiva, marcarFalha };
+async function listarPorUsuario(usuarioId) {
+  const [rows] = await db.query(
+    `SELECT a.*, p.nome AS plano_nome FROM assinaturas a
+     JOIN planos p ON p.id = a.plano_id
+     WHERE a.usuario_id = ?
+     ORDER BY a.criado_em DESC, a.id DESC`,
+    [usuarioId]
+  );
+  return rows;
+}
+
+async function cancelar(id, usuarioId) {
+  await db.query(
+    "UPDATE assinaturas SET status = 'cancelada' WHERE id = ? AND usuario_id = ? AND status = 'ativa'",
+    [id, usuarioId]
+  );
+}
+
+module.exports = {
+  criar,
+  buscarPorId,
+  buscarPorIdentifier,
+  buscarAtualPorUsuario,
+  marcarAtiva,
+  marcarFalha,
+  listarPorUsuario,
+  cancelar,
+};

@@ -105,9 +105,19 @@ async function buscarPorTelefone(telefone, usuarioId) {
 }
 
 async function criar({ usuarioId, nome, servico, origem, telefone, status, valor }) {
+  const statusFinal = status || 'novo';
   const [result] = await db.query(
-    'INSERT INTO leads (usuario_id, nome, servico, origem, telefone, status, valor) VALUES (?, ?, ?, ?, ?, ?, ?)',
-    [usuarioId, nome, servico || null, origem || null, telefone || null, status || 'novo', valor || null]
+    'INSERT INTO leads (usuario_id, nome, servico, origem, telefone, status, valor, fechado_em) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+    [
+      usuarioId,
+      nome,
+      servico || null,
+      origem || null,
+      telefone || null,
+      statusFinal,
+      valor || null,
+      statusFinal === 'fechado' ? new Date() : null,
+    ]
   );
   return buscarPorId(result.insertId, usuarioId);
 }
@@ -121,6 +131,11 @@ async function atualizar(id, usuarioId, dados) {
       campos.push(`${campo} = ?`);
       valores.push(dados[campo]);
     }
+  }
+
+  if (dados.status !== undefined) {
+    campos.push('fechado_em = ?');
+    valores.push(dados.status === 'fechado' ? new Date() : null);
   }
 
   if (campos.length === 0) return buscarPorId(id, usuarioId);
