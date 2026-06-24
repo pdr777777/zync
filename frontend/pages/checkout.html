@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Assinar Zync Pro — Checkout</title>
+<link rel="stylesheet" href="../assets/css/app.css">
+</head>
+<body>
+
+<a href="../../index.html" class="auth-back">← Voltar para o site</a>
+
+<div class="checkout-screen" id="checkout-screen">
+  <div class="checkout-orb"></div>
+
+  <div class="checkout-grid">
+    <aside class="checkout-summary">
+      <div class="checkout-logo">Zy<span>nc</span></div>
+      <div class="checkout-plan-badge">✦ Plano Pro</div>
+
+      <div class="checkout-price">
+        <span id="co-price">R$197</span><span class="checkout-price-sub" id="co-price-sub">/mês</span>
+      </div>
+
+      <div class="checkout-toggle" id="checkout-toggle">
+        <button type="button" class="toggle-btn active" data-ciclo="mensal">Mensal</button>
+        <button type="button" class="toggle-btn" data-ciclo="anual">Anual <span class="badge-economia">-20%</span></button>
+      </div>
+
+      <ul class="checkout-features">
+        <li><div class="check">✓</div> Leads ilimitados</li>
+        <li><div class="check">✓</div> CRM completo + Kanban</li>
+        <li><div class="check">✓</div> WhatsApp ilimitado</li>
+        <li><div class="check">✓</div> IA de atendimento</li>
+        <li><div class="check">✓</div> Agendamento automático</li>
+        <li><div class="check">✓</div> Suporte prioritário</li>
+      </ul>
+
+      <hr class="price-divider">
+
+      <div class="checkout-total-row">
+        <span>Subtotal</span>
+        <span id="co-subtotal">R$197,00</span>
+      </div>
+      <div class="checkout-total-row discount hidden" id="co-discount-row">
+        <span>Desconto anual (20%)</span>
+        <span id="co-discount">−R$472,80</span>
+      </div>
+      <div class="checkout-total-row total">
+        <span>Total</span>
+        <span id="co-total">R$197,00/mês</span>
+      </div>
+    </aside>
+
+    <main class="checkout-form-panel">
+      <div id="checkout-active">
+      <div id="checkout-account-fields">
+        <div class="checkout-section-title">Sua conta</div>
+        <div class="field">
+          <label for="co-nome">Nome completo</label>
+          <input type="text" id="co-nome" placeholder="Seu nome" required>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="co-email">E-mail</label>
+            <input type="email" id="co-email" placeholder="voce@empresa.com" required>
+          </div>
+          <div class="field">
+            <label for="co-senha">Senha</label>
+            <input type="password" id="co-senha" placeholder="Mínimo 6 caracteres" minlength="6" required>
+          </div>
+        </div>
+      </div>
+
+      <div class="checkout-section-title">Forma de pagamento</div>
+      <div class="checkout-method-tabs">
+        <button type="button" class="method-tab active" data-method="cartao">💳 Cartão</button>
+        <button type="button" class="method-tab" data-method="pix">⚡ Pix</button>
+        <button type="button" class="method-tab" data-method="boleto">🧾 Boleto</button>
+      </div>
+
+      <form id="checkout-form" novalidate>
+        <div class="payment-panel" id="panel-cartao">
+          <div class="card-preview" id="card-preview">
+            <div class="card-preview-inner">
+              <div class="card-preview-front">
+                <div class="card-chip">▦</div>
+                <div class="card-number" id="cp-number">•••• •••• •••• ••••</div>
+                <div class="card-bottom">
+                  <div class="card-name" id="cp-name">NOME COMPLETO</div>
+                  <div class="card-expiry" id="cp-expiry">MM/AA</div>
+                </div>
+              </div>
+              <div class="card-preview-back">
+                <div class="card-stripe"></div>
+                <div class="card-cvv" id="cp-cvv">•••</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="card-numero">Número do cartão</label>
+            <input type="text" id="card-numero" inputmode="numeric" placeholder="0000 0000 0000 0000" maxlength="19" required>
+          </div>
+          <div class="field">
+            <label for="card-nome">Nome impresso no cartão</label>
+            <input type="text" id="card-nome" placeholder="Como está no cartão" required>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="card-validade">Validade</label>
+              <input type="text" id="card-validade" inputmode="numeric" placeholder="MM/AA" maxlength="5" required>
+            </div>
+            <div class="field">
+              <label for="card-cvv">CVV</label>
+              <input type="text" id="card-cvv" inputmode="numeric" placeholder="123" maxlength="4" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="payment-panel hidden" id="panel-pix">
+          <div class="pix-box">⚡ O código Pix (copia e cola) e o QR Code são gerados depois de confirmar — pagamento aprovado em poucos segundos.</div>
+        </div>
+
+        <div class="payment-panel hidden" id="panel-boleto">
+          <div class="boleto-box">🧾 O boleto é gerado depois de confirmar, com vencimento em 3 dias úteis. O acesso é liberado após a compensação.</div>
+        </div>
+
+        <div class="field">
+          <label for="co-cpf">CPF</label>
+          <input type="text" id="co-cpf" inputmode="numeric" placeholder="000.000.000-00" maxlength="14" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" id="checkout-submit">
+          <span id="checkout-submit-label">Confirmar assinatura — R$197,00/mês</span>
+        </button>
+
+        <div class="checkout-trust">🔒 Pagamento processado com criptografia de ponta a ponta · Cancele quando quiser</div>
+      </form>
+      </div>
+
+      <div class="checkout-success hidden" id="checkout-success">
+        <div class="success-check">✓</div>
+        <h2>Assinatura confirmada!</h2>
+        <p>Bem-vindo ao plano Pro. Você já pode acessar todos os recursos do Zync.</p>
+        <a href="dashboard.html" class="btn btn-primary">Ir para o dashboard →</a>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="../assets/js/api.js"></script>
+<script src="../assets/js/checkout.js"></script>
+
+</body>
+</html>
