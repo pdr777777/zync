@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
   reset_token_hash VARCHAR(64) NULL,
   reset_token_expira TIMESTAMP NULL,
   is_admin BOOLEAN NOT NULL DEFAULT FALSE,
-  foto_url VARCHAR(500) NULL,
+  foto_url TEXT NULL,
   idade INT NULL,
   cpf VARCHAR(14) NULL,
   instagram VARCHAR(120) NULL,

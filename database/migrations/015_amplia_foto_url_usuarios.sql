@@ -1,0 +1,4 @@
+USE zync;
+
+ALTER TABLE usuarios
+  MODIFY COLUMN foto_url LONGTEXT NULL;

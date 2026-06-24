@@ -687,6 +687,55 @@ a { color: inherit; text-decoration: none; }
 .modal-actions { display: flex; gap: 0.7rem; margin-top: 1.4rem; }
 .modal-actions .btn { flex: 1; }
 
+/* ---------- FOTO DE PERFIL (upload + recorte) ---------- */
+.foto-upload-row { display: flex; align-items: center; gap: 1.1rem; }
+
+.foto-preview {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--roxo-claro), var(--roxo));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: var(--branco);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.foto-preview img { width: 100%; height: 100%; object-fit: cover; }
+
+.foto-upload-actions { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.crop-viewport {
+  width: 240px;
+  height: 240px;
+  max-width: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0 auto 1.2rem;
+  position: relative;
+  background: var(--preto2);
+  border: 1px solid var(--borda);
+  cursor: grab;
+  touch-action: none;
+}
+.crop-viewport.dragging { cursor: grabbing; }
+.crop-viewport img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+.crop-zoom-row { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.4rem; }
+.crop-zoom-row input[type="range"] { flex: 1; accent-color: var(--roxo); }
+
+.crop-hint { font-size: 0.78rem; color: var(--cinza); text-align: center; margin-bottom: 0.2rem; }
+
 /* ---------- LEAD PANEL (slide-over) ---------- */
 .panel-overlay {
   position: fixed;

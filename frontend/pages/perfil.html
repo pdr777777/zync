@@ -10,7 +10,7 @@
 
 <div class="app-shell">
   <aside class="app-sidebar">
-    <div class="sidebar-logo">Zy<span>nc</span></div>
+    <div class="sidebar-logo"><span>Zync</span></div>
 
     <nav class="sidebar-nav">
       <a href="dashboard.html#stats" class="sidebar-item" data-icon="dashboard"> Visão geral</a>
@@ -66,8 +66,15 @@
       </div>
       <form id="form-pessoal" novalidate>
         <div class="field">
-          <label for="perfil-foto">URL da foto de perfil</label>
-          <input type="url" id="perfil-foto" placeholder="https://...">
+          <label>Foto de perfil</label>
+          <div class="foto-upload-row">
+            <div class="foto-preview" id="foto-preview">--</div>
+            <div class="foto-upload-actions">
+              <button type="button" class="btn btn-secondary btn-sm" id="foto-escolher" data-icon="camera"> Escolher foto</button>
+              <button type="button" class="btn btn-ghost btn-sm hidden" id="foto-remover" data-icon="x"> Remover foto</button>
+              <input type="file" id="foto-input" accept="image/*" class="hidden">
+            </div>
+          </div>
         </div>
         <div class="field-row">
           <div class="field">
@@ -122,6 +129,31 @@
       </form>
     </section>
   </main>
+</div>
+
+<!-- Modal: ajustar foto de perfil -->
+<div class="modal-overlay" id="foto-crop-modal">
+  <div class="modal-box" style="max-width: 380px;">
+    <div class="modal-header">
+      <div class="modal-title">Ajustar foto</div>
+      <button class="modal-close" data-close-modal aria-label="Fechar" data-icon="x"></button>
+    </div>
+
+    <div class="crop-viewport" id="crop-viewport">
+      <img id="crop-img" alt="" draggable="false">
+    </div>
+
+    <div class="crop-zoom-row">
+      <span style="font-size:0.75rem; color:var(--cinza);">Zoom</span>
+      <input type="range" id="crop-zoom" min="1" max="3" step="0.01" value="1">
+    </div>
+    <p class="crop-hint">Arraste a foto para posicionar dentro do círculo.</p>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" data-close-modal>Cancelar</button>
+      <button type="button" class="btn btn-primary" id="crop-confirmar">Usar esta foto</button>
+    </div>
+  </div>
 </div>
 
 <script src="../assets/js/api.js"></script>
