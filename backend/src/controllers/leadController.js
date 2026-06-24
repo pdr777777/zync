@@ -43,13 +43,13 @@ async function buscar(req, res) {
 }
 
 async function criar(req, res) {
-  const { nome, servico, origem, status, valor } = req.body;
+  const { nome, servico, origem, telefone, status, valor } = req.body;
   if (!nome) return res.status(400).json({ error: 'nome é obrigatório' });
 
   const erro = validarStatusEValor(req.body);
   if (erro) return res.status(400).json({ error: erro });
 
-  const lead = await leadModel.criar({ usuarioId: req.usuario.id, nome, servico, origem, status, valor });
+  const lead = await leadModel.criar({ usuarioId: req.usuario.id, nome, servico, origem, telefone, status, valor });
   res.status(201).json(lead);
 }
 
