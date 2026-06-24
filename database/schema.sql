@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS usuarios (
   senha_hash VARCHAR(255) NOT NULL,
   criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   reset_token_hash VARCHAR(64) NULL,
-  reset_token_expira DATETIME NULL
+  reset_token_expira DATETIME NULL,
+  is_admin BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE IF NOT EXISTS leads (

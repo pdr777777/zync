@@ -14,7 +14,10 @@ async function create({ nome, email, senha_hash }) {
 }
 
 async function buscarPorId(id) {
-  const [rows] = await db.query('SELECT id, nome, email, criado_em FROM usuarios WHERE id = ?', [id]);
+  const [rows] = await db.query(
+    'SELECT id, nome, email, criado_em, is_admin FROM usuarios WHERE id = ?',
+    [id]
+  );
   return rows[0];
 }
 
@@ -63,6 +66,10 @@ async function limparTokenReset(id) {
   );
 }
 
+async function definirAdmin(id, isAdmin) {
+  await db.query('UPDATE usuarios SET is_admin = ? WHERE id = ?', [isAdmin ? 1 : 0, id]);
+}
+
 module.exports = {
   findByEmail,
   create,
@@ -72,4 +79,5 @@ module.exports = {
   definirTokenReset,
   buscarPorTokenResetValido,
   limparTokenReset,
+  definirAdmin,
 };

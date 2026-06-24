@@ -53,7 +53,10 @@ async function login(req, res) {
     { expiresIn: '7d' }
   );
 
-  res.json({ token, usuario: { id: usuario.id, nome: usuario.nome, email: usuario.email } });
+  res.json({
+    token,
+    usuario: { id: usuario.id, nome: usuario.nome, email: usuario.email, is_admin: !!usuario.is_admin },
+  });
 }
 
 async function me(req, res) {
