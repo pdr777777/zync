@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zync — CRM, Automação e IA em uma plataforma</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=Space+Grotesk:wght@400;500;700&display=swap');
+
+  :root {
+    --roxo: #7C3AED;
+    --roxo-forte: #5B21B6;
+    --roxo-claro: #A78BFA;
+    --roxo-glow: rgba(124,58,237,0.35);
+    --roxo-bg: rgba(124,58,237,0.08);
+    --preto: #07060E;
+    --preto2: #0F0D1A;
+    --preto3: #151225;
+    --branco: #FFFFFF;
+    --cinza: rgba(255,255,255,0.55);
+    --cinza2: rgba(255,255,255,0.08);
+    --borda: rgba(124,58,237,0.2);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--preto);
+    color: var(--branco);
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* GRID NOISE BACKGROUND */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(124,58,237,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124,58,237,0.03) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.1rem 4rem;
+    backdrop-filter: blur(20px);
+    background: rgba(7,6,14,0.8);
+    border-bottom: 1px solid var(--borda);
+  }
+
+  .nav-logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: var(--branco);
+  }
+
+  .nav-logo span { color: var(--roxo-claro); }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--cinza);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 400;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--branco); }
+
+  .nav-cta {
+    background: var(--roxo);
+    color: var(--branco);
+    border: none;
+    padding: 0.6rem 1.4rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+
+  .nav-cta:hover {
+    background: var(--roxo-forte);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 24px var(--roxo-glow);
+  }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 8rem 2rem 4rem;
+    overflow: hidden;
+  }
+
+  .hero-orb {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -55%);
+    width: 700px;
+    height: 700px;
+    background: radial-gradient(ellipse, rgba(124,58,237,0.22) 0%, transparent 70%);
+    pointer-events: none;
+    border-radius: 50%;
+    animation: pulse 6s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: translate(-50%, -55%) scale(1); opacity: 1; }
+    50% { transform: translate(-50%, -55%) scale(1.1); opacity: 0.7; }
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--roxo-bg);
+    border: 1px solid var(--borda);
+    border-radius: 100px;
+    padding: 0.35rem 1rem;
+    font-size: 0.8rem;
+    color: var(--roxo-claro);
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--roxo-claro);
+    border-radius: 50%;
+    animation: blink 2s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .hero h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(2.8rem, 6vw, 5rem);
+    font-weight: 700;
+    line-height: 1.08;
+    letter-spacing: -0.04em;
+    max-width: 850px;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero h1 .highlight {
+    background: linear-gradient(135deg, #A78BFA, #7C3AED, #C4B5FD);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero p {
+    font-size: 1.125rem;
+    color: var(--cinza);
+    max-width: 520px;
+    line-height: 1.7;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 2.5rem;
+  }
+
+  .hero-buttons {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+    margin-bottom: 4rem;
+  }
+
+  .btn-primary {
+    background: var(--roxo);
+    color: var(--branco);
+    border: none;
+    padding: 0.85rem 2rem;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    box-shadow: 0 0 30px var(--roxo-glow);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 40px var(--roxo-glow);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--branco);
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 0.85rem 2rem;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--roxo-claro);
+    color: var(--roxo-claro);
+  }
+
+  /* STATS */
+  .stats {
+    display: flex;
+    gap: 3rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .stat { text-align: center; }
+
+  .stat-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--branco);
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
+    color: var(--cinza);
+    margin-top: 0.2rem;
+  }
+
+  /* DASHBOARD MOCKUP */
+  .mockup-wrap {
+    position: relative;
+    z-index: 1;
+    margin-top: 5rem;
+    padding: 0 2rem;
+  }
+
+  .mockup-glow {
+    position: absolute;
+    bottom: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: 120px;
+    background: radial-gradient(ellipse, rgba(124,58,237,0.4) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .mockup {
+    max-width: 900px;
+    margin: 0 auto;
+    background: var(--preto3);
+    border: 1px solid var(--borda);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 40px 120px rgba(0,0,0,0.7), 0 0 60px rgba(124,58,237,0.15);
+  }
+
+  .mockup-bar {
+    background: var(--preto2);
+    padding: 0.8rem 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--borda);
+  }
+
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #FF5F57; }
+  .dot-y { background: #FEBC2E; }
+  .dot-g { background: #28C840; }
+
+  .mockup-url {
+    flex: 1;
+    text-align: center;
+    background: rgba(255,255,255,0.05);
+    border-radius: 6px;
+    padding: 0.3rem 1rem;
+    font-size: 0.75rem;
+    color: var(--cinza);
+    margin: 0 1rem;
+  }
+
+  .mockup-inner {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    min-height: 380px;
+  }
+
+  .mockup-sidebar {
+    background: var(--preto2);
+    padding: 1.2rem;
+    border-right: 1px solid var(--borda);
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 0.7rem;
+    border-radius: 7px;
+    font-size: 0.8rem;
+    color: var(--cinza);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .sidebar-item.active {
+    background: var(--roxo-bg);
+    color: var(--roxo-claro);
+    border: 1px solid var(--borda);
+  }
+
+  .sidebar-icon {
+    width: 16px;
+    height: 16px;
+    opacity: 0.7;
+  }
+
+  .mockup-content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .mockup-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+  }
+
+  .m-card {
+    background: var(--preto2);
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    padding: 0.9rem;
+  }
+
+  .m-card-label {
+    font-size: 0.7rem;
+    color: var(--cinza);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.4rem;
+  }
+
+  .m-card-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--branco);
+  }
+
+  .m-card-sub {
+    font-size: 0.7rem;
+    color: #A78BFA;
+    margin-top: 0.2rem;
+  }
+
+  .kanban {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.6rem;
+    flex: 1;
+  }
+
+  .k-col {
+    background: var(--preto2);
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    padding: 0.7rem;
+  }
+
+  .k-header {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--cinza);
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .k-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+  .k-card {
+    background: var(--preto3);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 6px;
+    padding: 0.5rem 0.6rem;
+    margin-bottom: 0.4rem;
+    font-size: 0.72rem;
+    color: var(--cinza);
+  }
+
+  .k-card strong { display: block; color: var(--branco); font-size: 0.75rem; margin-bottom: 0.2rem; }
+
+  .k-tag {
+    display: inline-block;
+    background: var(--roxo-bg);
+    color: var(--roxo-claro);
+    font-size: 0.6rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    margin-top: 0.2rem;
+  }
+
+  /* FEATURES */
+  section {
+    position: relative;
+    z-index: 1;
+  }
+
+  .features {
+    padding: 7rem 4rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-eyebrow {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--roxo-claro);
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    max-width: 600px;
+    margin-bottom: 1rem;
+  }
+
+  .section-sub {
+    color: var(--cinza);
+    font-size: 1.05rem;
+    max-width: 480px;
+    line-height: 1.7;
+    margin-bottom: 4rem;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+  }
+
+  .feat-card {
+    background: var(--preto3);
+    border: 1px solid var(--borda);
+    border-radius: 14px;
+    padding: 2rem;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--roxo-claro), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .feat-card:hover::before { opacity: 1; }
+
+  .feat-card:hover {
+    border-color: var(--roxo-claro);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 60px rgba(124,58,237,0.15);
+  }
+
+  .feat-icon {
+    width: 44px;
+    height: 44px;
+    background: var(--roxo-bg);
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.2rem;
+    font-size: 1.2rem;
+  }
+
+  .feat-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+  }
+
+  .feat-desc {
+    color: var(--cinza);
+    font-size: 0.9rem;
+    line-height: 1.65;
+  }
+
+  /* PRICING */
+  .pricing {
+    padding: 7rem 4rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .toggle-wrap {
+    display: inline-flex;
+    background: var(--preto3);
+    border: 1px solid var(--borda);
+    border-radius: 100px;
+    padding: 4px;
+    margin-bottom: 3rem;
+  }
+
+  .toggle-btn {
+    padding: 0.5rem 1.5rem;
+    border-radius: 100px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    color: var(--cinza);
+    transition: all 0.2s;
+  }
+
+  .toggle-btn.active {
+    background: var(--roxo);
+    color: var(--branco);
+    box-shadow: 0 0 20px var(--roxo-glow);
+  }
+
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    text-align: left;
+  }
+
+  .price-card {
+    background: var(--preto3);
+    border: 1px solid var(--borda);
+    border-radius: 16px;
+    padding: 2rem;
+    transition: all 0.3s;
+  }
+
+  .price-card.featured {
+    background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(91,33,182,0.1));
+    border-color: var(--roxo-claro);
+    box-shadow: 0 0 60px rgba(124,58,237,0.2);
+    position: relative;
+  }
+
+  .featured-badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--roxo);
+    color: var(--branco);
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.3rem 1rem;
+    border-radius: 100px;
+    white-space: nowrap;
+  }
+
+  .price-plan {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--roxo-claro);
+    margin-bottom: 0.8rem;
+  }
+
+  .price-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 3rem;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    color: var(--branco);
+    line-height: 1;
+  }
+
+  .price-num sup { font-size: 1.2rem; vertical-align: top; margin-top: 0.5rem; }
+  .price-num span { font-size: 1rem; font-weight: 400; color: var(--cinza); }
+
+  .price-desc {
+    color: var(--cinza);
+    font-size: 0.85rem;
+    margin: 0.8rem 0 1.5rem;
+    line-height: 1.5;
+  }
+
+  .price-divider {
+    border: none;
+    border-top: 1px solid var(--borda);
+    margin: 1.5rem 0;
+  }
+
+  .price-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .price-features li {
+    font-size: 0.875rem;
+    color: var(--cinza);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .check {
+    width: 16px;
+    height: 16px;
+    background: var(--roxo-bg);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--roxo-claro);
+    font-size: 0.65rem;
+  }
+
+  .price-btn {
+    width: 100%;
+    padding: 0.85rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid var(--borda);
+    background: transparent;
+    color: var(--branco);
+    transition: all 0.2s;
+  }
+
+  .price-btn.primary {
+    background: var(--roxo);
+    border-color: transparent;
+    box-shadow: 0 0 30px var(--roxo-glow);
+  }
+
+  .price-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+
+  /* CTA */
+  .cta-section {
+    padding: 8rem 4rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 400px;
+    background: radial-gradient(ellipse, rgba(124,58,237,0.25) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .cta-section h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .cta-section p {
+    color: var(--cinza);
+    font-size: 1.05rem;
+    max-width: 420px;
+    margin: 0 auto 2.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .cta-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--borda);
+    padding: 2.5rem 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    z-index: 1;
+  }
+
+  .footer-logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--cinza);
+  }
+
+  .footer-logo span { color: var(--roxo-claro); }
+
+  .footer-copy {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.3);
+  }
+
+  /* SCROLL ANIMATION */
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: all 0.6s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .hero { padding: 6rem 1.5rem 3rem; }
+    .stats { gap: 1.5rem; flex-wrap: wrap; justify-content: center; }
+    .features { padding: 4rem 1.5rem; }
+    .features-grid { grid-template-columns: 1fr; }
+    .pricing { padding: 4rem 1.5rem; }
+    .pricing-grid { grid-template-columns: 1fr; }
+    .cta-section { padding: 5rem 1.5rem; }
+    footer { flex-direction: column; gap: 1rem; text-align: center; }
+    .mockup-inner { grid-template-columns: 1fr; }
+    .mockup-sidebar { display: none; }
+    .mockup-cards { grid-template-columns: repeat(2,1fr); }
+    .kanban { grid-template-columns: repeat(2,1fr); }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Zy<span>nc</span></div>
+  <ul class="nav-links">
+    <li><a href="#features">Funcionalidades</a></li>
+    <li><a href="#pricing">Preços</a></li>
+    <li><a href="#">Sobre</a></li>
+    <li><a href="#">Blog</a></li>
+  </ul>
+  <a href="#" class="nav-cta">Começar grátis</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-orb"></div>
+
+  <div class="hero-badge">
+    <div class="badge-dot"></div>
+    Novo: IA que agenda consultas automaticamente
+  </div>
+
+  <h1>
+    Transforme conversas<br>
+    em <span class="highlight">clientes reais</span>
+  </h1>
+
+  <p>CRM inteligente, automação no WhatsApp e IA de atendimento integrados. Feito para clínicas, academias, estéticas e muito mais.</p>
+
+  <div class="hero-buttons">
+    <a href="#" class="btn-primary">Testar grátis por 7 dias →</a>
+    <a href="#" class="btn-secondary">Ver demonstração</a>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num">2.400+</div>
+      <div class="stat-label">Empresas ativas</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">98%</div>
+      <div class="stat-label">Taxa de satisfação</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">3x</div>
+      <div class="stat-label">Mais conversões</div>
+    </div>
+  </div>
+
+  <div class="mockup-wrap reveal">
+    <div class="mockup-glow"></div>
+    <div class="mockup">
+      <div class="mockup-bar">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
+        <div class="mockup-url">app.zync.com.br/dashboard</div>
+      </div>
+      <div class="mockup-inner">
+        <div class="mockup-sidebar">
+          <div class="sidebar-item active">📊 Dashboard</div>
+          <div class="sidebar-item">👥 Leads</div>
+          <div class="sidebar-item">💬 WhatsApp</div>
+          <div class="sidebar-item">🤖 IA</div>
+          <div class="sidebar-item">📅 Agenda</div>
+          <div class="sidebar-item">📈 Relatórios</div>
+        </div>
+        <div class="mockup-content">
+          <div class="mockup-cards">
+            <div class="m-card">
+              <div class="m-card-label">Leads hoje</div>
+              <div class="m-card-num">47</div>
+              <div class="m-card-sub">↑ 12% vs ontem</div>
+            </div>
+            <div class="m-card">
+              <div class="m-card-label">Conversões</div>
+              <div class="m-card-num">18</div>
+              <div class="m-card-sub">↑ 8% esta semana</div>
+            </div>
+            <div class="m-card">
+              <div class="m-card-label">Msgs enviadas</div>
+              <div class="m-card-num">324</div>
+              <div class="m-card-sub">Automático</div>
+            </div>
+            <div class="m-card">
+              <div class="m-card-label">Resp. IA</div>
+              <div class="m-card-num">89%</div>
+              <div class="m-card-sub">Taxa de resolução</div>
+            </div>
+          </div>
+          <div class="kanban">
+            <div class="k-col">
+              <div class="k-header"><div class="k-dot" style="background:#A78BFA"></div>Novos leads</div>
+              <div class="k-card"><strong>Maria Souza</strong>Implante dental<div class="k-tag">WhatsApp</div></div>
+              <div class="k-card"><strong>João Lima</strong>Clareamento<div class="k-tag">Instagram</div></div>
+            </div>
+            <div class="k-col">
+              <div class="k-header"><div class="k-dot" style="background:#60A5FA"></div>Em contato</div>
+              <div class="k-card"><strong>Ana Costa</strong>Harmonização<div class="k-tag">IA ativa</div></div>
+            </div>
+            <div class="k-col">
+              <div class="k-header"><div class="k-dot" style="background:#34D399"></div>Proposta enviada</div>
+              <div class="k-card"><strong>Pedro Rocha</strong>Prótese total<div class="k-tag">R$ 4.800</div></div>
+            </div>
+            <div class="k-col">
+              <div class="k-header"><div class="k-dot" style="background:#F59E0B"></div>Fechado ✓</div>
+              <div class="k-card"><strong>Carla Neves</strong>Lente de contato<div class="k-tag">R$ 3.200</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="reveal">
+    <div class="section-eyebrow">Funcionalidades</div>
+    <h2 class="section-title">Tudo que você precisa em um só lugar</h2>
+    <p class="section-sub">Do primeiro contato ao fechamento, o Zync automatiza cada etapa da jornada do cliente.</p>
+  </div>
+
+  <div class="features-grid">
+    <div class="feat-card reveal">
+      <div class="feat-icon">📋</div>
+      <div class="feat-title">CRM com Funil Kanban</div>
+      <div class="feat-desc">Visualize todos os seus leads em um painel intuitivo. Arraste e solte entre etapas e nunca perca um cliente.</div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon">💬</div>
+      <div class="feat-title">Automação no WhatsApp</div>
+      <div class="feat-desc">Mensagens automáticas no momento certo. Novo lead, follow-up, lembrete de consulta — tudo no piloto automático.</div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon">🤖</div>
+      <div class="feat-title">IA de Atendimento</div>
+      <div class="feat-desc">Responde dúvidas sobre preços, horários e serviços 24h. Quando não souber, transfere para um humano.</div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon">📅</div>
+      <div class="feat-title">Agendamento Automático</div>
+      <div class="feat-desc">A IA agenda consultas diretamente pelo WhatsApp, sem precisar de atendente humano.</div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon">📊</div>
+      <div class="feat-title">Dashboard em Tempo Real</div>
+      <div class="feat-desc">Acompanhe leads, conversões, mensagens enviadas e receita gerada em um único painel.</div>
+    </div>
+    <div class="feat-card reveal">
+      <div class="feat-icon">🏷️</div>
+      <div class="feat-title">Tags e Segmentação</div>
+      <div class="feat-desc">Organize seus leads por serviço, origem e interesse. Envie mensagens segmentadas para cada grupo.</div>
+    </div>
+  </div>
+</section>
+
+<section class="pricing" id="pricing">
+  <div class="reveal">
+    <div class="section-eyebrow">Preços</div>
+    <h2 class="section-title" style="margin: 0 auto 1rem;">Simples, sem surpresas</h2>
+    <p class="section-sub" style="margin: 0 auto 2rem;">Comece grátis. Escale conforme seu negócio cresce.</p>
+  </div>
+
+  <div class="toggle-wrap reveal">
+    <button class="toggle-btn active" onclick="this.classList.add('active'); this.nextElementSibling.classList.remove('active')">Mensal</button>
+    <button class="toggle-btn" onclick="this.classList.add('active'); this.previousElementSibling.classList.remove('active')">Anual <span style="color:#A78BFA;font-size:0.75rem;">-20%</span></button>
+  </div>
+
+  <div class="pricing-grid reveal">
+    <div class="price-card">
+      <div class="price-plan">Starter</div>
+      <div class="price-num"><sup>R$</sup>0<span>/mês</span></div>
+      <div class="price-desc">Para quem quer testar sem risco.</div>
+      <hr class="price-divider">
+      <ul class="price-features">
+        <li><div class="check">✓</div> Até 50 leads/mês</li>
+        <li><div class="check">✓</div> CRM básico</li>
+        <li><div class="check">✓</div> 100 mensagens WhatsApp</li>
+        <li><div class="check">✓</div> Suporte por e-mail</li>
+      </ul>
+      <button class="price-btn">Começar grátis</button>
+    </div>
+
+    <div class="price-card featured">
+      <div class="featured-badge">✦ Mais popular</div>
+      <div class="price-plan">Pro</div>
+      <div class="price-num"><sup>R$</sup>197<span>/mês</span></div>
+      <div class="price-desc">Para negócios que querem crescer de verdade.</div>
+      <hr class="price-divider">
+      <ul class="price-features">
+        <li><div class="check">✓</div> Leads ilimitados</li>
+        <li><div class="check">✓</div> CRM completo + Kanban</li>
+        <li><div class="check">✓</div> WhatsApp ilimitado</li>
+        <li><div class="check">✓</div> IA de atendimento</li>
+        <li><div class="check">✓</div> Agendamento automático</li>
+        <li><div class="check">✓</div> Suporte prioritário</li>
+      </ul>
+      <button class="price-btn primary">Testar 7 dias grátis</button>
+    </div>
+
+    <div class="price-card">
+      <div class="price-plan">Enterprise</div>
+      <div class="price-num" style="font-size:2rem;">Sob consulta</div>
+      <div class="price-desc">Para redes de clínicas e franquias.</div>
+      <hr class="price-divider">
+      <ul class="price-features">
+        <li><div class="check">✓</div> Múltiplas unidades</li>
+        <li><div class="check">✓</div> IA personalizada</li>
+        <li><div class="check">✓</div> Integrações customizadas</li>
+        <li><div class="check">✓</div> Gerente de conta dedicado</li>
+        <li><div class="check">✓</div> SLA garantido</li>
+      </ul>
+      <button class="price-btn">Falar com vendas</button>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <h2 class="reveal">Pronto para multiplicar<br>suas conversões?</h2>
+  <p class="reveal">Junte-se a mais de 2.400 empresas que já usam o Zync para fechar mais negócios.</p>
+  <div class="cta-buttons reveal">
+    <a href="#" class="btn-primary">Começar agora — grátis</a>
+    <a href="#" class="btn-secondary">Falar com especialista</a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">Zy<span>nc</span></div>
+  <div class="footer-copy">© 2025 Zync. Todos os direitos reservados.</div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
