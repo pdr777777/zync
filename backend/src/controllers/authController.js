@@ -48,7 +48,11 @@ async function login(req, res) {
   }
 
   const token = jwt.sign(
-    { id: usuario.id, email: usuario.email },
+    {
+      id: usuario.id,
+      email: usuario.email,
+      pwdTs: Math.floor(new Date(usuario.senha_alterada_em).getTime() / 1000),
+    },
     process.env.JWT_SECRET,
     { expiresIn: '7d' }
   );
@@ -133,6 +137,11 @@ async function esqueciSenha(req, res) {
   res.json({ mensagem: 'Se o e-mail existir, enviamos instruções de redefinição de senha.' });
 }
 
+async function logoutEverywhere(req, res) {
+  await usuarioModel.invalidarSessoes(req.usuario.id);
+  res.json({ mensagem: 'Todas as sessões foram encerradas. Faça login novamente.' });
+}
+
 async function redefinirSenha(req, res) {
   const { token, novaSenha } = req.body;
   if (!token || !novaSenha) {
@@ -162,6 +171,7 @@ module.exports = {
   login: asyncHandler(login),
   me: asyncHandler(me),
   atualizarMe: asyncHandler(atualizarMe),
+  logoutEverywhere: asyncHandler(logoutEverywhere),
   esqueciSenha: asyncHandler(esqueciSenha),
   redefinirSenha: asyncHandler(redefinirSenha),
 };

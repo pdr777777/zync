@@ -1,10 +1,10 @@
 const db = require('../config/db');
 
 async function leadsPorOrigem(usuarioId) {
-  const [rows] = await db.query(
-    `SELECT COALESCE(origem, 'Não informado') AS origem, COUNT(*) AS total
+  const { rows } = await db.query(
+    `SELECT COALESCE(origem, 'Não informado') AS origem, COUNT(*)::int AS total
      FROM leads
-     WHERE usuario_id = ?
+     WHERE usuario_id = $1
      GROUP BY origem
      ORDER BY total DESC`,
     [usuarioId]
@@ -13,8 +13,8 @@ async function leadsPorOrigem(usuarioId) {
 }
 
 async function funilConversao(usuarioId) {
-  const [rows] = await db.query(
-    'SELECT status, COUNT(*) AS total FROM leads WHERE usuario_id = ? GROUP BY status',
+  const { rows } = await db.query(
+    'SELECT status, COUNT(*)::int AS total FROM leads WHERE usuario_id = $1 GROUP BY status',
     [usuarioId]
   );
 
@@ -32,28 +32,31 @@ async function funilConversao(usuarioId) {
 }
 
 async function faturamentoPorPeriodo(usuarioId, { inicio, fim, agrupamento } = {}) {
-  const formato = agrupamento === 'mes' ? '%Y-%m' : '%Y-%m-%d';
+  const formato = agrupamento === 'mes' ? 'YYYY-MM' : 'YYYY-MM-DD';
 
-  const condicoes = ['usuario_id = ?', "status = 'fechado'", 'fechado_em IS NOT NULL'];
+  const condicoes = ['usuario_id = $1', "status = 'fechado'", 'fechado_em IS NOT NULL'];
   const params = [usuarioId];
 
   if (inicio) {
-    condicoes.push('fechado_em >= ?');
     params.push(inicio);
+    condicoes.push(`fechado_em >= $${params.length}`);
   }
 
   if (fim) {
-    condicoes.push('fechado_em <= ?');
     params.push(fim);
+    condicoes.push(`fechado_em <= $${params.length}`);
   }
 
-  const [rows] = await db.query(
-    `SELECT DATE_FORMAT(fechado_em, ?) AS periodo, SUM(valor) AS total, COUNT(*) AS quantidade
+  params.push(formato);
+  const formatoIndex = params.length;
+
+  const { rows } = await db.query(
+    `SELECT TO_CHAR(fechado_em, $${formatoIndex}) AS periodo, SUM(valor) AS total, COUNT(*)::int AS quantidade
      FROM leads
      WHERE ${condicoes.join(' AND ')}
      GROUP BY periodo
      ORDER BY periodo ASC`,
-    [formato, ...params]
+    params
   );
 
   return rows;

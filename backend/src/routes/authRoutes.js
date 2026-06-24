@@ -10,5 +10,6 @@ router.post('/esqueci-senha', authLimiter, authController.esqueciSenha);
 router.post('/redefinir-senha', authLimiter, authController.redefinirSenha);
 router.get('/me', autenticar, authController.me);
 router.put('/me', autenticar, authController.atualizarMe);
+router.post('/logout-everywhere', autenticar, authController.logoutEverywhere);
 
 module.exports = router;

@@ -1,7 +1,7 @@
 const db = require('../config/db');
 
 async function listarUsuarios() {
-  const [rows] = await db.query(
+  const { rows } = await db.query(
     `SELECT u.id, u.nome, u.email, u.is_admin, u.criado_em,
             a.status AS assinatura_status, a.expira_em AS assinatura_expira_em, p.nome AS plano_nome
      FROM usuarios u
@@ -15,16 +15,18 @@ async function listarUsuarios() {
 }
 
 async function metricas() {
-  const [[{ totalUsuarios }]] = await db.query('SELECT COUNT(*) AS totalUsuarios FROM usuarios');
+  const { rows: totalRows } = await db.query('SELECT COUNT(*)::int AS "totalUsuarios" FROM usuarios');
+  const totalUsuarios = totalRows[0].totalUsuarios;
 
-  const [porStatus] = await db.query('SELECT status, COUNT(*) AS total FROM assinaturas GROUP BY status');
+  const { rows: porStatus } = await db.query('SELECT status, COUNT(*)::int AS total FROM assinaturas GROUP BY status');
 
-  const [[{ mrr }]] = await db.query(
-    `SELECT COALESCE(SUM(a.valor / (p.intervalo_dias / 30)), 0) AS mrr
+  const { rows: mrrRows } = await db.query(
+    `SELECT COALESCE(SUM(a.valor / (p.intervalo_dias / 30.0)), 0) AS mrr
      FROM assinaturas a
      JOIN planos p ON p.id = a.plano_id
      WHERE a.status = 'ativa'`
   );
+  const mrr = mrrRows[0].mrr;
 
   const assinaturasPorStatus = {};
   for (const row of porStatus) {

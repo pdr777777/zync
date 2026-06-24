@@ -1,5 +1,3 @@
-USE zync;
-
 INSERT INTO usuarios (nome, email, senha_hash) VALUES
   ('Admin Zync', 'admin@zync.com.br', 'troque_este_hash');
 

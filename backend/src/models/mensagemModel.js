@@ -2,8 +2,8 @@ const db = require('../config/db');
 
 async function listarPorLead(leadId, { page, limit } = {}) {
   if (page === undefined && limit === undefined) {
-    const [rows] = await db.query(
-      'SELECT * FROM mensagens WHERE lead_id = ? ORDER BY criado_em ASC, id ASC',
+    const { rows } = await db.query(
+      'SELECT * FROM mensagens WHERE lead_id = $1 ORDER BY criado_em ASC, id ASC',
       [leadId]
     );
     return rows;
@@ -13,13 +13,13 @@ async function listarPorLead(leadId, { page, limit } = {}) {
   const limiteNum = Math.min(100, Math.max(1, parseInt(limit, 10) || 20));
   const offset = (paginaNum - 1) * limiteNum;
 
-  const [rows] = await db.query(
-    'SELECT * FROM mensagens WHERE lead_id = ? ORDER BY criado_em ASC, id ASC LIMIT ? OFFSET ?',
+  const { rows } = await db.query(
+    'SELECT * FROM mensagens WHERE lead_id = $1 ORDER BY criado_em ASC, id ASC LIMIT $2 OFFSET $3',
     [leadId, limiteNum, offset]
   );
 
-  const [totalRows] = await db.query(
-    'SELECT COUNT(*) AS total FROM mensagens WHERE lead_id = ?',
+  const { rows: totalRows } = await db.query(
+    'SELECT COUNT(*)::int AS total FROM mensagens WHERE lead_id = $1',
     [leadId]
   );
   const total = totalRows[0].total;
@@ -34,11 +34,10 @@ async function listarPorLead(leadId, { page, limit } = {}) {
 }
 
 async function criar({ leadId, conteudo, enviadoPor }) {
-  const [result] = await db.query(
-    'INSERT INTO mensagens (lead_id, conteudo, enviado_por) VALUES (?, ?, ?)',
+  const { rows } = await db.query(
+    'INSERT INTO mensagens (lead_id, conteudo, enviado_por) VALUES ($1, $2, $3) RETURNING *',
     [leadId, conteudo, enviadoPor]
   );
-  const [rows] = await db.query('SELECT * FROM mensagens WHERE id = ?', [result.insertId]);
   return rows[0];
 }
 
