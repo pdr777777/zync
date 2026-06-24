@@ -34,6 +34,45 @@
     color: var(--branco);
     font-family: 'Inter', sans-serif;
     overflow-x: hidden;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* CURSOR GLOW — luminescencia que segue o mouse pela pagina inteira */
+  .cursor-glow {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: radial-gradient(650px circle at var(--mx, 50%) var(--my, 30%), rgba(167,139,250,0.16), transparent 70%);
+  }
+
+  /* GRAO/RUIDO — acabamento premium, nitidez de filme em alta resolucao */
+  .grain-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    pointer-events: none;
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
+  }
+
+  /* DESFOQUE NO RODAPE — sensacao de profundidade enquanto rola a tela */
+  .scroll-blur-bottom {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 130px;
+    z-index: 50;
+    pointer-events: none;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    -webkit-mask-image: linear-gradient(to top, #000 0%, transparent 100%);
+    mask-image: linear-gradient(to top, #000 0%, transparent 100%);
   }
 
   /* GRID NOISE BACKGROUND */
@@ -107,14 +146,40 @@
   }
 
   .nav-links a {
+    position: relative;
+    display: inline-block;
     color: var(--cinza);
     text-decoration: none;
     font-size: 0.9rem;
     font-weight: 400;
-    transition: color 0.2s;
+    padding: 0.3rem 0;
+    transition: color 0.25s, text-shadow 0.25s;
   }
 
-  .nav-links a:hover { color: var(--branco); }
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: var(--roxo-claro);
+    box-shadow: 0 0 10px var(--roxo-claro), 0 0 18px var(--roxo-glow);
+    opacity: 0;
+    transform: scaleX(0.3);
+    transform-origin: center;
+    transition: opacity 0.25s, transform 0.25s;
+  }
+
+  .nav-links a:hover {
+    color: var(--branco);
+    text-shadow: 0 0 16px var(--roxo-glow);
+  }
+
+  .nav-links a:hover::after {
+    opacity: 1;
+    transform: scaleX(1);
+  }
 
   .nav-cta {
     background: var(--roxo);
@@ -948,6 +1013,10 @@
 </head>
 <body>
 
+<div class="cursor-glow" id="cursor-glow"></div>
+<div class="scroll-blur-bottom"></div>
+<div class="grain-overlay"></div>
+
 <nav>
   <div class="nav-logo"><span>Zync</span></div>
   <ul class="nav-links">
@@ -1241,6 +1310,29 @@
     p.style.animationDelay = `${Math.random() * -20}s`;
     particlesEl.appendChild(p);
   }
+
+  // CURSOR GLOW — luminescencia seguindo o mouse pela pagina inteira
+  (function () {
+    const root = document.documentElement;
+    let mx = window.innerWidth / 2;
+    let my = window.innerHeight * 0.3;
+    let agendado = false;
+
+    function aplicar() {
+      root.style.setProperty('--mx', `${mx}px`);
+      root.style.setProperty('--my', `${my}px`);
+      agendado = false;
+    }
+
+    window.addEventListener('mousemove', (e) => {
+      mx = e.clientX;
+      my = e.clientY;
+      if (!agendado) {
+        agendado = true;
+        requestAnimationFrame(aplicar);
+      }
+    }, { passive: true });
+  })();
 
   // MOUSE PARALLAX (hero orb)
   const orbParallax = document.querySelector('.orb-parallax');
