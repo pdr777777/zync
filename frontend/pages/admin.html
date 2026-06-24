@@ -34,34 +34,89 @@
     <div class="app-topbar">
       <div>
         <div class="app-title">Painel administrativo do Zync</div>
-        <div class="app-title-sub">Visível só pra quem fundou isso — acesso restrito aos 3 e-mails da equipe.</div>
+        <div class="app-title-sub">Visível só pra quem fundou isso.</div>
       </div>
     </div>
 
-    <section class="chart-card">
-      <div class="chart-card-header">
-        <div class="chart-title">⚠️ Ainda em construção</div>
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-card-top"><div class="stat-icon">🏢</div></div>
+        <div class="stat-label">Empresas cadastradas</div>
+        <div class="stat-num" id="adm-total-usuarios"><span class="skeleton" style="width:40px;height:1.8rem;"></span></div>
       </div>
-      <p style="color:var(--cinza); font-size:0.9rem; line-height:1.6;">
-        Hoje o backend só expõe dados por usuário (cada empresa só vê os próprios leads, mensagens e assinatura).
-        Pra esse painel mostrar algo de verdade — todas as empresas cadastradas, assinaturas ativas, receita total
-        recebida via SyncPay — precisa de endpoints novos no backend que só leem/agregam dados quando quem está
-        logado é um dos e-mails de administrador. Isso é trabalho de backend (pdr), ainda não existe.
-      </p>
+      <div class="stat-card">
+        <div class="stat-card-top"><div class="stat-icon">💰</div></div>
+        <div class="stat-label">MRR (receita recorrente)</div>
+        <div class="stat-num" id="adm-mrr"><span class="skeleton" style="width:60px;height:1.8rem;"></span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-top"><div class="stat-icon">✅</div></div>
+        <div class="stat-label">Assinaturas ativas</div>
+        <div class="stat-num" id="adm-ativas"><span class="skeleton" style="width:40px;height:1.8rem;"></span></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-top"><div class="stat-icon">⏳</div></div>
+        <div class="stat-label">Pendentes / canceladas</div>
+        <div class="stat-num" id="adm-pendentes"><span class="skeleton" style="width:40px;height:1.8rem;"></span></div>
+      </div>
     </section>
 
-    <section class="chart-card">
-      <div class="chart-card-header">
-        <div class="chart-title">O que dá pra construir aqui quando o backend estiver pronto</div>
-      </div>
-      <ul class="checkout-features" style="margin-bottom:0;">
-        <li><div class="check">✓</div> Lista de todas as empresas/usuários cadastrados</li>
-        <li><div class="check">✓</div> Assinaturas ativas, pendentes e canceladas, com receita total (MRR)</li>
-        <li><div class="check">✓</div> Editar/criar planos sem precisar de migration manual</li>
-        <li><div class="check">✓</div> Conceder ou revogar acesso de administrador pra outras contas</li>
-      </ul>
-    </section>
+    <div class="kanban-header">
+      <div class="app-title" style="font-size:1.15rem;">Empresas cadastradas</div>
+      <button class="btn btn-ghost btn-sm" id="refresh-admin">↻ Atualizar</button>
+    </div>
+    <div class="agenda-list" id="admin-users-list">
+      <div class="empty-state"><span class="spinner"></span></div>
+    </div>
+
+    <div class="kanban-header" style="margin-top:2.2rem;">
+      <div class="app-title" style="font-size:1.15rem;">Planos</div>
+      <button class="btn btn-primary btn-sm" id="open-new-plano">+ Novo plano</button>
+    </div>
+    <div class="agenda-list" id="admin-planos-list">
+      <div class="empty-state"><span class="spinner"></span></div>
+    </div>
   </main>
+</div>
+
+<!-- Modal: novo / editar plano -->
+<div class="modal-overlay" id="plano-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title" id="plano-modal-title">Novo plano</div>
+      <button class="modal-close" data-close-modal aria-label="Fechar">✕</button>
+    </div>
+
+    <form id="plano-form" novalidate>
+      <input type="hidden" id="pl-id">
+      <div class="field">
+        <label for="pl-nome">Nome</label>
+        <input type="text" id="pl-nome" placeholder="Ex: Pro Mensal" required>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="pl-preco">Preço (R$)</label>
+          <input type="number" id="pl-preco" min="0" step="0.01" required>
+        </div>
+        <div class="field">
+          <label for="pl-intervalo">Intervalo (dias)</label>
+          <input type="number" id="pl-intervalo" min="1" step="1" value="30" required>
+        </div>
+      </div>
+      <div class="field" id="pl-ativo-field" style="display:none;">
+        <label for="pl-ativo">Status</label>
+        <select id="pl-ativo">
+          <option value="1">Ativo</option>
+          <option value="0">Inativo</option>
+        </select>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" data-close-modal>Cancelar</button>
+        <button type="submit" class="btn btn-primary" id="plano-submit"><span id="plano-submit-label">Salvar</span></button>
+      </div>
+    </form>
+  </div>
 </div>
 
 <script src="../assets/js/api.js"></script>

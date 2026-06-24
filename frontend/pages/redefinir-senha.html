@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Redefinir senha — Zync</title>
+<link rel="stylesheet" href="../assets/css/app.css">
+</head>
+<body>
+
+<a href="../../index.html" class="auth-back">← Voltar para o site</a>
+
+<div class="auth-screen">
+  <div class="auth-orb"></div>
+
+  <div class="auth-card">
+    <div class="auth-logo">Zy<span>nc</span></div>
+    <div class="auth-title">Crie uma nova senha</div>
+    <div class="auth-sub">O link de redefinição é válido por 1 hora.</div>
+
+    <div class="auth-alert" id="alert"></div>
+
+    <form class="auth-form" id="redefinir-form" novalidate>
+      <div class="field">
+        <label for="senha">Nova senha</label>
+        <input type="password" id="senha" placeholder="Mínimo 6 caracteres" minlength="6" required autocomplete="new-password">
+      </div>
+      <div class="field">
+        <label for="confirmar">Confirmar nova senha</label>
+        <input type="password" id="confirmar" placeholder="Repita a senha" minlength="6" required autocomplete="new-password">
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block" id="submit-btn">
+        <span id="submit-label">Redefinir senha</span>
+      </button>
+    </form>
+
+    <div class="auth-foot" id="foot-links">
+      <a href="login.html">← Voltar para o login</a>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/api.js"></script>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('token');
+
+  const form = document.getElementById('redefinir-form');
+  const alertBox = document.getElementById('alert');
+  const submitBtn = document.getElementById('submit-btn');
+  const submitLabel = document.getElementById('submit-label');
+
+  if (!token) {
+    form.classList.add('hidden');
+    alertBox.textContent = 'Link inválido — falta o token de redefinição. Solicite um novo link.';
+    alertBox.classList.add('visible');
+    document.getElementById('foot-links').innerHTML = '<a href="esqueci-senha.html">Solicitar novo link</a>';
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    alertBox.className = 'auth-alert';
+
+    const senha = document.getElementById('senha').value;
+    const confirmar = document.getElementById('confirmar').value;
+
+    if (senha !== confirmar) {
+      alertBox.textContent = 'As senhas não coincidem';
+      alertBox.classList.add('visible');
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitLabel.innerHTML = '<span class="spinner"></span>';
+
+    try {
+      await Api.auth.redefinirSenha(token, senha);
+      form.classList.add('hidden');
+      alertBox.textContent = 'Senha redefinida com sucesso. Você já pode entrar com a nova senha.';
+      alertBox.classList.add('visible', 'success');
+      document.getElementById('foot-links').innerHTML = '<a href="login.html">Ir para o login →</a>';
+    } catch (err) {
+      alertBox.textContent = err.message;
+      alertBox.classList.add('visible');
+      submitBtn.disabled = false;
+      submitLabel.textContent = 'Redefinir senha';
+    }
+  });
+</script>
+
+</body>
+</html>

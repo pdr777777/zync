@@ -997,6 +997,11 @@ a { color: inherit; }
 .badge-cancelado { background: rgba(248,113,113,0.15); color: var(--vermelho); }
 .badge-concluido { background: rgba(52,211,153,0.15); color: var(--verde); }
 
+.badge-pendente { background: rgba(245,158,11,0.15); color: var(--amber); }
+.badge-ativa { background: rgba(52,211,153,0.15); color: var(--verde); }
+.badge-cancelada { background: rgba(248,113,113,0.15); color: var(--vermelho); }
+.badge-expirada { background: rgba(255,255,255,0.08); color: var(--cinza); }
+
 .agenda-list {
   display: flex;
   flex-direction: column;
