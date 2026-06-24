@@ -1,0 +1,33 @@
+name: Backup do banco
+
+on:
+  schedule:
+    - cron: '0 6 * * *' # 06:00 UTC = 03:00 horário de Brasília, todo dia
+  workflow_dispatch: {}
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Instala dependencias
+        working-directory: database
+        run: npm install --omit=dev
+
+      - name: Roda backup
+        working-directory: database
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: npm run backup
+
+      - name: Sobe o backup como artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backup-zync-${{ github.run_id }}
+          path: backups/*.json
+          retention-days: 90

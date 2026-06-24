@@ -1,0 +1,13 @@
+{
+  "name": "zync-database-scripts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Scripts de backup/restore do banco Postgres do Zync",
+  "scripts": {
+    "backup": "node scripts/backup.js",
+    "restore": "node scripts/restore.js"
+  },
+  "dependencies": {
+    "pg": "^8.13.1"
+  }
+}
