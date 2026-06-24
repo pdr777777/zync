@@ -358,6 +358,42 @@
     margin: 0 1rem;
   }
 
+  .mockup-bell {
+    position: relative;
+    font-size: 0.9rem;
+    opacity: 0.8;
+  }
+
+  .mockup-bell::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    right: -3px;
+    width: 7px;
+    height: 7px;
+    background: #F87171;
+    border-radius: 50%;
+    box-shadow: 0 0 6px #F87171;
+  }
+
+  .mockup-live {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.65rem;
+    color: #34D399;
+    margin-left: 0.6rem;
+  }
+
+  .mockup-live-dot {
+    width: 6px;
+    height: 6px;
+    background: #34D399;
+    border-radius: 50%;
+    box-shadow: 0 0 6px #34D399;
+    animation: blink 2s ease-in-out infinite;
+  }
+
   .mockup-inner {
     display: grid;
     grid-template-columns: 200px 1fr;
@@ -486,6 +522,51 @@
     padding: 0.1rem 0.4rem;
     border-radius: 4px;
     margin-top: 0.2rem;
+  }
+
+  .mockup-analytics {
+    background: var(--preto2);
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    padding: 0.7rem 0.8rem;
+    margin-top: 0.6rem;
+  }
+
+  .mockup-analytics-title {
+    font-size: 0.62rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--cinza);
+    margin-bottom: 0.55rem;
+  }
+
+  .mockup-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .mockup-bar-label {
+    font-size: 0.62rem;
+    color: var(--cinza);
+    width: 64px;
+    flex-shrink: 0;
+  }
+
+  .mockup-bar-track {
+    flex: 1;
+    height: 5px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+
+  .mockup-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--roxo), var(--roxo-claro));
+    border-radius: 100px;
   }
 
   /* FEATURES */
@@ -921,15 +1002,16 @@
         <div class="dot dot-y"></div>
         <div class="dot dot-g"></div>
         <div class="mockup-url">app.zync.com.br/dashboard</div>
+        <div class="mockup-live"><div class="mockup-live-dot"></div>ao vivo</div>
+        <div class="mockup-bell">🔔</div>
       </div>
       <div class="mockup-inner">
         <div class="mockup-sidebar">
-          <div class="sidebar-item active">📊 Dashboard</div>
+          <div class="sidebar-item active">📊 Visão geral</div>
+          <div class="sidebar-item">📈 Análises</div>
           <div class="sidebar-item">👥 Leads</div>
-          <div class="sidebar-item">💬 WhatsApp</div>
-          <div class="sidebar-item">🤖 IA</div>
           <div class="sidebar-item">📅 Agenda</div>
-          <div class="sidebar-item">📈 Relatórios</div>
+          <div class="sidebar-item">💬 Suporte</div>
         </div>
         <div class="mockup-content">
           <div class="mockup-cards">
@@ -973,6 +1055,12 @@
               <div class="k-card"><strong>Carla Neves</strong>Lente de contato<div class="k-tag">R$ 3.200</div></div>
             </div>
           </div>
+          <div class="mockup-analytics">
+            <div class="mockup-analytics-title">Leads por origem</div>
+            <div class="mockup-bar-row"><div class="mockup-bar-label">WhatsApp</div><div class="mockup-bar-track"><div class="mockup-bar-fill" style="width:85%"></div></div></div>
+            <div class="mockup-bar-row"><div class="mockup-bar-label">Instagram</div><div class="mockup-bar-track"><div class="mockup-bar-fill" style="width:60%"></div></div></div>
+            <div class="mockup-bar-row"><div class="mockup-bar-label">Site</div><div class="mockup-bar-track"><div class="mockup-bar-fill" style="width:35%"></div></div></div>
+          </div>
         </div>
       </div>
     </div>
@@ -1009,8 +1097,8 @@
     </div>
     <div class="feat-card reveal">
       <div class="feat-icon">📊</div>
-      <div class="feat-title">Dashboard em Tempo Real</div>
-      <div class="feat-desc">Acompanhe leads, conversões, mensagens enviadas e receita gerada em um único painel.</div>
+      <div class="feat-title">Análises e Notificações</div>
+      <div class="feat-desc">Funil de conversão, faturamento e origem dos leads em tempo real — com notificações automáticas a cada novo contato ou mensagem.</div>
     </div>
     <div class="feat-card reveal">
       <div class="feat-icon">🏷️</div>
