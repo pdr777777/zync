@@ -12,5 +12,7 @@ router.get('/metricas', adminController.metricas);
 router.get('/planos', adminController.listarPlanos);
 router.post('/planos', adminController.criarPlano);
 router.put('/planos/:id', adminController.atualizarPlano);
+router.get('/suporte', adminController.listarSuporte);
+router.patch('/suporte/:id/respondida', adminController.responderSuporte);
 
 module.exports = router;

@@ -1,6 +1,7 @@
 const adminModel = require('../models/adminModel');
 const planoModel = require('../models/planoModel');
 const usuarioModel = require('../models/usuarioModel');
+const suporteModel = require('../models/suporteModel');
 const asyncHandler = require('../utils/asyncHandler');
 const validators = require('../utils/validators');
 
@@ -74,6 +75,19 @@ async function atualizarPlano(req, res) {
   res.json(atualizado);
 }
 
+async function listarSuporte(req, res) {
+  const itens = await suporteModel.listarTodas();
+  res.json(itens);
+}
+
+async function responderSuporte(req, res) {
+  const item = await suporteModel.buscarPorId(req.params.id);
+  if (!item) return res.status(404).json({ error: 'Mensagem não encontrada' });
+
+  await suporteModel.marcarRespondida(req.params.id);
+  res.status(204).send();
+}
+
 module.exports = {
   listarUsuarios: asyncHandler(listarUsuarios),
   metricas: asyncHandler(metricas),
@@ -81,4 +95,6 @@ module.exports = {
   listarPlanos: asyncHandler(listarPlanos),
   criarPlano: asyncHandler(criarPlano),
   atualizarPlano: asyncHandler(atualizarPlano),
+  listarSuporte: asyncHandler(listarSuporte),
+  responderSuporte: asyncHandler(responderSuporte),
 };

@@ -10,6 +10,12 @@ CREATE TABLE IF NOT EXISTS usuarios (
   reset_token_hash VARCHAR(64) NULL,
   reset_token_expira DATETIME NULL,
   is_admin BOOLEAN NOT NULL DEFAULT FALSE,
+  foto_url VARCHAR(500) NULL,
+  idade INT NULL,
+  cpf VARCHAR(14) NULL,
+  instagram VARCHAR(120) NULL,
+  facebook VARCHAR(120) NULL,
+  telefone VARCHAR(20) NULL,
   KEY idx_usuarios_reset_token (reset_token_hash)
 );
 
@@ -118,4 +124,14 @@ CREATE TABLE IF NOT EXISTS assinaturas (
   FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
   FOREIGN KEY (plano_id) REFERENCES planos(id),
   UNIQUE KEY idx_assinaturas_syncpay_identifier (syncpay_identifier)
+);
+
+CREATE TABLE IF NOT EXISTS mensagens_suporte (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  usuario_id INT NOT NULL,
+  mensagem TEXT NOT NULL,
+  video_url VARCHAR(500),
+  respondida BOOLEAN NOT NULL DEFAULT FALSE,
+  criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );

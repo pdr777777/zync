@@ -105,6 +105,27 @@ async function atualizarMe(req, res) {
     dados.senha_hash = await bcrypt.hash(senha, 10);
   }
 
+  const { foto_url, idade, cpf, instagram, facebook, telefone } = req.body;
+
+  if (foto_url !== undefined) dados.foto_url = foto_url || null;
+  if (instagram !== undefined) dados.instagram = instagram || null;
+  if (facebook !== undefined) dados.facebook = facebook || null;
+  if (telefone !== undefined) dados.telefone = telefone || null;
+
+  if (idade !== undefined) {
+    if (idade !== null && (!Number.isInteger(idade) || idade < 0 || idade > 130)) {
+      return res.status(400).json({ error: 'idade inválida' });
+    }
+    dados.idade = idade;
+  }
+
+  if (cpf !== undefined) {
+    if (cpf && !validators.cpfValido(cpf)) {
+      return res.status(400).json({ error: 'cpf inválido' });
+    }
+    dados.cpf = cpf || null;
+  }
+
   const usuario = await usuarioModel.atualizar(req.usuario.id, dados);
   res.json(usuario);
 }
