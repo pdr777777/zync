@@ -1,4 +1,5 @@
 const dashboardModel = require('../models/dashboardModel');
+const asyncHandler = require('../utils/asyncHandler');
 
 async function obterMetricas(req, res) {
   const usuarioId = req.usuario.id;
@@ -14,4 +15,4 @@ async function obterMetricas(req, res) {
   res.json({ leadsHoje, conversoes, mensagensEnviadas, taxaRespostaIA, leadsPorStatus });
 }
 
-module.exports = { obterMetricas };
+module.exports = { obterMetricas: asyncHandler(obterMetricas) };

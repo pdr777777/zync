@@ -2,9 +2,36 @@ const db = require('../config/db');
 
 const CAMPOS_ATUALIZAVEIS = ['nome', 'servico', 'origem', 'telefone', 'status', 'valor'];
 
-async function listarPorUsuario(usuarioId) {
+async function listarPorUsuario(usuarioId, tagId) {
+  if (tagId) {
+    const [rows] = await db.query(
+      `SELECT l.* FROM leads l
+       INNER JOIN lead_tags lt ON lt.lead_id = l.id
+       WHERE l.usuario_id = ? AND lt.tag_id = ?
+       ORDER BY l.criado_em DESC`,
+      [usuarioId, tagId]
+    );
+    return rows;
+  }
+
   const [rows] = await db.query(
     'SELECT * FROM leads WHERE usuario_id = ? ORDER BY criado_em DESC',
+    [usuarioId]
+  );
+  return rows;
+}
+
+async function listarInbox(usuarioId) {
+  const [rows] = await db.query(
+    `SELECT l.*, m.conteudo AS ultima_mensagem, m.enviado_por AS ultima_mensagem_de, m.criado_em AS ultima_mensagem_em
+     FROM leads l
+     LEFT JOIN (
+       SELECT lead_id, conteudo, enviado_por, criado_em,
+              ROW_NUMBER() OVER (PARTITION BY lead_id ORDER BY criado_em DESC) AS rn
+       FROM mensagens
+     ) m ON m.lead_id = l.id AND m.rn = 1
+     WHERE l.usuario_id = ?
+     ORDER BY COALESCE(m.criado_em, l.criado_em) DESC`,
     [usuarioId]
   );
   return rows;
@@ -59,4 +86,4 @@ async function remover(id, usuarioId) {
   await db.query('DELETE FROM leads WHERE id = ? AND usuario_id = ?', [id, usuarioId]);
 }
 
-module.exports = { listarPorUsuario, buscarPorId, buscarPorTelefone, criar, atualizar, remover };
+module.exports = { listarPorUsuario, listarInbox, buscarPorId, buscarPorTelefone, criar, atualizar, remover };

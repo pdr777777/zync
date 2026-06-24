@@ -8,6 +8,10 @@ const dashboardRoutes = require('./dashboardRoutes');
 const iaRoutes = require('./iaRoutes');
 const whatsappRoutes = require('./whatsappRoutes');
 const whatsappWebhookRoutes = require('./whatsappWebhookRoutes');
+const tagRoutes = require('./tagRoutes');
+const leadTagRoutes = require('./leadTagRoutes');
+const agendamentoRoutes = require('./agendamentoRoutes');
+const leadAgendamentoRoutes = require('./leadAgendamentoRoutes');
 
 router.get('/health', (req, res) => {
   res.json({ status: 'ok' });
@@ -20,5 +24,9 @@ router.use('/dashboard', dashboardRoutes);
 router.use('/leads/:leadId/ia', iaRoutes);
 router.use('/leads/:leadId/whatsapp', whatsappRoutes);
 router.use('/webhooks/whatsapp/:usuarioId', whatsappWebhookRoutes);
+router.use('/tags', tagRoutes);
+router.use('/leads/:leadId/tags', leadTagRoutes);
+router.use('/agendamentos', agendamentoRoutes);
+router.use('/leads/:leadId/agendamentos', leadAgendamentoRoutes);
 
 module.exports = router;
