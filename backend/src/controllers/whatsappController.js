@@ -2,6 +2,7 @@ const leadModel = require('../models/leadModel');
 const mensagemModel = require('../models/mensagemModel');
 const iaService = require('../services/iaService');
 const whatsappService = require('../services/whatsappService');
+const asyncHandler = require('../utils/asyncHandler');
 
 async function receberMensagem(req, res) {
   const { usuarioId } = req.params;
@@ -45,4 +46,7 @@ async function enviarManual(req, res) {
   res.status(201).json(mensagem);
 }
 
-module.exports = { receberMensagem, enviarManual };
+module.exports = {
+  receberMensagem: asyncHandler(receberMensagem),
+  enviarManual: asyncHandler(enviarManual),
+};

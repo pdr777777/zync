@@ -1,0 +1,63 @@
+const tagModel = require('../models/tagModel');
+const leadModel = require('../models/leadModel');
+const asyncHandler = require('../utils/asyncHandler');
+
+async function listar(req, res) {
+  const tags = await tagModel.listarPorUsuario(req.usuario.id);
+  res.json(tags);
+}
+
+async function criar(req, res) {
+  const { nome } = req.body;
+  if (!nome) return res.status(400).json({ error: 'nome é obrigatório' });
+
+  const tag = await tagModel.criar({ usuarioId: req.usuario.id, nome });
+  res.status(201).json(tag);
+}
+
+async function remover(req, res) {
+  const tag = await tagModel.buscarPorId(req.params.id, req.usuario.id);
+  if (!tag) return res.status(404).json({ error: 'Tag não encontrada' });
+
+  await tagModel.remover(req.params.id, req.usuario.id);
+  res.status(204).send();
+}
+
+async function listarDoLead(req, res) {
+  const lead = await leadModel.buscarPorId(req.params.leadId, req.usuario.id);
+  if (!lead) return res.status(404).json({ error: 'Lead não encontrado' });
+
+  const tags = await tagModel.listarPorLead(req.params.leadId);
+  res.json(tags);
+}
+
+async function associarAoLead(req, res) {
+  const lead = await leadModel.buscarPorId(req.params.leadId, req.usuario.id);
+  if (!lead) return res.status(404).json({ error: 'Lead não encontrado' });
+
+  const { tagId } = req.body;
+  if (!tagId) return res.status(400).json({ error: 'tagId é obrigatório' });
+
+  const tag = await tagModel.buscarPorId(tagId, req.usuario.id);
+  if (!tag) return res.status(404).json({ error: 'Tag não encontrada' });
+
+  await tagModel.associarLead(req.params.leadId, tagId);
+  res.status(201).json({ ok: true });
+}
+
+async function desassociarDoLead(req, res) {
+  const lead = await leadModel.buscarPorId(req.params.leadId, req.usuario.id);
+  if (!lead) return res.status(404).json({ error: 'Lead não encontrado' });
+
+  await tagModel.desassociarLead(req.params.leadId, req.params.tagId);
+  res.status(204).send();
+}
+
+module.exports = {
+  listar: asyncHandler(listar),
+  criar: asyncHandler(criar),
+  remover: asyncHandler(remover),
+  listarDoLead: asyncHandler(listarDoLead),
+  associarAoLead: asyncHandler(associarAoLead),
+  desassociarDoLead: asyncHandler(desassociarDoLead),
+};

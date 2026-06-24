@@ -1,6 +1,7 @@
 const leadModel = require('../models/leadModel');
 const mensagemModel = require('../models/mensagemModel');
 const iaService = require('../services/iaService');
+const asyncHandler = require('../utils/asyncHandler');
 
 async function responder(req, res) {
   const lead = await leadModel.buscarPorId(req.params.leadId, req.usuario.id);
@@ -26,4 +27,4 @@ async function responder(req, res) {
   res.status(201).json({ mensagemCliente, mensagemIA });
 }
 
-module.exports = { responder };
+module.exports = { responder: asyncHandler(responder) };
