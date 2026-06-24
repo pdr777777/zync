@@ -1,6 +1,6 @@
 const db = require('../config/db');
 
-const CAMPOS_ATUALIZAVEIS = ['nome', 'servico', 'origem', 'status', 'valor'];
+const CAMPOS_ATUALIZAVEIS = ['nome', 'servico', 'origem', 'telefone', 'status', 'valor'];
 
 async function listarPorUsuario(usuarioId) {
   const [rows] = await db.query(
@@ -18,10 +18,18 @@ async function buscarPorId(id, usuarioId) {
   return rows[0];
 }
 
-async function criar({ usuarioId, nome, servico, origem, status, valor }) {
+async function buscarPorTelefone(telefone, usuarioId) {
+  const [rows] = await db.query(
+    'SELECT * FROM leads WHERE telefone = ? AND usuario_id = ?',
+    [telefone, usuarioId]
+  );
+  return rows[0];
+}
+
+async function criar({ usuarioId, nome, servico, origem, telefone, status, valor }) {
   const [result] = await db.query(
-    'INSERT INTO leads (usuario_id, nome, servico, origem, status, valor) VALUES (?, ?, ?, ?, ?, ?)',
-    [usuarioId, nome, servico || null, origem || null, status || 'novo', valor || null]
+    'INSERT INTO leads (usuario_id, nome, servico, origem, telefone, status, valor) VALUES (?, ?, ?, ?, ?, ?, ?)',
+    [usuarioId, nome, servico || null, origem || null, telefone || null, status || 'novo', valor || null]
   );
   return buscarPorId(result.insertId, usuarioId);
 }
@@ -51,4 +59,4 @@ async function remover(id, usuarioId) {
   await db.query('DELETE FROM leads WHERE id = ? AND usuario_id = ?', [id, usuarioId]);
 }
 
-module.exports = { listarPorUsuario, buscarPorId, criar, atualizar, remover };
+module.exports = { listarPorUsuario, buscarPorId, buscarPorTelefone, criar, atualizar, remover };

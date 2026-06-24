@@ -1,0 +1,48 @@
+const leadModel = require('../models/leadModel');
+const mensagemModel = require('../models/mensagemModel');
+const iaService = require('../services/iaService');
+const whatsappService = require('../services/whatsappService');
+
+async function receberMensagem(req, res) {
+  const { usuarioId } = req.params;
+  const { telefone, nome, mensagem } = req.body;
+
+  if (!telefone || !mensagem) {
+    return res.status(400).json({ error: 'telefone e mensagem são obrigatórios' });
+  }
+
+  let lead = await leadModel.buscarPorTelefone(telefone, usuarioId);
+  if (!lead) {
+    lead = await leadModel.criar({
+      usuarioId,
+      nome: nome || telefone,
+      origem: 'WhatsApp',
+      telefone,
+    });
+  }
+
+  await mensagemModel.criar({ leadId: lead.id, conteudo: mensagem, enviadoPor: 'cliente' });
+
+  const respostaTexto = iaService.gerarResposta(mensagem);
+  await mensagemModel.criar({ leadId: lead.id, conteudo: respostaTexto, enviadoPor: 'ia' });
+
+  whatsappService.enviarMensagem(telefone, respostaTexto);
+
+  res.status(200).json({ ok: true });
+}
+
+async function enviarManual(req, res) {
+  const lead = await leadModel.buscarPorId(req.params.leadId, req.usuario.id);
+  if (!lead) return res.status(404).json({ error: 'Lead não encontrado' });
+  if (!lead.telefone) return res.status(400).json({ error: 'Lead não possui telefone cadastrado' });
+
+  const { conteudo } = req.body;
+  if (!conteudo) return res.status(400).json({ error: 'conteudo é obrigatório' });
+
+  const mensagem = await mensagemModel.criar({ leadId: lead.id, conteudo, enviadoPor: 'humano' });
+  whatsappService.enviarMensagem(lead.telefone, conteudo);
+
+  res.status(201).json(mensagem);
+}
+
+module.exports = { receberMensagem, enviarManual };

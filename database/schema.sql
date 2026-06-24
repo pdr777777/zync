@@ -15,10 +15,12 @@ CREATE TABLE IF NOT EXISTS leads (
   nome VARCHAR(120) NOT NULL,
   servico VARCHAR(120),
   origem VARCHAR(60),
+  telefone VARCHAR(20),
   status ENUM('novo', 'em_contato', 'proposta_enviada', 'fechado') DEFAULT 'novo',
   valor DECIMAL(10,2),
   criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+  FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
+  UNIQUE KEY idx_leads_usuario_telefone (usuario_id, telefone)
 );
 
 CREATE TABLE IF NOT EXISTS mensagens (
