@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
   criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   reset_token_hash VARCHAR(64) NULL,
   reset_token_expira DATETIME NULL,
+  is_admin BOOLEAN NOT NULL DEFAULT FALSE,
   KEY idx_usuarios_reset_token (reset_token_hash)
 );
 
