@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Entrar — Zync</title>
+<link rel="stylesheet" href="../assets/css/app.css">
+</head>
+<body>
+
+<a href="../index.html" class="auth-back">← Voltar para o site</a>
+
+<div class="auth-screen">
+  <div class="auth-orb"></div>
+
+  <div class="auth-card">
+    <div class="auth-logo">Zy<span>nc</span></div>
+    <div class="auth-title">Bem-vindo de volta</div>
+    <div class="auth-sub">Entre para acessar seu painel de leads e conversas.</div>
+
+    <div class="auth-alert" id="alert"></div>
+
+    <form class="auth-form" id="login-form" novalidate>
+      <div class="field">
+        <label for="email">E-mail</label>
+        <input type="email" id="email" name="email" placeholder="voce@empresa.com" required autocomplete="email">
+      </div>
+
+      <div class="field">
+        <label for="senha">Senha</label>
+        <input type="password" id="senha" name="senha" placeholder="••••••••" required autocomplete="current-password">
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block" id="submit-btn">
+        <span id="submit-label">Entrar</span>
+      </button>
+    </form>
+
+    <div class="auth-foot">
+      Ainda não tem conta? <a href="registro.html">Criar conta gratuita</a>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/api.js"></script>
+<script>
+  Auth.redirectIfAuthenticated();
+
+  const form = document.getElementById('login-form');
+  const alertBox = document.getElementById('alert');
+  const submitBtn = document.getElementById('submit-btn');
+  const submitLabel = document.getElementById('submit-label');
+
+  function setLoading(loading) {
+    submitBtn.disabled = loading;
+    submitLabel.innerHTML = loading ? '<span class="spinner"></span>' : 'Entrar';
+  }
+
+  function showAlert(message) {
+    alertBox.textContent = message;
+    alertBox.classList.add('visible');
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    alertBox.classList.remove('visible');
+
+    const email = document.getElementById('email').value.trim();
+    const senha = document.getElementById('senha').value;
+
+    setLoading(true);
+    try {
+      const { token, usuario } = await Api.login(email, senha);
+      Auth.setSession(token, usuario);
+      window.location.href = 'dashboard.html';
+    } catch (err) {
+      showAlert(err.message);
+      setLoading(false);
+    }
+  });
+</script>
+
+</body>
+</html>

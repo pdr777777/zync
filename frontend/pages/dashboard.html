@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Zync</title>
+<link rel="stylesheet" href="../assets/css/app.css">
+</head>
+<body>
+
+<div class="app-shell">
+  <aside class="app-sidebar">
+    <div class="sidebar-logo">Zy<span>nc</span></div>
+
+    <nav class="sidebar-nav">
+      <a href="#stats" class="sidebar-item active" data-nav="stats">📊 Visão geral</a>
+      <a href="#kanban" class="sidebar-item" data-nav="kanban">👥 Leads</a>
+      <a href="../index.html" class="sidebar-item">🌐 Site</a>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" id="user-avatar">--</div>
+      <div class="sidebar-user-info">
+        <div class="sidebar-user-name" id="user-name">—</div>
+        <div class="sidebar-user-email" id="user-email">—</div>
+      </div>
+      <button class="sidebar-logout" id="logout-btn" title="Sair">⏻</button>
+    </div>
+  </aside>
+
+  <main class="app-main">
+    <div class="app-topbar">
+      <div>
+        <div class="app-title" id="stats">Dashboard</div>
+        <div class="app-title-sub">Acompanhe seus leads e conversões em tempo real.</div>
+      </div>
+      <div style="display:flex; gap:0.7rem;">
+        <button class="btn btn-secondary" id="open-cmdk">🔎 Buscar (Ctrl+K)</button>
+        <button class="btn btn-primary" id="open-new-lead">+ Novo lead</button>
+      </div>
+    </div>
+
+    <section class="stats-grid" id="stats-grid">
+      <div class="stat-card">
+        <div class="stat-card-top">
+          <div class="stat-icon">🆕</div>
+        </div>
+        <div class="stat-label">Leads hoje</div>
+        <div class="stat-num" id="stat-leads-hoje"><span class="skeleton" style="width:40px;height:1.8rem;"></span></div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-top">
+          <div class="stat-icon">✅</div>
+        </div>
+        <div class="stat-label">Conversões</div>
+        <div class="stat-num" id="stat-conversoes"><span class="skeleton" style="width:40px;height:1.8rem;"></span></div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-top">
+          <div class="stat-icon">💬</div>
+        </div>
+        <div class="stat-label">Msgs enviadas</div>
+        <div class="stat-num" id="stat-mensagens"><span class="skeleton" style="width:40px;height:1.8rem;"></span></div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-top">
+          <div class="stat-icon">🤖</div>
+        </div>
+        <div class="stat-label">Resp. IA</div>
+        <div class="stat-num" id="stat-ia"><span class="skeleton" style="width:40px;height:1.8rem;"></span></div>
+        <div class="stat-sub">Taxa de resolução</div>
+      </div>
+    </section>
+
+    <section class="chart-card">
+      <div class="chart-card-header">
+        <div>
+          <div class="chart-title">Leads nos últimos 14 dias</div>
+          <div class="chart-sub" id="chart-sub">—</div>
+        </div>
+      </div>
+      <svg id="sparkline" class="sparkline" viewBox="0 0 560 120" preserveAspectRatio="none"></svg>
+      <div class="sparkline-labels" id="sparkline-labels"></div>
+    </section>
+
+    <div class="kanban-header" id="kanban">
+      <div class="app-title" style="font-size:1.15rem;">Funil de leads</div>
+      <button class="btn btn-ghost btn-sm" id="refresh-leads">↻ Atualizar</button>
+    </div>
+
+    <div class="kanban-filters">
+      <input type="text" id="kanban-search" placeholder="🔍 Buscar por nome, telefone, serviço…">
+      <select id="kanban-filter-origem">
+        <option value="">Todas as origens</option>
+      </select>
+    </div>
+
+    <section class="kanban-board" id="kanban-board">
+      <div class="kanban-col" data-status="novo">
+        <div class="kanban-col-header"><span class="k-dot" style="background:#A78BFA"></span>Novos leads<span class="kanban-col-count" data-count="novo">0</span></div>
+        <div class="kanban-col-body" data-col="novo"></div>
+      </div>
+      <div class="kanban-col" data-status="em_contato">
+        <div class="kanban-col-header"><span class="k-dot" style="background:#60A5FA"></span>Em contato<span class="kanban-col-count" data-count="em_contato">0</span></div>
+        <div class="kanban-col-body" data-col="em_contato"></div>
+      </div>
+      <div class="kanban-col" data-status="proposta_enviada">
+        <div class="kanban-col-header"><span class="k-dot" style="background:#F59E0B"></span>Proposta enviada<span class="kanban-col-count" data-count="proposta_enviada">0</span></div>
+        <div class="kanban-col-body" data-col="proposta_enviada"></div>
+      </div>
+      <div class="kanban-col" data-status="fechado">
+        <div class="kanban-col-header"><span class="k-dot" style="background:#34D399"></span>Fechado ✓<span class="kanban-col-count" data-count="fechado">0</span></div>
+        <div class="kanban-col-body" data-col="fechado"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Modal: novo lead -->
+<div class="modal-overlay" id="lead-modal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">Novo lead</div>
+      <button class="modal-close" data-close-modal>✕</button>
+    </div>
+
+    <form id="new-lead-form" novalidate>
+      <div class="field">
+        <label for="nl-nome">Nome *</label>
+        <input type="text" id="nl-nome" placeholder="Nome do cliente" required>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="nl-servico">Serviço</label>
+          <input type="text" id="nl-servico" placeholder="Ex: Implante dental">
+        </div>
+        <div class="field">
+          <label for="nl-origem">Origem</label>
+          <input type="text" id="nl-origem" placeholder="Ex: WhatsApp">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="nl-telefone">Telefone</label>
+          <input type="text" id="nl-telefone" placeholder="+55 11 99999-9999">
+        </div>
+        <div class="field">
+          <label for="nl-valor">Valor (R$)</label>
+          <input type="number" id="nl-valor" placeholder="0,00" min="0" step="0.01">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="nl-status">Status</label>
+        <select id="nl-status">
+          <option value="novo">Novo lead</option>
+          <option value="em_contato">Em contato</option>
+          <option value="proposta_enviada">Proposta enviada</option>
+          <option value="fechado">Fechado</option>
+        </select>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" data-close-modal>Cancelar</button>
+        <button type="submit" class="btn btn-primary" id="nl-submit"><span id="nl-submit-label">Criar lead</span></button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Painel de conversa do lead -->
+<div class="panel-overlay" id="panel-overlay"></div>
+<aside class="lead-panel" id="lead-panel">
+  <div class="panel-header">
+    <div class="panel-header-top">
+      <div>
+        <div class="panel-lead-name" id="panel-nome">—</div>
+        <div class="panel-lead-meta" id="panel-meta">—</div>
+      </div>
+      <button class="panel-close" id="panel-close">✕</button>
+    </div>
+    <div class="panel-status-row">
+      <select id="panel-status">
+        <option value="novo">Novo lead</option>
+        <option value="em_contato">Em contato</option>
+        <option value="proposta_enviada">Proposta enviada</option>
+        <option value="fechado">Fechado</option>
+      </select>
+      <button class="btn btn-danger btn-sm" id="panel-delete">Excluir</button>
+    </div>
+  </div>
+
+  <div class="panel-body" id="panel-messages">
+    <div class="empty-state" style="padding:2rem 1rem;">
+      <div class="empty-state-icon">💬</div>
+      <div>Nenhuma mensagem ainda</div>
+    </div>
+  </div>
+
+  <div class="panel-footer">
+    <div class="toggle-wrap" style="display:flex; gap:0.4rem; margin-bottom:0.7rem;">
+      <button type="button" class="btn btn-secondary btn-sm" id="mode-humano" style="flex:1;">Responder como atendente</button>
+      <button type="button" class="btn btn-ghost btn-sm" id="mode-ia" style="flex:1;">Simular cliente (testar IA)</button>
+    </div>
+    <div class="panel-input-row">
+      <textarea id="panel-input" rows="2" placeholder="Digite uma mensagem…"></textarea>
+      <button class="btn btn-primary" id="panel-send" style="align-self:flex-end;">➤</button>
+    </div>
+  </div>
+</aside>
+
+<div class="cmdk-overlay" id="cmdk-overlay">
+  <div class="cmdk-box">
+    <input type="text" id="cmdk-input" class="cmdk-input" placeholder="Buscar ações ou leads… (Esc para fechar)" autocomplete="off">
+    <div class="cmdk-list" id="cmdk-list"></div>
+  </div>
+</div>
+
+<script src="../assets/js/api.js"></script>
+<script src="../assets/js/dashboard.js"></script>
+
+</body>
+</html>
