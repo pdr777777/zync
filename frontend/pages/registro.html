@@ -33,7 +33,7 @@
 
       <div class="field">
         <label for="senha">Senha</label>
-        <input type="password" id="senha" name="senha" placeholder="Mínimo 6 caracteres" required minlength="6" autocomplete="new-password">
+        <input type="password" id="senha" name="senha" placeholder="Mínimo 8 caracteres, com letras e números" required minlength="8" autocomplete="new-password">
       </div>
 
       <button type="submit" class="btn btn-primary btn-block" id="submit-btn">
@@ -74,8 +74,8 @@
     const email = document.getElementById('email').value.trim();
     const senha = document.getElementById('senha').value;
 
-    if (senha.length < 6) {
-      showAlert('A senha precisa ter no mínimo 6 caracteres.');
+    if (senha.length < 8 || !/[a-zA-Z]/.test(senha) || !/[0-9]/.test(senha)) {
+      showAlert('A senha precisa ter no mínimo 8 caracteres, com letras e números.');
       return;
     }
 

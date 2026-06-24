@@ -9,7 +9,8 @@ function emailValido(email) {
 }
 
 function senhaValida(senha) {
-  return typeof senha === 'string' && senha.length >= 6;
+  if (typeof senha !== 'string' || senha.length < 8) return false;
+  return /[a-zA-Z]/.test(senha) && /[0-9]/.test(senha);
 }
 
 function dataValida(data) {

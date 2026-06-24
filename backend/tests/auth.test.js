@@ -51,6 +51,26 @@ describe('POST /api/auth/register', () => {
 
     expect(resposta.status).toBe(400);
   });
+
+  test('rejeita senha só com letras', async () => {
+    const resposta = await request(app).post('/api/auth/register').send({
+      nome: 'Fulano',
+      email: `soletras-${Date.now()}@zync.com`,
+      senha: 'somenteletras',
+    });
+
+    expect(resposta.status).toBe(400);
+  });
+
+  test('rejeita senha só com números', async () => {
+    const resposta = await request(app).post('/api/auth/register').send({
+      nome: 'Fulano',
+      email: `sonumeros-${Date.now()}@zync.com`,
+      senha: '12345678',
+    });
+
+    expect(resposta.status).toBe(400);
+  });
 });
 
 describe('POST /api/auth/login', () => {

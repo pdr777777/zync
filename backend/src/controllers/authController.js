@@ -17,7 +17,7 @@ async function register(req, res) {
   }
 
   if (!validators.senhaValida(senha)) {
-    return res.status(400).json({ error: 'senha deve ter pelo menos 6 caracteres' });
+    return res.status(400).json({ error: 'senha deve ter pelo menos 8 caracteres, com letras e números' });
   }
 
   const existente = await usuarioModel.findByEmail(email);
@@ -103,7 +103,7 @@ async function atualizarMe(req, res) {
     }
 
     if (!validators.senhaValida(senha)) {
-      return res.status(400).json({ error: 'senha deve ter pelo menos 6 caracteres' });
+      return res.status(400).json({ error: 'senha deve ter pelo menos 8 caracteres, com letras e números' });
     }
 
     dados.senha_hash = await bcrypt.hash(senha, 10);
@@ -170,7 +170,7 @@ async function redefinirSenha(req, res) {
   }
 
   if (!validators.senhaValida(novaSenha)) {
-    return res.status(400).json({ error: 'senha deve ter pelo menos 6 caracteres' });
+    return res.status(400).json({ error: 'senha deve ter pelo menos 8 caracteres, com letras e números' });
   }
 
   const tokenHash = crypto.createHash('sha256').update(token).digest('hex');

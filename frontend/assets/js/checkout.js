@@ -116,8 +116,8 @@ document.getElementById('account-form').addEventListener('submit', async (e) => 
   const email = document.getElementById('co-email').value.trim();
   const senha = document.getElementById('co-senha').value;
 
-  if (!nome || !email || senha.length < 6) {
-    showToast('Preencha seus dados corretamente (senha com mínimo 6 caracteres).', 'error');
+  if (!nome || !email || senha.length < 8 || !/[a-zA-Z]/.test(senha) || !/[0-9]/.test(senha)) {
+    showToast('Preencha seus dados corretamente (senha com mínimo 8 caracteres, com letras e números).', 'error');
     return;
   }
 
