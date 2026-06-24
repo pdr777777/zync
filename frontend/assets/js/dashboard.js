@@ -23,6 +23,13 @@ let panelTagsCache = [];
 let cmdkItems = [];
 let cmdkIndex = 0;
 
+const STATUS_AGENDAMENTO_LABELS = {
+  agendado: 'Agendado',
+  confirmado: 'Confirmado',
+  cancelado: 'Cancelado',
+  concluido: 'Concluído',
+};
+
 function formatMoeda(valor) {
   if (valor === null || valor === undefined || valor === '') return null;
   return Number(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -414,8 +421,12 @@ async function abrirPainel(leadId) {
   panelOverlay.classList.add('visible');
 
   setModo('humano');
-  await carregarMensagens(leadId);
-  await carregarTagsDoLead(leadId);
+  document.getElementById('panel-agenda-form').classList.add('hidden');
+  await Promise.all([
+    carregarMensagens(leadId),
+    carregarTagsDoLead(leadId),
+    carregarAgendamentosDoLead(leadId),
+  ]);
 }
 
 function fecharPainel() {
@@ -426,6 +437,93 @@ function fecharPainel() {
 
 document.getElementById('panel-close').addEventListener('click', fecharPainel);
 panelOverlay.addEventListener('click', fecharPainel);
+
+/* ---------- AGENDAMENTOS DO LEAD ---------- */
+async function carregarAgendamentosDoLead(leadId) {
+  const lista = document.getElementById('panel-agenda-list');
+  lista.innerHTML = '<div class="panel-agenda-empty">Carregando…</div>';
+
+  try {
+    const agendamentos = await Api.agendamentos.doLead(leadId);
+    lista.innerHTML = '';
+
+    if (agendamentos.length === 0) {
+      lista.innerHTML = '<div class="panel-agenda-empty">Nenhum agendamento ainda</div>';
+      return;
+    }
+
+    agendamentos.forEach((ag) => lista.appendChild(criarItemAgendamento(leadId, ag)));
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+}
+
+function criarItemAgendamento(leadId, ag) {
+  const item = document.createElement('div');
+  item.className = 'panel-agenda-item';
+  item.innerHTML = `
+    <div class="panel-agenda-item-info">
+      <div class="panel-agenda-item-data">${formatHora(ag.data_hora)}</div>
+      ${ag.servico ? `<div class="panel-agenda-item-servico">${escapeHtml(ag.servico)}</div>` : ''}
+    </div>
+  `;
+
+  const select = document.createElement('select');
+  Object.entries(STATUS_AGENDAMENTO_LABELS).forEach(([valor, label]) => {
+    const option = document.createElement('option');
+    option.value = valor;
+    option.textContent = label;
+    if (valor === ag.status) option.selected = true;
+    select.appendChild(option);
+  });
+
+  select.addEventListener('change', async () => {
+    try {
+      await Api.agendamentos.atualizar(ag.id, { status: select.value });
+      showToast('Agendamento atualizado', 'success');
+    } catch (err) {
+      showToast(err.message, 'error');
+      select.value = ag.status;
+    }
+  });
+
+  item.appendChild(select);
+  return item;
+}
+
+const panelAgendaForm = document.getElementById('panel-agenda-form');
+
+document.getElementById('panel-agenda-toggle').addEventListener('click', () => {
+  panelAgendaForm.classList.toggle('hidden');
+});
+
+document.getElementById('panel-agenda-cancel').addEventListener('click', () => {
+  panelAgendaForm.classList.add('hidden');
+  panelAgendaForm.reset();
+});
+
+panelAgendaForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if (!currentLeadId) return;
+
+  const dataHoraInput = document.getElementById('ag-data-hora').value;
+  if (!dataHoraInput) return;
+
+  const dados = {
+    data_hora: dataHoraInput.replace('T', ' ') + ':00',
+    servico: document.getElementById('ag-servico').value.trim() || null,
+  };
+
+  try {
+    await Api.agendamentos.criar(currentLeadId, dados);
+    showToast('Agendamento criado', 'success');
+    panelAgendaForm.classList.add('hidden');
+    panelAgendaForm.reset();
+    await carregarAgendamentosDoLead(currentLeadId);
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+});
 
 async function carregarMensagens(leadId) {
   const body = document.getElementById('panel-messages');

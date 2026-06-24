@@ -627,6 +627,62 @@ a { color: inherit; }
 .panel-status-row { display: flex; gap: 0.6rem; align-items: center; }
 .panel-status-row select { flex: 1; }
 
+/* ---------- AGENDAMENTOS NO PAINEL ---------- */
+.panel-agenda { margin-top: 0.9rem; }
+
+.panel-agenda-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--cinza);
+  margin-bottom: 0.5rem;
+}
+
+.panel-agenda-list { display: flex; flex-direction: column; gap: 0.4rem; }
+
+.panel-agenda-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  background: var(--preto2);
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.78rem;
+}
+
+.panel-agenda-item-info { display: flex; flex-direction: column; gap: 0.1rem; }
+.panel-agenda-item-data { font-weight: 600; }
+.panel-agenda-item-servico { color: var(--cinza); font-size: 0.72rem; }
+
+.panel-agenda-item select {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--borda);
+  border-radius: 6px;
+  color: var(--branco);
+  font-size: 0.7rem;
+  padding: 0.25rem 0.4rem;
+}
+
+.panel-agenda-empty { font-size: 0.75rem; color: rgba(255,255,255,0.3); padding: 0.4rem 0; }
+
+.panel-agenda-form { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.6rem; }
+.panel-agenda-form input {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.8rem;
+  color: var(--branco);
+  font-family: inherit;
+  color-scheme: dark;
+}
+.panel-agenda-form-actions { display: flex; gap: 0.5rem; }
+.panel-agenda-form.hidden { display: none; }
+
 .panel-body {
   flex: 1;
   overflow-y: auto;

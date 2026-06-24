@@ -225,6 +225,22 @@
         <option value="">+ tag</option>
       </select>
     </div>
+
+    <div class="panel-agenda">
+      <div class="panel-agenda-header">
+        <span>📅 Agendamentos</span>
+        <button type="button" class="btn btn-ghost btn-sm" id="panel-agenda-toggle">+ Agendar</button>
+      </div>
+      <div class="panel-agenda-list" id="panel-agenda-list"></div>
+      <form id="panel-agenda-form" class="panel-agenda-form hidden">
+        <input type="datetime-local" id="ag-data-hora" required>
+        <input type="text" id="ag-servico" placeholder="Serviço (opcional)">
+        <div class="panel-agenda-form-actions">
+          <button type="submit" class="btn btn-primary btn-sm">Salvar</button>
+          <button type="button" class="btn btn-ghost btn-sm" id="panel-agenda-cancel">Cancelar</button>
+        </div>
+      </form>
+    </div>
   </div>
 
   <div class="panel-body" id="panel-messages">
