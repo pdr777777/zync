@@ -3,7 +3,7 @@ const API_BASE = (() => {
   if (hostname === 'localhost' || hostname === '127.0.0.1') {
     return `${protocol}//${hostname}:3001/api`;
   }
-  return '/api';
+  return 'https://zync-backend-production.up.railway.app/api';
 })();
 
 const Auth = {
