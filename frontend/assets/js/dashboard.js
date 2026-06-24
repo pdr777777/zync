@@ -92,7 +92,9 @@ function popularFiltroOrigem() {
   const atual = select.value;
   const origens = [...new Set(leadsCache.map((l) => l.origem).filter(Boolean))].sort();
   select.innerHTML = '<option value="">Todas as origens</option>' + origens.map((o) => `<option value="${escapeHtml(o)}">${escapeHtml(o)}</option>`).join('');
-  select.value = origens.includes(atual) ? atual : '';
+  const novoValor = origens.includes(atual) ? atual : '';
+  select.value = novoValor;
+  leadsFiltro.origem = novoValor;
 }
 
 document.getElementById('kanban-search').addEventListener('input', (e) => {
