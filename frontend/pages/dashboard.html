@@ -92,8 +92,8 @@
     </div>
 
     <div class="kanban-filters">
-      <input type="text" id="kanban-search" placeholder="🔍 Buscar por nome, telefone, serviço…">
-      <select id="kanban-filter-origem">
+      <input type="text" id="kanban-search" placeholder="🔍 Buscar por nome, telefone, serviço…" aria-label="Buscar leads">
+      <select id="kanban-filter-origem" aria-label="Filtrar por origem">
         <option value="">Todas as origens</option>
       </select>
     </div>
@@ -124,7 +124,7 @@
   <div class="modal-box">
     <div class="modal-header">
       <div class="modal-title">Novo lead</div>
-      <button class="modal-close" data-close-modal>✕</button>
+      <button class="modal-close" data-close-modal aria-label="Fechar">✕</button>
     </div>
 
     <form id="new-lead-form" novalidate>
@@ -182,7 +182,7 @@
         <div class="panel-lead-name" id="panel-nome">—</div>
         <div class="panel-lead-meta" id="panel-meta">—</div>
       </div>
-      <button class="panel-close" id="panel-close">✕</button>
+      <button class="panel-close" id="panel-close" aria-label="Fechar painel">✕</button>
     </div>
     <div class="panel-status-row">
       <select id="panel-status">
@@ -209,7 +209,7 @@
     </div>
     <div class="panel-input-row">
       <textarea id="panel-input" rows="2" placeholder="Digite uma mensagem…"></textarea>
-      <button class="btn btn-primary" id="panel-send" style="align-self:flex-end;">➤</button>
+      <button class="btn btn-primary" id="panel-send" style="align-self:flex-end;" aria-label="Enviar mensagem">➤</button>
     </div>
   </div>
 </aside>
