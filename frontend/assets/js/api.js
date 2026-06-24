@@ -88,6 +88,11 @@ const Api = {
   register: (nome, email, senha) => apiRequest('/auth/register', { method: 'POST', body: { nome, email, senha }, auth: false }),
   login: (email, senha) => apiRequest('/auth/login', { method: 'POST', body: { email, senha }, auth: false }),
 
+  auth: {
+    me: () => apiRequest('/auth/me'),
+    atualizarMe: (dados) => apiRequest('/auth/me', { method: 'PUT', body: dados }),
+  },
+
   dashboard: () => apiRequest('/dashboard'),
 
   leads: {
@@ -111,6 +116,28 @@ const Api = {
     simular: (leadId, conteudo) => apiRequest(`/leads/${leadId}/ia/responder`, { method: 'POST', body: { conteudo } }),
   },
 };
+
+async function downloadComAuth(path, filename) {
+  const token = Auth.getToken();
+  const res = await fetch(`${API_BASE}${path}`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new ApiError(data.error || 'Erro ao exportar', res.status);
+  }
+
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
 
 function showToast(message, type = 'success') {
   let stack = document.querySelector('.toast-stack');

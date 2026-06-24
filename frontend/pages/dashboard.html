@@ -15,6 +15,7 @@
     <nav class="sidebar-nav">
       <a href="#stats" class="sidebar-item active" data-nav="stats">📊 Visão geral</a>
       <a href="#kanban" class="sidebar-item" data-nav="kanban">👥 Leads</a>
+      <a href="perfil.html" class="sidebar-item">👤 Perfil</a>
       <a href="../index.html" class="sidebar-item">🌐 Site</a>
     </nav>
 
@@ -88,7 +89,10 @@
 
     <div class="kanban-header" id="kanban">
       <div class="app-title" style="font-size:1.15rem;">Funil de leads</div>
-      <button class="btn btn-ghost btn-sm" id="refresh-leads">↻ Atualizar</button>
+      <div style="display:flex; gap:0.6rem;">
+        <button class="btn btn-ghost btn-sm" id="export-csv">⬇ Exportar CSV</button>
+        <button class="btn btn-ghost btn-sm" id="refresh-leads">↻ Atualizar</button>
+      </div>
     </div>
 
     <div class="kanban-filters">
@@ -222,6 +226,7 @@
 </div>
 
 <script src="../assets/js/api.js"></script>
+<script src="../assets/js/app-shell.js"></script>
 <script src="../assets/js/dashboard.js"></script>
 
 </body>

@@ -29,21 +29,6 @@ function formatHora(iso) {
   return new Date(iso).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
 }
 
-function iniciais(nome) {
-  return nome.split(' ').filter(Boolean).slice(0, 2).map((p) => p[0].toUpperCase()).join('');
-}
-
-/* ---------- USUÁRIO ---------- */
-function renderUsuario() {
-  const usuario = Auth.getUsuario();
-  if (!usuario) return;
-  document.getElementById('user-avatar').textContent = iniciais(usuario.nome);
-  document.getElementById('user-name').textContent = usuario.nome;
-  document.getElementById('user-email').textContent = usuario.email;
-}
-
-document.getElementById('logout-btn').addEventListener('click', () => Auth.logout());
-
 /* ---------- DASHBOARD STATS ---------- */
 async function loadDashboard() {
   try {
@@ -264,6 +249,18 @@ function addActivity(leadId, entry) {
 document.getElementById('refresh-leads').addEventListener('click', () => {
   loadLeads();
   loadDashboard();
+});
+
+document.getElementById('export-csv').addEventListener('click', async (e) => {
+  const btn = e.currentTarget;
+  btn.disabled = true;
+  try {
+    await downloadComAuth('/leads/export', 'leads.csv');
+  } catch (err) {
+    showToast(err.message, 'error');
+  } finally {
+    btn.disabled = false;
+  }
 });
 
 /* ---------- NOVO LEAD ---------- */
@@ -599,6 +596,5 @@ document.querySelectorAll('.sidebar-item[data-nav]').forEach((item) => {
 });
 
 /* ---------- INIT ---------- */
-renderUsuario();
 loadDashboard();
 loadLeads();

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perfil — Zync</title>
+<link rel="stylesheet" href="../assets/css/app.css">
+</head>
+<body>
+
+<div class="app-shell">
+  <aside class="app-sidebar">
+    <div class="sidebar-logo">Zy<span>nc</span></div>
+
+    <nav class="sidebar-nav">
+      <a href="dashboard.html#stats" class="sidebar-item">📊 Visão geral</a>
+      <a href="dashboard.html#kanban" class="sidebar-item">👥 Leads</a>
+      <a href="perfil.html" class="sidebar-item active">👤 Perfil</a>
+      <a href="../index.html" class="sidebar-item">🌐 Site</a>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" id="user-avatar">--</div>
+      <div class="sidebar-user-info">
+        <div class="sidebar-user-name" id="user-name">—</div>
+        <div class="sidebar-user-email" id="user-email">—</div>
+      </div>
+      <button class="sidebar-logout" id="logout-btn" title="Sair">⏻</button>
+    </div>
+  </aside>
+
+  <main class="app-main">
+    <div class="app-topbar">
+      <div>
+        <div class="app-title">Perfil</div>
+        <div class="app-title-sub">Gerencie suas informações de conta e senha.</div>
+      </div>
+    </div>
+
+    <section class="chart-card" style="max-width: 480px;">
+      <div class="chart-card-header">
+        <div class="chart-title">Informações da conta</div>
+      </div>
+      <form id="form-perfil" novalidate>
+        <div class="field">
+          <label for="perfil-nome">Nome</label>
+          <input type="text" id="perfil-nome" required>
+        </div>
+        <div class="field">
+          <label for="perfil-email">E-mail</label>
+          <input type="email" id="perfil-email" required>
+        </div>
+        <button type="submit" class="btn btn-primary" id="perfil-submit">
+          <span id="perfil-submit-label">Salvar alterações</span>
+        </button>
+      </form>
+    </section>
+
+    <section class="chart-card" style="max-width: 480px;">
+      <div class="chart-card-header">
+        <div class="chart-title">Alterar senha</div>
+      </div>
+      <form id="form-senha" novalidate>
+        <div class="field">
+          <label for="senha-atual">Senha atual</label>
+          <input type="password" id="senha-atual" required autocomplete="current-password">
+        </div>
+        <div class="field">
+          <label for="senha-nova">Nova senha</label>
+          <input type="password" id="senha-nova" required minlength="6" autocomplete="new-password">
+        </div>
+        <div class="field">
+          <label for="senha-confirmar">Confirmar nova senha</label>
+          <input type="password" id="senha-confirmar" required minlength="6" autocomplete="new-password">
+        </div>
+        <button type="submit" class="btn btn-primary" id="senha-submit">
+          <span id="senha-submit-label">Alterar senha</span>
+        </button>
+      </form>
+    </section>
+  </main>
+</div>
+
+<script src="../assets/js/api.js"></script>
+<script src="../assets/js/app-shell.js"></script>
+<script src="../assets/js/perfil.js"></script>
+
+</body>
+</html>
