@@ -33,6 +33,16 @@ Usa Jest + Supertest contra um schema Postgres separado (`zync_test`), criado e 
 | `POST /api/webhooks/whatsapp/:usuarioId` | Não | Webhook público para receber mensagens do WhatsApp |
 | `GET /health` | Não | Health check (testa conexão com o banco) — usado por uptime monitor |
 
+## Integrações externas
+
+| Serviço | Status |
+|---|---|
+| E-mail (`src/services/emailService.js`) | Real via SendGrid — precisa de `SENDGRID_API_KEY` e `EMAIL_FROM` (e-mail verificado em Single Sender Verification). Sem essas variáveis, cai no mock (`console.log`) — é o que acontece localmente/nos testes. |
+| Pagamento (`src/services/syncpayService.js`) | Real, já configurado em produção (`SYNCPAY_*`). |
+| WhatsApp (`src/services/whatsappService.js`) | Mock — webhook recebe mensagens reais, mas o envio ainda não chama nenhuma API real (Meta Cloud API/Twilio). |
+| IA de atendimento (`src/services/iaService.js`) | Mock — resposta por palavra-chave, não é um LLM real. |
+| Alerta push (`src/services/ntfyService.js`) | Real via [ntfy.sh](https://ntfy.sh) — manda notificação (sem dado pessoal) em cadastro, login e pagamento confirmado. Precisa de `NTFY_TOPIC`. O tópico funciona como uma "senha" fraca (quem souber o nome recebe as notificações também) — por isso a mensagem nunca inclui e-mail, nome ou valor. |
+
 ## Monitoramento
 
 - **Erros**: `@sentry/node` captura exceções não tratadas e erros 500/503
