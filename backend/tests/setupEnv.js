@@ -1,4 +1,5 @@
 process.env.NODE_ENV = 'test';
+process.env.JWT_SECRET = process.env.JWT_SECRET || 'segredo-teste-jwt';
 process.env.WHATSAPP_WEBHOOK_TOKEN = process.env.WHATSAPP_WEBHOOK_TOKEN || 'token-teste-whatsapp';
 process.env.SYNCPAY_WEBHOOK_TOKEN = process.env.SYNCPAY_WEBHOOK_TOKEN || 'token-teste-syncpay';
 
