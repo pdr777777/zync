@@ -6,6 +6,7 @@ const emailService = require('../services/emailService');
 const asyncHandler = require('../utils/asyncHandler');
 const validators = require('../utils/validators');
 const ntfy = require('../utils/ntfy');
+const frontendUrl = require('../utils/frontendUrl');
 
 async function register(req, res) {
   const { nome, email, senha } = req.body;
@@ -165,7 +166,7 @@ async function esqueciSenha(req, res) {
 
     await usuarioModel.definirTokenReset(usuario.id, tokenHash, expiraEm);
 
-    const linkReset = `${process.env.FRONTEND_URL || ''}/pages/redefinir-senha.html?token=${token}`;
+    const linkReset = `${frontendUrl.urlPrincipal()}/pages/redefinir-senha.html?token=${token}`;
     emailService.enviarEmail(
       usuario.email,
       'Redefinição de senha - Zync',

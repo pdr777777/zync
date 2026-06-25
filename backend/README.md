@@ -67,6 +67,18 @@ Roda automaticamente no CI (`.github/workflows/test.yml`) em todo push/PR pra `m
   do tópico recebe as mensagens), por isso o nome deve ser longo e aleatório,
   nunca algo previsível como `zync` ou `alertas`.
 
+## CORS
+
+A API só aceita requisições de origens na variável `FRONTEND_URL` (separadas
+por vírgula se for mais de um domínio) + `localhost:5500`/`127.0.0.1:5500`
+pra desenvolvimento local. Origem fora da lista recebe `403`. Pra liberar um
+novo domínio (ex: deploy alternativo do Vercel), adiciona ele na lista do
+Railway:
+
+```
+railway variables --set "FRONTEND_URL=https://dominio-1.vercel.app,https://dominio-2.vercel.app" --environment production
+```
+
 ## Produção (Railway)
 
 API hospedada em: **https://zync-backend-production.up.railway.app**

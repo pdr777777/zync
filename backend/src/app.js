@@ -9,14 +9,15 @@ const db = require('./config/db');
 const routes = require('./routes');
 const { apiLimiter } = require('./middleware/rateLimiter');
 const { tratarErro, rotaNaoEncontrada } = require('./middleware/errorMiddleware');
+const frontendUrl = require('./utils/frontendUrl');
 
 const app = express();
 
 const ORIGENS_PERMITIDAS = [
-  process.env.FRONTEND_URL,
+  ...frontendUrl.listarUrls(),
   'http://localhost:5500',
   'http://127.0.0.1:5500',
-].filter(Boolean);
+];
 
 app.set('trust proxy', 1);
 app.use(helmet());
