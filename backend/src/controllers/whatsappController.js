@@ -1,6 +1,7 @@
 const leadModel = require('../models/leadModel');
 const mensagemModel = require('../models/mensagemModel');
 const notificacaoModel = require('../models/notificacaoModel');
+const usuarioModel = require('../models/usuarioModel');
 const iaService = require('../services/iaService');
 const whatsappService = require('../services/whatsappService');
 const asyncHandler = require('../utils/asyncHandler');
@@ -25,7 +26,8 @@ async function processarMensagemRecebida({ usuarioId, telefone, nome, mensagem }
     mensagem: `${lead.nome} enviou uma mensagem`,
   });
 
-  const respostaTexto = await iaService.gerarResposta(mensagem);
+  const empresa = await usuarioModel.buscarPorId(usuarioId);
+  const respostaTexto = await iaService.gerarResposta(mensagem, empresa);
   await mensagemModel.criar({ leadId: lead.id, conteudo: respostaTexto, enviadoPor: 'ia' });
 
   await whatsappService.enviarMensagem(telefone, respostaTexto);

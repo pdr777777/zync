@@ -58,6 +58,9 @@ async function carregarPerfil() {
     document.getElementById('perfil-telefone').value = usuario.telefone || '';
     document.getElementById('perfil-instagram').value = usuario.instagram || '';
     document.getElementById('perfil-facebook').value = usuario.facebook || '';
+    document.getElementById('ia-o-que-vende').value = usuario.ia_o_que_vende || '';
+    document.getElementById('ia-horario').value = usuario.ia_horario_funcionamento || '';
+    document.getElementById('ia-tom').value = usuario.ia_tom_de_voz || 'amigavel';
 
     fotoAtual = usuario.foto_url || null;
     fotoAlterada = false;
@@ -263,6 +266,31 @@ document.getElementById('form-pessoal').addEventListener('submit', async (e) => 
   } finally {
     btn.disabled = false;
     label.textContent = 'Salvar informações';
+  }
+});
+
+document.getElementById('form-ia').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const dados = {
+    ia_o_que_vende: document.getElementById('ia-o-que-vende').value.trim() || null,
+    ia_horario_funcionamento: document.getElementById('ia-horario').value.trim() || null,
+    ia_tom_de_voz: document.getElementById('ia-tom').value,
+  };
+
+  const btn = document.getElementById('ia-submit');
+  const label = document.getElementById('ia-submit-label');
+  btn.disabled = true;
+  label.innerHTML = '<span class="spinner"></span>';
+
+  try {
+    await Api.auth.atualizarMe(dados);
+    showToast('Configuração da IA salva com sucesso', 'success');
+  } catch (err) {
+    showToast(err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    label.textContent = 'Salvar configuração';
   }
 });
 

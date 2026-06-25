@@ -21,7 +21,11 @@ CREATE TABLE IF NOT EXISTS usuarios (
   senha_alterada_em TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   catalogo_slug VARCHAR(32) NULL UNIQUE,
   removido_em TIMESTAMPTZ NULL,
-  whatsapp_phone_number_id VARCHAR(60) NULL UNIQUE
+  whatsapp_phone_number_id VARCHAR(60) NULL UNIQUE,
+  ia_o_que_vende TEXT NULL,
+  ia_horario_funcionamento VARCHAR(200) NULL,
+  ia_tom_de_voz VARCHAR(20) NULL DEFAULT 'amigavel'
+    CHECK (ia_tom_de_voz IN ('formal', 'casual', 'amigavel'))
 );
 
 CREATE INDEX IF NOT EXISTS idx_usuarios_reset_token ON usuarios (reset_token_hash);

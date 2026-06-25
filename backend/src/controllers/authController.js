@@ -128,7 +128,10 @@ async function atualizarMe(req, res) {
     dados.senha_hash = await bcrypt.hash(senha, 10);
   }
 
-  const { foto_url, idade, cpf, instagram, facebook, telefone, nome_empresa } = req.body;
+  const {
+    foto_url, idade, cpf, instagram, facebook, telefone, nome_empresa,
+    ia_o_que_vende, ia_horario_funcionamento, ia_tom_de_voz,
+  } = req.body;
 
   if (foto_url !== undefined) dados.foto_url = foto_url || null;
   if (instagram !== undefined) dados.instagram = instagram || null;
@@ -154,6 +157,27 @@ async function atualizarMe(req, res) {
       return res.status(400).json({ error: 'cpf inválido' });
     }
     dados.cpf = cpf || null;
+  }
+
+  if (ia_o_que_vende !== undefined) {
+    if (ia_o_que_vende && !validators.dentroDoTamanho(ia_o_que_vende, 2000)) {
+      return res.status(400).json({ error: 'ia_o_que_vende deve ter no máximo 2000 caracteres' });
+    }
+    dados.ia_o_que_vende = ia_o_que_vende || null;
+  }
+
+  if (ia_horario_funcionamento !== undefined) {
+    if (ia_horario_funcionamento && !validators.dentroDoTamanho(ia_horario_funcionamento, 200)) {
+      return res.status(400).json({ error: 'ia_horario_funcionamento deve ter no máximo 200 caracteres' });
+    }
+    dados.ia_horario_funcionamento = ia_horario_funcionamento || null;
+  }
+
+  if (ia_tom_de_voz !== undefined) {
+    if (!['formal', 'casual', 'amigavel'].includes(ia_tom_de_voz)) {
+      return res.status(400).json({ error: 'ia_tom_de_voz deve ser formal, casual ou amigavel' });
+    }
+    dados.ia_tom_de_voz = ia_tom_de_voz;
   }
 
   const usuario = await usuarioModel.atualizar(req.usuario.id, dados);

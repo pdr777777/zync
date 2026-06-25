@@ -46,6 +46,7 @@
 
     <div class="settings-tabs">
       <button type="button" class="settings-tab active" data-tab="perfil" data-i18n="config.tabPerfil">Perfil/Usuário</button>
+      <button type="button" class="settings-tab" data-tab="ia" data-i18n="config.tabIa">IA de Atendimento</button>
       <button type="button" class="settings-tab" data-tab="idioma" data-i18n="config.tabIdioma">Idioma</button>
       <button type="button" class="settings-tab" data-tab="tema" data-i18n="config.tabTema">Tema</button>
     </div>
@@ -156,6 +157,40 @@
           assinado pra URL cadastrada.
         </p>
         <div class="integracao-list" id="integracoes-list"></div>
+      </section>
+    </div>
+
+    <div class="settings-panel" data-panel="ia">
+      <section class="chart-card" style="max-width: 620px;">
+        <div class="chart-card-header">
+          <div class="chart-title">Configuração da IA de atendimento</div>
+        </div>
+        <p style="color:var(--cinza); font-size:0.85rem; margin-bottom:1.2rem; max-width:520px;">
+          Essas informações são usadas pela IA pra responder seus leads no WhatsApp
+          de forma personalizada — sem isso, ela responde de um jeito genérico e evita
+          falar sobre preço, horário e outros detalhes do seu negócio.
+        </p>
+        <form id="form-ia" novalidate>
+          <div class="field">
+            <label for="ia-o-que-vende">O que sua empresa vende/oferece</label>
+            <textarea id="ia-o-que-vende" rows="4" maxlength="2000" placeholder="Ex: Somos um studio de estética. Oferecemos limpeza de pele (R$ 120), design de sobrancelha (R$ 60) e massagem relaxante (R$ 150)."></textarea>
+          </div>
+          <div class="field">
+            <label for="ia-horario">Horário de funcionamento</label>
+            <input type="text" id="ia-horario" maxlength="200" placeholder="Ex: Segunda a sábado, das 9h às 19h">
+          </div>
+          <div class="field">
+            <label for="ia-tom">Tom de voz</label>
+            <select id="ia-tom">
+              <option value="amigavel">Amigável</option>
+              <option value="casual">Casual</option>
+              <option value="formal">Formal</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary" id="ia-submit">
+            <span id="ia-submit-label">Salvar configuração</span>
+          </button>
+        </form>
       </section>
     </div>
 

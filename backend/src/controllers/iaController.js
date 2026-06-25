@@ -1,5 +1,6 @@
 const leadModel = require('../models/leadModel');
 const mensagemModel = require('../models/mensagemModel');
+const usuarioModel = require('../models/usuarioModel');
 const iaService = require('../services/iaService');
 const asyncHandler = require('../utils/asyncHandler');
 
@@ -16,7 +17,8 @@ async function responder(req, res) {
     enviadoPor: 'cliente',
   });
 
-  const respostaTexto = await iaService.gerarResposta(conteudo);
+  const empresa = await usuarioModel.buscarPorId(req.usuario.id);
+  const respostaTexto = await iaService.gerarResposta(conteudo, empresa);
 
   const mensagemIA = await mensagemModel.criar({
     leadId: req.params.leadId,

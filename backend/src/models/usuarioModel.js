@@ -18,7 +18,8 @@ async function buscarPorId(id) {
   const { rows } = await db.query(
     `SELECT id, nome, email, criado_em, is_admin,
             foto_url, idade, cpf, instagram, facebook, telefone, nome_empresa,
-            whatsapp_phone_number_id
+            whatsapp_phone_number_id,
+            ia_o_que_vende, ia_horario_funcionamento, ia_tom_de_voz
      FROM usuarios WHERE id = $1`,
     [id]
   );
@@ -34,6 +35,7 @@ const CAMPOS_ATUALIZAVEIS = [
   'nome', 'email', 'senha_hash',
   'foto_url', 'idade', 'cpf', 'instagram', 'facebook', 'telefone', 'nome_empresa',
   'whatsapp_phone_number_id',
+  'ia_o_que_vende', 'ia_horario_funcionamento', 'ia_tom_de_voz',
 ];
 
 async function atualizar(id, dados) {
@@ -116,7 +118,8 @@ async function buscarPorSlugCatalogo(slug) {
 
 async function buscarPorWhatsappPhoneNumberId(phoneNumberId) {
   const { rows } = await db.query(
-    'SELECT id, nome FROM usuarios WHERE whatsapp_phone_number_id = $1',
+    `SELECT id, nome, nome_empresa, ia_o_que_vende, ia_horario_funcionamento, ia_tom_de_voz
+     FROM usuarios WHERE whatsapp_phone_number_id = $1`,
     [phoneNumberId]
   );
   return rows[0];

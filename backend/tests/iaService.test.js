@@ -46,4 +46,38 @@ describe('iaService', () => {
 
     expect(resposta).toMatch(/segunda a sábado/i);
   });
+
+  test('monta o system prompt com os dados da empresa quando fornecidos', async () => {
+    process.env.ANTHROPIC_API_KEY = 'chave-teste';
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ content: [{ type: 'text', text: 'ok' }] }),
+    });
+
+    await gerarResposta('Oi', {
+      nome_empresa: 'Studio Beleza & Cia',
+      ia_o_que_vende: 'Limpeza de pele e design de sobrancelha',
+      ia_horario_funcionamento: 'Seg a sáb, 9h às 19h',
+      ia_tom_de_voz: 'casual',
+    });
+
+    const corpo = JSON.parse(global.fetch.mock.calls[0][1].body);
+    expect(corpo.system).toContain('Studio Beleza & Cia');
+    expect(corpo.system).toContain('Limpeza de pele e design de sobrancelha');
+    expect(corpo.system).toContain('Seg a sáb, 9h às 19h');
+    expect(corpo.system).toMatch(/casual/i);
+  });
+
+  test('sem dados da empresa, usa prompt genérico (sem quebrar)', async () => {
+    process.env.ANTHROPIC_API_KEY = 'chave-teste';
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ content: [{ type: 'text', text: 'ok' }] }),
+    });
+
+    await gerarResposta('Oi');
+
+    const corpo = JSON.parse(global.fetch.mock.calls[0][1].body);
+    expect(corpo.system).toContain('uma empresa');
+  });
 });

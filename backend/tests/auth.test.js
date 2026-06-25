@@ -114,6 +114,48 @@ describe('GET /api/auth/me', () => {
   });
 });
 
+describe('PUT /api/auth/me — configuração da IA de atendimento', () => {
+  test('salva o que vende, horário e tom de voz', async () => {
+    const { token } = await criarUsuarioEToken(app, request);
+
+    const resposta = await request(app)
+      .put('/api/auth/me')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        ia_o_que_vende: 'Limpeza de pele e design de sobrancelha',
+        ia_horario_funcionamento: 'Seg a sáb, 9h às 19h',
+        ia_tom_de_voz: 'casual',
+      });
+
+    expect(resposta.status).toBe(200);
+    expect(resposta.body.ia_o_que_vende).toBe('Limpeza de pele e design de sobrancelha');
+    expect(resposta.body.ia_horario_funcionamento).toBe('Seg a sáb, 9h às 19h');
+    expect(resposta.body.ia_tom_de_voz).toBe('casual');
+  });
+
+  test('rejeita tom de voz fora da lista permitida', async () => {
+    const { token } = await criarUsuarioEToken(app, request);
+
+    const resposta = await request(app)
+      .put('/api/auth/me')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ ia_tom_de_voz: 'engracado' });
+
+    expect(resposta.status).toBe(400);
+  });
+
+  test('rejeita ia_o_que_vende maior que 2000 caracteres', async () => {
+    const { token } = await criarUsuarioEToken(app, request);
+
+    const resposta = await request(app)
+      .put('/api/auth/me')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ ia_o_que_vende: 'a'.repeat(2001) });
+
+    expect(resposta.status).toBe(400);
+  });
+});
+
 describe('Fluxo de reset de senha', () => {
   test('esqueci-senha responde igual pra email existente e inexistente', async () => {
     const { email } = await criarUsuarioEToken(app, request);

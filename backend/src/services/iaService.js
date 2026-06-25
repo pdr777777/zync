@@ -1,8 +1,29 @@
 const Sentry = require('../config/sentry');
 
-const SYSTEM_PROMPT = `Você é o assistente de atendimento ao cliente de uma empresa que usa o Zync (CRM de atendimento via WhatsApp). Responda em português do Brasil, de forma simpática, profissional e objetiva (no máximo 2-3 frases).
+const TOM_DE_VOZ = {
+  formal: 'Mantenha um tom formal e cortês.',
+  casual: 'Mantenha um tom casual e direto, como numa conversa informal.',
+  amigavel: 'Mantenha um tom amigável e caloroso.',
+};
 
-Você não tem acesso a preços, horários de funcionamento, endereço ou disponibilidade de agenda da empresa — nunca invente esses dados. Se o cliente perguntar isso, diga que um atendente vai confirmar em breve e pergunte se pode ajudar com mais alguma coisa.`;
+function montarSystemPrompt(empresa = {}) {
+  const nomeEmpresa = empresa.nome_empresa || empresa.nome;
+  const tom = TOM_DE_VOZ[empresa.ia_tom_de_voz] || TOM_DE_VOZ.amigavel;
+
+  let prompt = `Você é o assistente de atendimento ao cliente${nomeEmpresa ? ` da empresa "${nomeEmpresa}"` : ' de uma empresa'}, que usa o Zync (CRM de atendimento via WhatsApp). Responda em português do Brasil, de forma profissional e objetiva (no máximo 2-3 frases). ${tom}`;
+
+  if (empresa.ia_o_que_vende) {
+    prompt += `\n\nO que a empresa vende/oferece: ${empresa.ia_o_que_vende}`;
+  }
+
+  if (empresa.ia_horario_funcionamento) {
+    prompt += `\n\nHorário de funcionamento: ${empresa.ia_horario_funcionamento}`;
+  }
+
+  prompt += '\n\nSe o cliente perguntar algo que você não sabe (preço exato, disponibilidade de agenda, endereço, ou qualquer outro dado que não foi passado acima), diga que um atendente vai confirmar em breve e pergunte se pode ajudar com mais alguma coisa. Nunca invente informação.';
+
+  return prompt;
+}
 
 function respostaMock(mensagem) {
   const texto = mensagem.toLowerCase();
@@ -22,7 +43,7 @@ function respostaMock(mensagem) {
   return 'Obrigado pela mensagem! Em breve um de nossos atendentes vai te responder. Posso ajudar com mais alguma coisa?';
 }
 
-async function gerarResposta(mensagem) {
+async function gerarResposta(mensagem, empresa = {}) {
   if (!process.env.ANTHROPIC_API_KEY) {
     return respostaMock(mensagem);
   }
@@ -38,7 +59,7 @@ async function gerarResposta(mensagem) {
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 300,
-        system: SYSTEM_PROMPT,
+        system: montarSystemPrompt(empresa),
         messages: [{ role: 'user', content: mensagem }],
       }),
     });
