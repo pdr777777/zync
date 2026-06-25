@@ -8,14 +8,11 @@ afterAll(async () => {
 });
 
 function autorizacaoWebhook() {
-  const tokenEsperado = process.env.WHATSAPP_WEBHOOK_TOKEN;
-  return tokenEsperado ? `Bearer ${tokenEsperado}` : undefined;
+  return `Bearer ${process.env.WHATSAPP_WEBHOOK_TOKEN}`;
 }
 
 describe('POST /api/webhooks/whatsapp/:usuarioId', () => {
-  test('rejeita sem o token correto quando configurado', async () => {
-    if (!process.env.WHATSAPP_WEBHOOK_TOKEN) return;
-
+  test('rejeita sem o token correto', async () => {
     const { usuario } = await criarUsuarioEToken(app, request);
     const resposta = await request(app)
       .post(`/api/webhooks/whatsapp/${usuario.id}`)
@@ -27,12 +24,11 @@ describe('POST /api/webhooks/whatsapp/:usuarioId', () => {
 
   test('cria lead e mensagens, gera notificação', async () => {
     const { token, usuario } = await criarUsuarioEToken(app, request);
-    const auth = autorizacaoWebhook();
 
-    const req = request(app).post(`/api/webhooks/whatsapp/${usuario.id}`);
-    if (auth) req.set('Authorization', auth);
-
-    const resposta = await req.send({ telefone: '11988887777', nome: 'Cliente WhatsApp', mensagem: 'Olá, gostaria de informações' });
+    const resposta = await request(app)
+      .post(`/api/webhooks/whatsapp/${usuario.id}`)
+      .set('Authorization', autorizacaoWebhook())
+      .send({ telefone: '11988887777', nome: 'Cliente WhatsApp', mensagem: 'Olá, gostaria de informações' });
     expect(resposta.status).toBe(200);
 
     const leads = await request(app).get('/api/leads').set('Authorization', `Bearer ${token}`);
@@ -52,12 +48,12 @@ describe('POST /api/webhooks/whatsapp/:usuarioId', () => {
 
   test('reaproveita lead existente pelo telefone em mensagens seguintes', async () => {
     const { token, usuario } = await criarUsuarioEToken(app, request);
-    const auth = autorizacaoWebhook();
 
     for (const mensagem of ['Primeira mensagem', 'Segunda mensagem']) {
-      const req = request(app).post(`/api/webhooks/whatsapp/${usuario.id}`);
-      if (auth) req.set('Authorization', auth);
-      await req.send({ telefone: '11977776666', nome: 'Cliente Recorrente', mensagem });
+      await request(app)
+        .post(`/api/webhooks/whatsapp/${usuario.id}`)
+        .set('Authorization', autorizacaoWebhook())
+        .send({ telefone: '11977776666', nome: 'Cliente Recorrente', mensagem });
     }
 
     const leads = await request(app).get('/api/leads').set('Authorization', `Bearer ${token}`);
