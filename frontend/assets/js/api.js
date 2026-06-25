@@ -160,6 +160,16 @@ const Api = {
     desassociar: (leadId, tagId) => apiRequest(`/leads/${leadId}/tags/${tagId}`, { method: 'DELETE' }),
   },
 
+  camposPersonalizados: {
+    listar: () => apiRequest('/campos-personalizados'),
+    criar: (dados) => apiRequest('/campos-personalizados', { method: 'POST', body: dados }),
+    atualizar: (id, dados) => apiRequest(`/campos-personalizados/${id}`, { method: 'PATCH', body: dados }),
+    remover: (id) => apiRequest(`/campos-personalizados/${id}`, { method: 'DELETE' }),
+    doLead: (leadId) => apiRequest(`/leads/${leadId}/campos-personalizados`),
+    definir: (leadId, campoId, valor) => apiRequest(`/leads/${leadId}/campos-personalizados/${campoId}`, { method: 'PUT', body: { valor } }),
+    removerValor: (leadId, campoId) => apiRequest(`/leads/${leadId}/campos-personalizados/${campoId}`, { method: 'DELETE' }),
+  },
+
   agendamentos: {
     listarTodos: () => apiRequest('/agendamentos'),
     doLead: (leadId) => apiRequest(`/leads/${leadId}/agendamentos`),
@@ -196,6 +206,19 @@ const Api = {
     atualizar: (id, dados) => apiRequest(`/integracoes/${id}`, { method: 'PATCH', body: dados }),
     remover: (id) => apiRequest(`/integracoes/${id}`, { method: 'DELETE' }),
     testar: (id) => apiRequest(`/integracoes/${id}/testar`, { method: 'POST' }),
+  },
+
+  catalogo: {
+    listar: () => apiRequest('/catalogo'),
+    criar: (dados) => apiRequest('/catalogo', { method: 'POST', body: dados }),
+    atualizar: (id, dados) => apiRequest(`/catalogo/${id}`, { method: 'PATCH', body: dados }),
+    remover: (id) => apiRequest(`/catalogo/${id}`, { method: 'DELETE' }),
+    link: () => apiRequest('/catalogo/link'),
+  },
+
+  catalogoPublico: {
+    obter: (slug) => apiRequest(`/catalogo-publico/${slug}`, { auth: false }),
+    solicitar: (slug, dados) => apiRequest(`/catalogo-publico/${slug}/solicitar`, { method: 'POST', body: dados, auth: false }),
   },
 };
 

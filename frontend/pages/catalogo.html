@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<script src="../assets/js/theme.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Catálogo — Zync</title>
+<link rel="stylesheet" href="../assets/css/app.css">
+</head>
+<body>
+
+<div class="app-shell">
+  <aside class="app-sidebar">
+    <div class="sidebar-logo"><span>Zync</span></div>
+
+    <nav class="sidebar-nav">
+      <a href="dashboard.html#stats" class="sidebar-item" data-icon="dashboard"> <span data-i18n="nav.visaoGeral">Visão geral</span></a>
+      <a href="dashboard.html#analises" class="sidebar-item" data-icon="trendingUp"> <span data-i18n="nav.analises">Análises</span></a>
+      <a href="dashboard.html#kanban" class="sidebar-item" data-icon="users"> <span data-i18n="nav.leads">Leads</span></a>
+      <a href="agenda.html" class="sidebar-item" data-icon="calendar"> <span data-i18n="nav.agenda">Agenda</span></a>
+      <a href="catalogo.html" class="sidebar-item active" data-icon="tag"> <span data-i18n="nav.catalogo">Catálogo</span></a>
+
+      <div class="sidebar-divider"></div>
+
+      <a href="configuracoes.html" class="sidebar-item" data-icon="settings"> <span data-i18n="nav.configuracoes">Configurações</span></a>
+      <a href="suporte.html" class="sidebar-item" data-icon="messageCircle"> <span data-i18n="nav.suporte">Suporte</span></a>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" id="user-avatar">--</div>
+      <div class="sidebar-user-info">
+        <div class="sidebar-user-name" id="user-name">—</div>
+        <div class="sidebar-user-email" id="user-email">—</div>
+      </div>
+      <button class="sidebar-logout" id="logout-btn" title="Sair" data-icon="logOut"></button>
+    </div>
+  </aside>
+
+  <main class="app-main">
+    <div class="app-topbar">
+      <div>
+        <div class="app-title">Catálogo</div>
+        <div class="app-title-sub">Cadastre produtos e compartilhe um link de vendas pelo WhatsApp.</div>
+      </div>
+    </div>
+
+    <section class="chart-card" style="max-width: 680px;">
+      <div class="chart-card-header">
+        <div class="chart-title">Seu link de vendas</div>
+      </div>
+      <div class="catalogo-link-row">
+        <div class="catalogo-link-url" id="catalogo-link-url">Carregando...</div>
+        <button type="button" class="btn btn-secondary btn-sm" id="catalogo-copiar-link" data-icon="fileText"> Copiar link</button>
+      </div>
+      <p style="color:var(--cinza); font-size:0.85rem;">
+        Qualquer pessoa que abrir esse link vê seus produtos ativos e pode
+        pedir um deles — o pedido entra automaticamente como lead aqui no Zync.
+      </p>
+    </section>
+
+    <section class="chart-card" style="max-width: 680px;">
+      <div class="chart-card-header">
+        <div class="chart-title">Produtos</div>
+        <button type="button" class="btn btn-secondary btn-sm" id="produto-novo" data-icon="plus"> Novo produto</button>
+      </div>
+      <div class="produto-list" id="produtos-list"></div>
+    </section>
+  </main>
+</div>
+
+<!-- Modal: novo/editar produto -->
+<div class="modal-overlay" id="produto-modal">
+  <div class="modal-box" style="max-width: 420px;">
+    <div class="modal-header">
+      <div class="modal-title" id="produto-modal-titulo">Novo produto</div>
+      <button class="modal-close" data-close-modal aria-label="Fechar" data-icon="x"></button>
+    </div>
+
+    <form id="form-produto" novalidate>
+      <div class="field">
+        <label>Foto do produto</label>
+        <div class="foto-upload-row">
+          <div class="foto-preview" id="produto-foto-preview" style="border-radius: var(--radius);">--</div>
+          <div class="foto-upload-actions">
+            <button type="button" class="btn btn-secondary btn-sm" id="produto-foto-escolher" data-icon="camera"> Escolher foto</button>
+            <button type="button" class="btn btn-ghost btn-sm hidden" id="produto-foto-remover" data-icon="x"> Remover foto</button>
+            <input type="file" id="produto-foto-input" accept="image/*" class="hidden">
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label for="produto-nome">Nome</label>
+        <input type="text" id="produto-nome" required maxlength="120">
+      </div>
+      <div class="field">
+        <label for="produto-descricao">Descrição</label>
+        <input type="text" id="produto-descricao" maxlength="500">
+      </div>
+      <div class="field">
+        <label for="produto-preco">Preço (R$)</label>
+        <input type="number" id="produto-preco" min="0" step="0.01" required>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" data-close-modal>Cancelar</button>
+        <button type="submit" class="btn btn-primary" id="produto-submit">
+          <span id="produto-submit-label">Salvar produto</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: ajustar foto do produto -->
+<div class="modal-overlay" id="produto-foto-crop-modal">
+  <div class="modal-box" style="max-width: 380px;">
+    <div class="modal-header">
+      <div class="modal-title">Ajustar foto</div>
+      <button class="modal-close" data-close-modal aria-label="Fechar" data-icon="x"></button>
+    </div>
+
+    <div class="crop-viewport" id="produto-crop-viewport" style="border-radius: var(--radius);">
+      <img id="produto-crop-img" alt="" draggable="false">
+    </div>
+
+    <div class="crop-zoom-row">
+      <span style="font-size:0.75rem; color:var(--cinza);">Zoom</span>
+      <input type="range" id="produto-crop-zoom" min="1" max="3" step="0.01" value="1">
+    </div>
+    <p class="crop-hint">Arraste a foto para posicionar dentro do quadro.</p>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" data-close-modal>Cancelar</button>
+      <button type="button" class="btn btn-primary" id="produto-crop-confirmar">Usar esta foto</button>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/api.js"></script>
+<script src="../assets/js/icons.js"></script>
+<script src="../assets/js/i18n.js"></script>
+<script src="../assets/js/app-shell.js"></script>
+<script src="../assets/js/catalogo.js"></script>
+
+</body>
+</html>

@@ -45,4 +45,13 @@ const webhookLimiter = rateLimit({
   message: { error: 'Muitas requisições. Tente novamente em breve.' },
 });
 
-module.exports = { authLimiter, webhookLimiter, apiLimiter };
+const catalogoPublicoLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  limit: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: skipEmTeste,
+  message: { error: 'Muitas requisições. Tente novamente em alguns minutos.' },
+});
+
+module.exports = { authLimiter, webhookLimiter, apiLimiter, catalogoPublicoLimiter };

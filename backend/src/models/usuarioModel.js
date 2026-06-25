@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const db = require('../config/db');
 
 async function findByEmail(email) {
@@ -91,6 +92,26 @@ async function definirAdmin(id, isAdmin) {
   await db.query('UPDATE usuarios SET is_admin = $1 WHERE id = $2', [!!isAdmin, id]);
 }
 
+async function garantirSlugCatalogo(id) {
+  const { rows } = await db.query('SELECT catalogo_slug FROM usuarios WHERE id = $1', [id]);
+  if (rows[0]?.catalogo_slug) return rows[0].catalogo_slug;
+
+  for (let tentativa = 0; tentativa < 3; tentativa++) {
+    const slug = crypto.randomBytes(12).toString('hex');
+    try {
+      await db.query('UPDATE usuarios SET catalogo_slug = $1 WHERE id = $2', [slug, id]);
+      return slug;
+    } catch (err) {
+      if (err.code !== '23505' || tentativa === 2) throw err;
+    }
+  }
+}
+
+async function buscarPorSlugCatalogo(slug) {
+  const { rows } = await db.query('SELECT id, nome FROM usuarios WHERE catalogo_slug = $1', [slug]);
+  return rows[0];
+}
+
 module.exports = {
   findByEmail,
   create,
@@ -103,4 +124,6 @@ module.exports = {
   definirAdmin,
   buscarTimestampSenha,
   invalidarSessoes,
+  garantirSlugCatalogo,
+  buscarPorSlugCatalogo,
 };

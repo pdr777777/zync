@@ -18,7 +18,8 @@ CREATE TABLE IF NOT EXISTS usuarios (
   facebook VARCHAR(120) NULL,
   telefone VARCHAR(20) NULL,
   nome_empresa VARCHAR(120) NULL,
-  senha_alterada_em TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+  senha_alterada_em TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  catalogo_slug VARCHAR(32) NULL UNIQUE
 );
 
 CREATE INDEX IF NOT EXISTS idx_usuarios_reset_token ON usuarios (reset_token_hash);
@@ -62,6 +63,23 @@ CREATE TABLE IF NOT EXISTS lead_tags (
   lead_id INT NOT NULL REFERENCES leads(id) ON DELETE CASCADE,
   tag_id INT NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
   PRIMARY KEY (lead_id, tag_id)
+);
+
+CREATE TABLE IF NOT EXISTS campos_personalizados (
+  id SERIAL PRIMARY KEY,
+  usuario_id INT NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
+  nome VARCHAR(60) NOT NULL,
+  tipo VARCHAR(20) NOT NULL CHECK (tipo IN ('texto', 'numero', 'data', 'selecao')),
+  opcoes JSONB,
+  criado_em TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT idx_campos_personalizados_usuario_nome UNIQUE (usuario_id, nome)
+);
+
+CREATE TABLE IF NOT EXISTS lead_campos_valores (
+  lead_id INT NOT NULL REFERENCES leads(id) ON DELETE CASCADE,
+  campo_id INT NOT NULL REFERENCES campos_personalizados(id) ON DELETE CASCADE,
+  valor TEXT,
+  PRIMARY KEY (lead_id, campo_id)
 );
 
 CREATE TABLE IF NOT EXISTS agendamentos (
@@ -158,3 +176,16 @@ CREATE TABLE IF NOT EXISTS webhooks (
 );
 
 CREATE INDEX IF NOT EXISTS idx_webhooks_usuario ON webhooks (usuario_id);
+
+CREATE TABLE IF NOT EXISTS produtos (
+  id SERIAL PRIMARY KEY,
+  usuario_id INT NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
+  nome VARCHAR(120) NOT NULL,
+  descricao VARCHAR(500),
+  preco DECIMAL(10,2) NOT NULL,
+  foto_url TEXT,
+  ativo BOOLEAN NOT NULL DEFAULT true,
+  criado_em TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_produtos_usuario ON produtos (usuario_id);

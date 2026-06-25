@@ -20,6 +20,15 @@ let leadsFiltro = { termo: '', origem: '' };
 let tagsCache = [];
 let leadsTagFiltro = '';
 let panelTagsCache = [];
+let camposCache = [];
+let panelCamposCache = [];
+
+const TIPO_CAMPO_LABELS = {
+  texto: 'Texto',
+  numero: 'Número',
+  data: 'Data',
+  selecao: 'Seleção',
+};
 let cmdkItems = [];
 let cmdkIndex = 0;
 
@@ -176,6 +185,141 @@ document.getElementById('new-tag-form').addEventListener('submit', async (e) => 
     await loadTags();
     renderTagManageList();
     showToast('Tag criada', 'success');
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+});
+
+/* ---------- CAMPOS PERSONALIZADOS ---------- */
+async function loadCampos() {
+  try {
+    camposCache = await Api.camposPersonalizados.listar();
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+}
+
+const camposModal = document.getElementById('campos-modal');
+let campoEditandoId = null;
+
+function abrirCamposModal() {
+  camposModal.classList.add('visible');
+  renderCamposManageList();
+  document.getElementById('nc-nome').focus();
+}
+
+function sairDoModoEdicaoCampo() {
+  campoEditandoId = null;
+  document.getElementById('new-campo-form').reset();
+  document.getElementById('nc-opcoes').classList.add('hidden');
+  document.getElementById('nc-tipo').disabled = false;
+  document.getElementById('nc-submit').textContent = 'Adicionar';
+}
+
+function fecharCamposModal() {
+  camposModal.classList.remove('visible');
+  sairDoModoEdicaoCampo();
+}
+
+function abrirEdicaoCampo(campo) {
+  campoEditandoId = campo.id;
+  document.getElementById('nc-nome').value = campo.nome;
+  document.getElementById('nc-tipo').value = campo.tipo;
+  document.getElementById('nc-tipo').disabled = true;
+  const opcoesInput = document.getElementById('nc-opcoes');
+  if (campo.tipo === 'selecao') {
+    opcoesInput.value = (campo.opcoes || []).join(', ');
+    opcoesInput.classList.remove('hidden');
+  } else {
+    opcoesInput.classList.add('hidden');
+  }
+  document.getElementById('nc-submit').textContent = 'Salvar alterações';
+  document.getElementById('nc-nome').focus();
+}
+
+document.getElementById('open-campos').addEventListener('click', abrirCamposModal);
+camposModal.querySelectorAll('[data-close-modal]').forEach((el) => el.addEventListener('click', fecharCamposModal));
+camposModal.addEventListener('click', (e) => { if (e.target === camposModal) fecharCamposModal(); });
+
+document.getElementById('nc-tipo').addEventListener('change', (e) => {
+  document.getElementById('nc-opcoes').classList.toggle('hidden', e.target.value !== 'selecao');
+});
+
+function renderCamposManageList() {
+  const list = document.getElementById('campos-manage-list');
+  if (camposCache.length === 0) {
+    list.innerHTML = '<div class="tag-manage-empty">Nenhum campo ainda. Crie o primeiro abaixo.</div>';
+    return;
+  }
+
+  list.innerHTML = camposCache.map((c) => `
+    <div class="campo-manage-row" data-campo-id="${c.id}">
+      <span>${escapeHtml(c.nome)} <span class="badge badge-ativa">${TIPO_CAMPO_LABELS[c.tipo] || c.tipo}</span></span>
+      <span>
+        <button type="button" class="btn btn-ghost btn-sm campo-manage-editar" data-campo-id="${c.id}" aria-label="Editar campo ${escapeHtml(c.nome)}">Editar</button>
+        <button type="button" class="btn btn-ghost btn-sm campo-manage-remove" data-campo-id="${c.id}" aria-label="Excluir campo ${escapeHtml(c.nome)}">${icon('x', 14)}</button>
+      </span>
+    </div>
+  `).join('');
+
+  list.querySelectorAll('.campo-manage-editar').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const campo = camposCache.find((c) => String(c.id) === btn.dataset.campoId);
+      if (campo) abrirEdicaoCampo(campo);
+    });
+  });
+
+  list.querySelectorAll('.campo-manage-remove').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const campoId = btn.dataset.campoId;
+      if (!confirm('Excluir este campo? Os valores dele em todos os leads serão perdidos.')) return;
+
+      try {
+        await Api.camposPersonalizados.remover(campoId);
+        if (String(campoEditandoId) === campoId) sairDoModoEdicaoCampo();
+        await loadCampos();
+        renderCamposManageList();
+        showToast('Campo excluído', 'success');
+        if (currentLeadId) await carregarCamposDoLead(currentLeadId);
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    });
+  });
+}
+
+document.getElementById('new-campo-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const nome = document.getElementById('nc-nome').value.trim();
+  const tipo = document.getElementById('nc-tipo').value;
+  if (!nome) return;
+
+  let opcoes;
+  if (tipo === 'selecao') {
+    opcoes = document.getElementById('nc-opcoes').value.split(',').map((s) => s.trim()).filter(Boolean);
+    if (opcoes.length === 0) {
+      showToast('Informe pelo menos uma opção separada por vírgula', 'error');
+      return;
+    }
+  }
+
+  try {
+    if (campoEditandoId) {
+      const dados = { nome };
+      if (opcoes) dados.opcoes = opcoes;
+      await Api.camposPersonalizados.atualizar(campoEditandoId, dados);
+      showToast('Campo atualizado', 'success');
+    } else {
+      const dados = { nome, tipo };
+      if (opcoes) dados.opcoes = opcoes;
+      await Api.camposPersonalizados.criar(dados);
+      showToast('Campo criado', 'success');
+    }
+
+    sairDoModoEdicaoCampo();
+    await loadCampos();
+    renderCamposManageList();
+    if (currentLeadId) await carregarCamposDoLead(currentLeadId);
   } catch (err) {
     showToast(err.message, 'error');
   }
@@ -439,6 +583,7 @@ async function abrirPainel(leadId) {
     carregarMensagens(leadId),
     carregarTagsDoLead(leadId),
     carregarAgendamentosDoLead(leadId),
+    carregarCamposDoLead(leadId),
   ]);
 }
 
@@ -657,6 +802,60 @@ document.getElementById('panel-tag-add').addEventListener('change', async (e) =>
   }
 });
 
+async function carregarCamposDoLead(leadId) {
+  try {
+    panelCamposCache = await Api.camposPersonalizados.doLead(leadId);
+    renderPanelCampos();
+  } catch (err) {
+    showToast(err.message, 'error');
+  }
+}
+
+function inputDoCampo(campo) {
+  const valor = campo.valor ?? '';
+  if (campo.tipo === 'numero') return `<input type="number" class="campo-input" data-campo-id="${campo.id}" value="${escapeHtml(valor)}">`;
+  if (campo.tipo === 'data') return `<input type="date" class="campo-input" data-campo-id="${campo.id}" value="${escapeHtml(valor)}">`;
+  if (campo.tipo === 'selecao') {
+    const opcoesHtml = (campo.opcoes || []).map((o) => `<option value="${escapeHtml(o)}" ${o === valor ? 'selected' : ''}>${escapeHtml(o)}</option>`).join('');
+    return `<select class="campo-input" data-campo-id="${campo.id}"><option value="">—</option>${opcoesHtml}</select>`;
+  }
+  return `<input type="text" class="campo-input" data-campo-id="${campo.id}" value="${escapeHtml(valor)}">`;
+}
+
+function renderPanelCampos() {
+  const container = document.getElementById('panel-campos');
+
+  if (panelCamposCache.length === 0) {
+    container.innerHTML = '';
+    return;
+  }
+
+  container.innerHTML = panelCamposCache.map((c) => `
+    <div class="campo-row">
+      <label>${escapeHtml(c.nome)}</label>
+      ${inputDoCampo(c)}
+    </div>
+  `).join('');
+
+  async function salvar(input) {
+    const campoId = input.dataset.campoId;
+    try {
+      await Api.camposPersonalizados.definir(currentLeadId, campoId, input.value.trim());
+      const campo = panelCamposCache.find((c) => String(c.id) === campoId);
+      if (campo) campo.valor = input.value.trim() || null;
+    } catch (err) {
+      showToast(err.message, 'error');
+    }
+  }
+
+  container.querySelectorAll('input.campo-input').forEach((input) => {
+    input.addEventListener('blur', () => salvar(input));
+  });
+  container.querySelectorAll('select.campo-input').forEach((select) => {
+    select.addEventListener('change', () => salvar(select));
+  });
+}
+
 document.getElementById('panel-delete').addEventListener('click', async () => {
   if (!currentLeadId) return;
   if (!confirm('Tem certeza que deseja excluir este lead? Essa ação não pode ser desfeita.')) return;
@@ -737,6 +936,7 @@ function getCmdkAcoes() {
     { icon: icon('users', 16), label: 'Ir para Leads (kanban)', hint: 'Ação', run: () => document.getElementById('kanban').scrollIntoView({ behavior: 'smooth' }) },
     { icon: icon('plus', 16), label: 'Criar novo lead', hint: 'Ação', run: () => abrirModal() },
     { icon: icon('tag', 16), label: 'Gerenciar tags', hint: 'Ação', run: () => abrirTagModal() },
+    { icon: icon('clipboardList', 16), label: 'Gerenciar campos personalizados', hint: 'Ação', run: () => abrirCamposModal() },
     { icon: icon('calendar', 16), label: 'Ir para Agenda', hint: 'Ação', run: () => { window.location.href = 'agenda.html'; } },
     { icon: icon('settings', 16), label: 'Ir para Configurações', hint: 'Ação', run: () => { window.location.href = 'configuracoes.html'; } },
     { icon: icon('refreshCw', 16), label: 'Atualizar dados', hint: 'Ação', run: () => { loadLeads(); loadDashboard(); } },
@@ -993,4 +1193,5 @@ faturamentoSvg.addEventListener('mouseleave', () => {
 loadDashboard();
 loadLeads();
 loadTags();
+loadCampos();
 carregarAnalises();

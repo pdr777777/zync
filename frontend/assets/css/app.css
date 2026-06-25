@@ -1194,6 +1194,46 @@ a { color: inherit; text-decoration: none; }
 .tag-manage-form { display: flex; gap: 0.6rem; }
 .tag-manage-form input { flex: 1; }
 
+.panel-campos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 0.8rem;
+}
+.campo-row { display: flex; flex-direction: column; gap: 0.3rem; }
+.campo-row label { font-size: 0.72rem; color: var(--cinza); }
+.campo-row .campo-input {
+  background: var(--preto3);
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  padding: 0.45rem 0.6rem;
+  font-size: 0.82rem;
+  color: var(--branco);
+  font-family: inherit;
+}
+.campo-row select.campo-input { cursor: pointer; }
+
+.campo-manage-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.2rem;
+  min-height: 32px;
+}
+.campo-manage-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--preto3);
+  border: 1px solid var(--borda);
+  border-radius: var(--radius);
+  padding: 0.5rem 0.8rem;
+  font-size: 0.85rem;
+}
+.campo-manage-form { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+.campo-manage-form input,
+.campo-manage-form select { flex: 1; min-width: 120px; }
+
 /* ---------- AGENDA ---------- */
 .badge-agendado { background: rgba(167,139,250,0.15); color: var(--azul-claro); }
 .badge-confirmado { background: rgba(34,211,238,0.15); color: var(--ciano); }
@@ -1286,6 +1326,100 @@ a { color: inherit; text-decoration: none; }
 .integracao-eventos { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.5rem; }
 .integracao-actions { display: flex; align-items: center; gap: 0.6rem; }
 .integracao-empty { color: var(--cinza); font-size: 0.85rem; padding: 1rem 0; }
+.integracao-secret {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: var(--cinza);
+}
+.integracao-secret button { color: var(--azul-claro); background: none; border: none; cursor: pointer; font-size: 0.72rem; }
+
+/* ---------- CATÁLOGO DE PRODUTOS ---------- */
+.catalogo-link-row {
+  background: var(--preto3);
+  border: 1px solid var(--borda);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.2rem;
+}
+.catalogo-link-url {
+  flex: 1;
+  min-width: 200px;
+  font-size: 0.85rem;
+  color: var(--cinza);
+  word-break: break-all;
+}
+
+.produto-list { display: flex; flex-direction: column; gap: 0.7rem; }
+
+.produto-row {
+  background: var(--preto3);
+  border: 1px solid var(--borda);
+  border-radius: var(--radius-lg);
+  padding: 0.9rem 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.produto-foto {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--azul-claro), var(--azul));
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.produto-info { flex: 1; min-width: 180px; }
+.produto-nome { font-weight: 600; font-size: 0.92rem; }
+.produto-preco { font-size: 0.85rem; color: var(--cinza); margin-top: 0.2rem; }
+.produto-actions { display: flex; align-items: center; gap: 0.6rem; }
+.produto-empty { color: var(--cinza); font-size: 0.85rem; padding: 1rem 0; }
+
+/* ---------- LOJA (vitrine pública do catálogo) ---------- */
+.loja-screen { min-height: 100vh; padding: 3rem 1.5rem; }
+.loja-header { text-align: center; margin-bottom: 2rem; }
+.loja-header h1 { font-family: 'Space Grotesk', sans-serif; font-size: 1.6rem; }
+.loja-header p { color: var(--cinza); font-size: 0.9rem; margin-top: 0.3rem; }
+
+.loja-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.loja-card {
+  background: var(--preto3);
+  border: 1px solid var(--borda);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.loja-card-foto {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, var(--azul-claro), var(--azul));
+  object-fit: cover;
+}
+
+.loja-card-nome { font-weight: 600; font-size: 0.95rem; }
+.loja-card-descricao { font-size: 0.82rem; color: var(--cinza); flex: 1; }
+.loja-card-preco { font-weight: 700; font-size: 1.05rem; color: var(--azul-claro); }
 
 /* ---------- SIDEBAR: DIVISOR DE SECAO ---------- */
 .sidebar-divider {

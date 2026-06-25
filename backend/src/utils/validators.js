@@ -22,6 +22,11 @@ function valorPositivo(valor) {
   return !isNaN(numero) && numero >= 0;
 }
 
+function numeroValido(valor) {
+  const numero = typeof valor === 'number' ? valor : parseFloat(valor);
+  return !isNaN(numero);
+}
+
 function dentroDoTamanho(valor, max) {
   return valor === undefined || valor === null || (typeof valor === 'string' && valor.length <= max);
 }
@@ -48,6 +53,7 @@ module.exports = {
   senhaValida,
   dataValida,
   valorPositivo,
+  numeroValido,
   cpfValido,
   dentroDoTamanho,
   STATUS_LEAD,

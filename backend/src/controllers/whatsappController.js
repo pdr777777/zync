@@ -35,7 +35,7 @@ async function receberMensagem(req, res) {
   const respostaTexto = await iaService.gerarResposta(mensagem);
   await mensagemModel.criar({ leadId: lead.id, conteudo: respostaTexto, enviadoPor: 'ia' });
 
-  whatsappService.enviarMensagem(telefone, respostaTexto);
+  await whatsappService.enviarMensagem(telefone, respostaTexto);
 
   res.status(200).json({ ok: true });
 }
@@ -49,7 +49,7 @@ async function enviarManual(req, res) {
   if (!conteudo) return res.status(400).json({ error: 'conteudo é obrigatório' });
 
   const mensagem = await mensagemModel.criar({ leadId: lead.id, conteudo, enviadoPor: 'humano' });
-  whatsappService.enviarMensagem(lead.telefone, conteudo);
+  await whatsappService.enviarMensagem(lead.telefone, conteudo);
 
   res.status(201).json(mensagem);
 }
