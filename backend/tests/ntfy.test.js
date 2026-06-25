@@ -1,6 +1,6 @@
-const { notificar } = require('../src/services/ntfyService');
+const ntfy = require('../src/utils/ntfy');
 
-describe('ntfyService', () => {
+describe('utils/ntfy', () => {
   const ORIGINAL_FETCH = global.fetch;
   const ORIGINAL_TOPIC = process.env.NTFY_TOPIC;
 
@@ -13,31 +13,31 @@ describe('ntfyService', () => {
     delete process.env.NTFY_TOPIC;
     global.fetch = jest.fn();
 
-    const resultado = await notificar('Evento qualquer');
+    await ntfy.notificar('Evento qualquer');
 
-    expect(resultado).toEqual({ sucesso: true });
     expect(global.fetch).not.toHaveBeenCalled();
   });
 
-  test('com NTFY_TOPIC, chama o ntfy.sh com a mensagem', async () => {
+  test('com NTFY_TOPIC, chama o ntfy.sh com a mensagem e os headers certos', async () => {
     process.env.NTFY_TOPIC = 'topico-teste';
     global.fetch = jest.fn().mockResolvedValue({ ok: true });
 
-    const resultado = await notificar('Novo cadastro no Zync!');
+    await ntfy.notificar('Novo cadastro no Zync!', { titulo: 'Zync · Novo cadastro', tag: 'tada' });
 
-    expect(resultado).toEqual({ sucesso: true });
     expect(global.fetch).toHaveBeenCalledWith(
       'https://ntfy.sh/topico-teste',
-      expect.objectContaining({ method: 'POST', body: 'Novo cadastro no Zync!' })
+      expect.objectContaining({
+        method: 'POST',
+        headers: { Title: 'Zync · Novo cadastro', Tags: 'tada' },
+        body: 'Novo cadastro no Zync!',
+      })
     );
   });
 
-  test('se o ntfy falhar, captura e retorna sucesso: false (sem lançar)', async () => {
+  test('se o ntfy falhar, não lança (best-effort)', async () => {
     process.env.NTFY_TOPIC = 'topico-teste';
     global.fetch = jest.fn().mockResolvedValue({ ok: false, status: 500 });
 
-    const resultado = await notificar('Evento qualquer');
-
-    expect(resultado).toEqual({ sucesso: false });
+    await expect(ntfy.notificar('Evento qualquer')).resolves.toBeUndefined();
   });
 });

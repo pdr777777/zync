@@ -41,7 +41,6 @@ Usa Jest + Supertest contra um schema Postgres separado (`zync_test`), criado e 
 | Pagamento (`src/services/syncpayService.js`) | Real, já configurado em produção (`SYNCPAY_*`). |
 | WhatsApp (`src/services/whatsappService.js`) | Mock — webhook recebe mensagens reais, mas o envio ainda não chama nenhuma API real (Meta Cloud API/Twilio). |
 | IA de atendimento (`src/services/iaService.js`) | Mock — resposta por palavra-chave, não é um LLM real. |
-| Alerta push (`src/services/ntfyService.js`) | Real via [ntfy.sh](https://ntfy.sh) — manda notificação (sem dado pessoal) em cadastro, login e pagamento confirmado. Precisa de `NTFY_TOPIC`. O tópico funciona como uma "senha" fraca (quem souber o nome recebe as notificações também) — por isso a mensagem nunca inclui e-mail, nome ou valor. |
 
 ## Monitoramento
 
@@ -57,6 +56,14 @@ Usa Jest + Supertest contra um schema Postgres separado (`zync_test`), criado e 
   cria uma conta grátis no UptimeRobot (ou similar), aponta um monitor HTTP
   pra `https://zync-backend-production.up.railway.app/health` a cada 5 min,
   e configura o contato de alerta (e-mail/Discord/Slack).
+- **Atividade do negócio**: novo cadastro, login e pagamento aprovado disparam
+  um push via [ntfy.sh](https://ntfy.sh) (ver `src/utils/ntfy.js`, chamado em
+  `authController.js` e `syncpayWebhookController.js`). Só ativa se a env var
+  `NTFY_TOPIC` estiver configurada. Pra receber no celular: instala o app
+  ntfy (iOS/Android), assina o mesmo tópico configurado em `NTFY_TOPIC` — sem
+  precisar criar conta. É um serviço público por tópico (quem souber o nome
+  do tópico recebe as mensagens), por isso o nome deve ser longo e aleatório,
+  nunca algo previsível como `zync` ou `alertas`.
 
 ## Produção (Railway)
 

@@ -3,9 +3,9 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const usuarioModel = require('../models/usuarioModel');
 const emailService = require('../services/emailService');
-const ntfyService = require('../services/ntfyService');
 const asyncHandler = require('../utils/asyncHandler');
 const validators = require('../utils/validators');
+const ntfy = require('../utils/ntfy');
 
 async function register(req, res) {
   const { nome, email, senha } = req.body;
@@ -29,7 +29,7 @@ async function register(req, res) {
   const senha_hash = await bcrypt.hash(senha, 10);
   const usuario = await usuarioModel.create({ nome, email, senha_hash });
 
-  ntfyService.notificar('Novo cadastro no Zync!');
+  ntfy.notificar('Novo cadastro no Zync!', { titulo: 'Zync · Novo cadastro', tag: 'tada' });
 
   res.status(201).json(usuario);
 }
@@ -60,7 +60,7 @@ async function login(req, res) {
     { expiresIn: '7d' }
   );
 
-  ntfyService.notificar('Login realizado no Zync.');
+  ntfy.notificar('Login realizado no Zync.', { titulo: 'Zync · Login', tag: 'unlock' });
 
   res.json({
     token,

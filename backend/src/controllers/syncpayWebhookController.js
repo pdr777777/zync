@@ -1,7 +1,7 @@
 const assinaturaModel = require('../models/assinaturaModel');
 const planoModel = require('../models/planoModel');
-const ntfyService = require('../services/ntfyService');
 const asyncHandler = require('../utils/asyncHandler');
+const ntfy = require('../utils/ntfy');
 
 async function receber(req, res) {
   const dados = req.body && req.body.data;
@@ -17,7 +17,7 @@ async function receber(req, res) {
   if (dados.status === 'completed') {
     const plano = await planoModel.buscarPorId(assinatura.plano_id);
     await assinaturaModel.marcarAtiva(dados.id, plano.intervalo_dias);
-    ntfyService.notificar('Pagamento recebido no Zync!');
+    ntfy.notificar('Pagamento recebido no Zync!', { titulo: 'Zync · Pagamento aprovado', tag: 'moneybag' });
   } else if (dados.status === 'failed' || dados.status === 'refunded') {
     await assinaturaModel.marcarFalha(dados.id);
   }
