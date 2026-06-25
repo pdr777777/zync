@@ -35,8 +35,7 @@ async function fazerCheckout(token, overrides = {}) {
 }
 
 function autorizacaoWebhook() {
-  const tokenEsperado = process.env.SYNCPAY_WEBHOOK_TOKEN;
-  return tokenEsperado ? `Bearer ${tokenEsperado}` : undefined;
+  return `Bearer ${process.env.SYNCPAY_WEBHOOK_TOKEN}`;
 }
 
 describe('GET /api/planos', () => {
@@ -89,11 +88,10 @@ describe('Webhook do SyncPay + ciclo de vida da assinatura', () => {
     const { token } = await criarUsuarioEToken(app, request);
     const checkout = await fazerCheckout(token);
 
-    const auth = autorizacaoWebhook();
-    const req = request(app).post('/api/webhooks/syncpay');
-    if (auth) req.set('Authorization', auth);
-
-    const webhook = await req.send({ data: { id: checkout.body.identifier, status: 'completed' } });
+    const webhook = await request(app)
+      .post('/api/webhooks/syncpay')
+      .set('Authorization', autorizacaoWebhook())
+      .send({ data: { id: checkout.body.identifier, status: 'completed' } });
     expect(webhook.status).toBe(200);
 
     const atual = await request(app).get('/api/assinaturas/atual').set('Authorization', `Bearer ${token}`);
@@ -102,17 +100,14 @@ describe('Webhook do SyncPay + ciclo de vida da assinatura', () => {
   });
 
   test('webhook com identifier desconhecido não derruba a API', async () => {
-    const auth = autorizacaoWebhook();
-    const req = request(app).post('/api/webhooks/syncpay');
-    if (auth) req.set('Authorization', auth);
-
-    const resposta = await req.send({ data: { id: 'identifier-que-nao-existe', status: 'completed' } });
+    const resposta = await request(app)
+      .post('/api/webhooks/syncpay')
+      .set('Authorization', autorizacaoWebhook())
+      .send({ data: { id: 'identifier-que-nao-existe', status: 'completed' } });
     expect(resposta.status).toBe(200);
   });
 
-  test('rejeita webhook sem o token correto quando configurado', async () => {
-    if (!process.env.SYNCPAY_WEBHOOK_TOKEN) return;
-
+  test('rejeita webhook sem o token correto', async () => {
     const resposta = await request(app)
       .post('/api/webhooks/syncpay')
       .set('Authorization', 'Bearer token-errado')
@@ -121,14 +116,49 @@ describe('Webhook do SyncPay + ciclo de vida da assinatura', () => {
     expect(resposta.status).toBe(401);
   });
 
+  test('rejeita payload sem data.id', async () => {
+    const resposta = await request(app)
+      .post('/api/webhooks/syncpay')
+      .set('Authorization', autorizacaoWebhook())
+      .send({ data: { status: 'completed' } });
+
+    expect(resposta.status).toBe(400);
+  });
+
+  test('cancela a assinatura ao receber status failed', async () => {
+    const { token } = await criarUsuarioEToken(app, request);
+    const checkout = await fazerCheckout(token);
+
+    await request(app)
+      .post('/api/webhooks/syncpay')
+      .set('Authorization', autorizacaoWebhook())
+      .send({ data: { id: checkout.body.identifier, status: 'failed' } });
+
+    const atual = await request(app).get('/api/assinaturas/atual').set('Authorization', `Bearer ${token}`);
+    expect(atual.body.status).toBe('cancelada');
+  });
+
+  test('cancela a assinatura ao receber status refunded', async () => {
+    const { token } = await criarUsuarioEToken(app, request);
+    const checkout = await fazerCheckout(token);
+
+    await request(app)
+      .post('/api/webhooks/syncpay')
+      .set('Authorization', autorizacaoWebhook())
+      .send({ data: { id: checkout.body.identifier, status: 'refunded' } });
+
+    const atual = await request(app).get('/api/assinaturas/atual').set('Authorization', `Bearer ${token}`);
+    expect(atual.body.status).toBe('cancelada');
+  });
+
   test('cancelar assinatura ativa e bloquear cancelamento duplicado', async () => {
     const { token } = await criarUsuarioEToken(app, request);
     const checkout = await fazerCheckout(token);
 
-    const auth = autorizacaoWebhook();
-    const req = request(app).post('/api/webhooks/syncpay');
-    if (auth) req.set('Authorization', auth);
-    await req.send({ data: { id: checkout.body.identifier, status: 'completed' } });
+    await request(app)
+      .post('/api/webhooks/syncpay')
+      .set('Authorization', autorizacaoWebhook())
+      .send({ data: { id: checkout.body.identifier, status: 'completed' } });
 
     const cancelar = await request(app)
       .post('/api/assinaturas/cancelar')
