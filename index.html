@@ -744,7 +744,7 @@
   /* PRICING */
   .pricing {
     padding: 7rem 4rem;
-    max-width: 1100px;
+    max-width: 1280px;
     margin: 0 auto;
     text-align: center;
   }
@@ -783,6 +783,36 @@
     grid-template-columns: repeat(3, 1fr);
     gap: 1.5rem;
     text-align: left;
+  }
+
+  .pricing-grid-4 { grid-template-columns: repeat(4, 1fr); max-width: 1240px; margin: 0 auto; }
+
+  .price-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: var(--roxo-bg);
+    border: 1px solid var(--borda);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--roxo-claro);
+    margin-bottom: 1.2rem;
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+  }
+
+  .price-card:hover .price-icon {
+    transform: scale(1.1) rotate(-4deg);
+    box-shadow: 0 0 24px var(--roxo-glow);
+  }
+
+  .price-features-prefix {
+    color: var(--roxo-claro) !important;
+    font-size: 0.78rem !important;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.2rem;
   }
 
   .price-card {
@@ -993,6 +1023,10 @@
     transform: translateY(0);
   }
 
+  @media (max-width: 1080px) {
+    .pricing-grid-4 { grid-template-columns: repeat(2, 1fr); }
+  }
+
   @media (max-width: 768px) {
     nav { padding: 1rem 1.5rem; }
     .nav-links { display: none; }
@@ -1002,6 +1036,7 @@
     .features-grid { grid-template-columns: 1fr; }
     .pricing { padding: 4rem 1.5rem; }
     .pricing-grid { grid-template-columns: 1fr; }
+    .pricing-grid-4 { grid-template-columns: 1fr; }
     .cta-section { padding: 5rem 1.5rem; }
     footer { flex-direction: column; gap: 1rem; text-align: center; }
     .mockup-inner { grid-template-columns: 1fr; }
@@ -1186,50 +1221,67 @@
 
   <div class="toggle-wrap reveal">
     <button class="toggle-btn active" onclick="this.classList.add('active'); this.nextElementSibling.classList.remove('active')">Mensal</button>
-    <button class="toggle-btn" onclick="this.classList.add('active'); this.previousElementSibling.classList.remove('active')">Anual <span style="color:#A78BFA;font-size:0.75rem;">-20%</span></button>
+    <button class="toggle-btn" onclick="this.classList.add('active'); this.previousElementSibling.classList.remove('active')">Anual <span style="color:#A78BFA;font-size:0.75rem;">-25%</span></button>
   </div>
 
-  <div class="pricing-grid reveal">
+  <div class="pricing-grid pricing-grid-4 reveal">
     <div class="price-card">
+      <div class="price-icon" data-icon="zap"></div>
       <div class="price-plan">Starter</div>
-      <div class="price-num"><sup>R$</sup>0<span>/mês</span></div>
-      <div class="price-desc">Para quem quer testar sem risco.</div>
+      <div class="price-num"><sup>R$</sup>97<span>/mês</span></div>
+      <div class="price-desc">Pra quem está começando a organizar os leads.</div>
       <hr class="price-divider">
       <ul class="price-features">
-        <li><div class="check" data-icon="check" data-icon-size="10"></div> Até 50 leads/mês</li>
-        <li><div class="check" data-icon="check" data-icon-size="10"></div> CRM básico</li>
-        <li><div class="check" data-icon="check" data-icon-size="10"></div> 100 mensagens WhatsApp</li>
+        <li><div class="check" data-icon="check" data-icon-size="10"></div> Até 100 leads/mês</li>
+        <li><div class="check" data-icon="check" data-icon-size="10"></div> CRM com funil Kanban</li>
+        <li><div class="check" data-icon="check" data-icon-size="10"></div> 200 mensagens WhatsApp/mês</li>
         <li><div class="check" data-icon="check" data-icon-size="10"></div> Suporte por e-mail</li>
       </ul>
-      <button class="price-btn" onclick="window.location.href='frontend/pages/registro.html'">Começar grátis</button>
+      <button class="price-btn" onclick="window.location.href='frontend/pages/checkout.html?plano=starter'">Começar agora</button>
     </div>
 
     <div class="price-card featured">
       <div class="featured-badge" data-icon="sparkle" data-icon-size="12"> Mais popular</div>
+      <div class="price-icon" data-icon="sparkles"></div>
       <div class="price-plan">Pro</div>
       <div class="price-num"><sup>R$</sup>247<span>/mês</span></div>
-      <div class="price-desc">Para negócios que querem crescer de verdade. Pague trimestral, semestral ou anual e economize até 25%.</div>
+      <div class="price-desc">Pague trimestral, semestral ou anual e economize até 25%.</div>
       <hr class="price-divider">
       <ul class="price-features">
+        <li class="price-features-prefix">Tudo do Starter, +</li>
         <li><div class="check" data-icon="check" data-icon-size="10"></div> Leads ilimitados</li>
-        <li><div class="check" data-icon="check" data-icon-size="10"></div> CRM completo + Kanban</li>
         <li><div class="check" data-icon="check" data-icon-size="10"></div> WhatsApp ilimitado</li>
         <li><div class="check" data-icon="check" data-icon-size="10"></div> IA de atendimento</li>
         <li><div class="check" data-icon="check" data-icon-size="10"></div> Agendamento automático</li>
-        <li><div class="check" data-icon="check" data-icon-size="10"></div> Suporte prioritário</li>
+        <li><div class="check" data-icon="check" data-icon-size="10"></div> Tags e segmentação</li>
       </ul>
       <button class="price-btn primary" onclick="window.location.href='frontend/pages/checkout.html?plano=pro'">Testar 7 dias grátis</button>
     </div>
 
     <div class="price-card">
-      <div class="price-plan">Enterprise</div>
-      <div class="price-num" style="font-size:2rem;">Sob consulta</div>
-      <div class="price-desc">Para redes de clínicas e franquias.</div>
+      <div class="price-icon" data-icon="trendingUp"></div>
+      <div class="price-plan">Scale</div>
+      <div class="price-num"><sup>R$</sup>497<span>/mês</span></div>
+      <div class="price-desc">Pra operações maiores, com mais de um atendente.</div>
       <hr class="price-divider">
       <ul class="price-features">
-        <li><div class="check" data-icon="check" data-icon-size="10"></div> Múltiplas unidades</li>
-        <li><div class="check" data-icon="check" data-icon-size="10"></div> IA personalizada</li>
-        <li><div class="check" data-icon="check" data-icon-size="10"></div> Integrações customizadas</li>
+        <li class="price-features-prefix">Tudo do Pro, +</li>
+        <li><div class="check" data-icon="check" data-icon-size="10"></div> Análises e relatórios avançados</li>
+        <li><div class="check" data-icon="check" data-icon-size="10"></div> Múltiplos atendentes</li>
+        <li><div class="check" data-icon="check" data-icon-size="10"></div> Suporte prioritário</li>
+      </ul>
+      <button class="price-btn" onclick="window.location.href='frontend/pages/checkout.html?plano=scale'">Testar 7 dias grátis</button>
+    </div>
+
+    <div class="price-card">
+      <div class="price-icon" data-icon="building"></div>
+      <div class="price-plan">Enterprise</div>
+      <div class="price-num" style="font-size:2rem;">Sob consulta</div>
+      <div class="price-desc">Pra redes, franquias e operações sob medida.</div>
+      <hr class="price-divider">
+      <ul class="price-features">
+        <li class="price-features-prefix">Tudo do Scale, +</li>
+        <li><div class="check" data-icon="check" data-icon-size="10"></div> Integrações personalizadas</li>
         <li><div class="check" data-icon="check" data-icon-size="10"></div> Gerente de conta dedicado</li>
         <li><div class="check" data-icon="check" data-icon-size="10"></div> SLA garantido</li>
       </ul>
