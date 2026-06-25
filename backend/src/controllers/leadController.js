@@ -2,6 +2,7 @@ const leadModel = require('../models/leadModel');
 const logModel = require('../models/logModel');
 const notificacaoModel = require('../models/notificacaoModel');
 const webhookService = require('../services/webhookService');
+const usoService = require('../services/usoService');
 const asyncHandler = require('../utils/asyncHandler');
 const validators = require('../utils/validators');
 const { paraCsv } = require('../utils/csv');
@@ -120,6 +121,8 @@ async function criar(req, res) {
     origem: lead.origem,
     status: lead.status,
   });
+
+  await usoService.verificarLimitesEAvisar(req.usuario.id);
 
   res.status(201).json(lead);
 }

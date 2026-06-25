@@ -47,6 +47,33 @@ function atualizarPreviewFoto(url) {
   }
 }
 
+function renderBarraUso({ usado, limite }, textoEl, fillEl) {
+  if (limite == null) return false;
+
+  textoEl.textContent = `${usado} / ${limite}`;
+  const percentual = Math.min(100, (usado / limite) * 100);
+  fillEl.style.width = `${percentual}%`;
+  fillEl.classList.toggle('uso-excedido', usado > limite);
+  fillEl.classList.toggle('uso-perto-limite', usado <= limite && percentual >= 80);
+  return true;
+}
+
+async function carregarUso() {
+  try {
+    const uso = await Api.assinaturas.uso();
+
+    const temLeads = renderBarraUso(uso.leads, document.getElementById('uso-leads-texto'), document.getElementById('uso-leads-fill'));
+    const temMensagens = renderBarraUso(uso.mensagens, document.getElementById('uso-mensagens-texto'), document.getElementById('uso-mensagens-fill'));
+
+    document.getElementById('uso-leads-row').classList.toggle('hidden', !temLeads);
+    document.getElementById('uso-mensagens-row').classList.toggle('hidden', !temMensagens);
+    document.getElementById('uso-plano-nome').textContent = uso.plano ? `(${uso.plano})` : '';
+    document.getElementById('uso-card').classList.toggle('hidden', !temLeads && !temMensagens);
+  } catch {
+    // uso do plano e informativo - se falhar, so nao mostra o card, sem interromper a tela
+  }
+}
+
 async function carregarPerfil() {
   try {
     const usuario = await Api.auth.me();
@@ -461,4 +488,5 @@ async function carregarIntegracoes() {
 })();
 
 carregarPerfil();
+carregarUso();
 carregarIntegracoes();

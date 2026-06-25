@@ -4,6 +4,7 @@ const notificacaoModel = require('../models/notificacaoModel');
 const usuarioModel = require('../models/usuarioModel');
 const iaService = require('../services/iaService');
 const whatsappService = require('../services/whatsappService');
+const usoService = require('../services/usoService');
 const asyncHandler = require('../utils/asyncHandler');
 
 async function processarMensagemRecebida({ usuarioId, telefone, nome, mensagem }) {
@@ -31,6 +32,7 @@ async function processarMensagemRecebida({ usuarioId, telefone, nome, mensagem }
   await mensagemModel.criar({ leadId: lead.id, conteudo: respostaTexto, enviadoPor: 'ia' });
 
   await whatsappService.enviarMensagem(telefone, respostaTexto);
+  await usoService.verificarLimitesEAvisar(usuarioId);
 
   return lead;
 }

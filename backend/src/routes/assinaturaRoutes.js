@@ -6,6 +6,7 @@ const assinaturaController = require('../controllers/assinaturaController');
 router.use(autenticar);
 router.post('/checkout', assinaturaController.checkout);
 router.get('/atual', assinaturaController.atual);
+router.get('/uso', assinaturaController.uso);
 router.get('/historico', assinaturaController.historico);
 router.post('/cancelar', assinaturaController.cancelar);
 

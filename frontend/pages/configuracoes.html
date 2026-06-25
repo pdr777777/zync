@@ -52,6 +52,20 @@
     </div>
 
     <div class="settings-panel active" data-panel="perfil">
+      <section class="chart-card hidden" style="max-width: 560px;" id="uso-card">
+        <div class="chart-card-header">
+          <div class="chart-title">Uso do plano <span id="uso-plano-nome"></span></div>
+        </div>
+        <div class="uso-row hidden" id="uso-leads-row">
+          <div class="uso-row-label">Leads este mês: <span id="uso-leads-texto"></span></div>
+          <div class="uso-bar-track"><div class="uso-bar-fill" id="uso-leads-fill"></div></div>
+        </div>
+        <div class="uso-row hidden" id="uso-mensagens-row">
+          <div class="uso-row-label">Mensagens este mês: <span id="uso-mensagens-texto"></span></div>
+          <div class="uso-bar-track"><div class="uso-bar-fill" id="uso-mensagens-fill"></div></div>
+        </div>
+      </section>
+
       <section class="chart-card" style="max-width: 560px;">
         <div class="chart-card-header">
           <div class="chart-title">Informações da conta</div>

@@ -43,6 +43,14 @@ async function contarNaoLidas(usuarioId) {
   return rows[0].total;
 }
 
+async function existeDoTipoNoMes(usuarioId, tipo) {
+  const { rows } = await db.query(
+    "SELECT 1 FROM notificacoes WHERE usuario_id = $1 AND tipo = $2 AND criado_em >= date_trunc('month', NOW()) LIMIT 1",
+    [usuarioId, tipo]
+  );
+  return rows.length > 0;
+}
+
 async function marcarComoLida(id, usuarioId) {
   await db.query(
     'UPDATE notificacoes SET lida = true WHERE id = $1 AND usuario_id = $2',
@@ -57,4 +65,7 @@ async function marcarTodasComoLidas(usuarioId) {
   );
 }
 
-module.exports = { criar, listarPorUsuario, buscarPorId, contarNaoLidas, marcarComoLida, marcarTodasComoLidas };
+module.exports = {
+  criar, listarPorUsuario, buscarPorId, contarNaoLidas, marcarComoLida, marcarTodasComoLidas,
+  existeDoTipoNoMes,
+};

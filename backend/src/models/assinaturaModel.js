@@ -20,7 +20,7 @@ async function buscarPorIdentifier(identifier) {
 
 async function buscarAtualPorUsuario(usuarioId) {
   const { rows } = await db.query(
-    `SELECT a.*, p.nome AS plano_nome FROM assinaturas a
+    `SELECT a.*, p.nome AS plano_nome, p.limite_leads_mes, p.limite_mensagens_mes FROM assinaturas a
      JOIN planos p ON p.id = a.plano_id
      WHERE a.usuario_id = $1
      ORDER BY a.criado_em DESC, a.id DESC

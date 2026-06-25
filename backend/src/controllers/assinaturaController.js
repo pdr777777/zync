@@ -1,5 +1,6 @@
 const planoModel = require('../models/planoModel');
 const assinaturaModel = require('../models/assinaturaModel');
+const usoModel = require('../models/usoModel');
 const syncpayService = require('../services/syncpayService');
 const logModel = require('../models/logModel');
 const asyncHandler = require('../utils/asyncHandler');
@@ -60,6 +61,21 @@ async function historico(req, res) {
   res.json(assinaturas);
 }
 
+async function uso(req, res) {
+  const assinatura = await assinaturaModel.buscarAtualPorUsuario(req.usuario.id);
+
+  const [leadsUsados, mensagensUsadas] = await Promise.all([
+    usoModel.contarLeadsDoMes(req.usuario.id),
+    usoModel.contarMensagensDoMes(req.usuario.id),
+  ]);
+
+  res.json({
+    plano: assinatura ? assinatura.plano_nome : null,
+    leads: { usado: leadsUsados, limite: assinatura ? assinatura.limite_leads_mes : null },
+    mensagens: { usado: mensagensUsadas, limite: assinatura ? assinatura.limite_mensagens_mes : null },
+  });
+}
+
 async function cancelar(req, res) {
   const assinatura = await assinaturaModel.buscarAtualPorUsuario(req.usuario.id);
   if (!assinatura || assinatura.status !== 'ativa') {
@@ -82,4 +98,5 @@ module.exports = {
   atual: asyncHandler(atual),
   historico: asyncHandler(historico),
   cancelar: asyncHandler(cancelar),
+  uso: asyncHandler(uso),
 };

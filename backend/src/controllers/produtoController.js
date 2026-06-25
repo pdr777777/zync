@@ -4,6 +4,7 @@ const leadModel = require('../models/leadModel');
 const logModel = require('../models/logModel');
 const notificacaoModel = require('../models/notificacaoModel');
 const webhookService = require('../services/webhookService');
+const usoService = require('../services/usoService');
 const asyncHandler = require('../utils/asyncHandler');
 const validators = require('../utils/validators');
 const frontendUrl = require('../utils/frontendUrl');
@@ -120,6 +121,8 @@ async function solicitar(req, res) {
     origem: lead.origem,
     status: lead.status,
   });
+
+  await usoService.verificarLimitesEAvisar(usuario.id);
 
   res.status(201).json({ sucesso: true });
 }

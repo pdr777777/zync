@@ -201,6 +201,7 @@ const Api = {
   assinaturas: {
     checkout: (dados) => apiRequest('/assinaturas/checkout', { method: 'POST', body: dados }),
     atual: () => apiRequest('/assinaturas/atual'),
+    uso: () => apiRequest('/assinaturas/uso'),
   },
 
   integracoes: {
