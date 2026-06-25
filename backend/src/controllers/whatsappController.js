@@ -5,14 +5,7 @@ const iaService = require('../services/iaService');
 const whatsappService = require('../services/whatsappService');
 const asyncHandler = require('../utils/asyncHandler');
 
-async function receberMensagem(req, res) {
-  const { usuarioId } = req.params;
-  const { telefone, nome, mensagem } = req.body;
-
-  if (!telefone || !mensagem) {
-    return res.status(400).json({ error: 'telefone e mensagem são obrigatórios' });
-  }
-
+async function processarMensagemRecebida({ usuarioId, telefone, nome, mensagem }) {
   let lead = await leadModel.buscarPorTelefone(telefone, usuarioId);
   if (!lead) {
     lead = await leadModel.criar({
@@ -37,6 +30,19 @@ async function receberMensagem(req, res) {
 
   await whatsappService.enviarMensagem(telefone, respostaTexto);
 
+  return lead;
+}
+
+async function receberMensagem(req, res) {
+  const { usuarioId } = req.params;
+  const { telefone, nome, mensagem } = req.body;
+
+  if (!telefone || !mensagem) {
+    return res.status(400).json({ error: 'telefone e mensagem são obrigatórios' });
+  }
+
+  await processarMensagemRecebida({ usuarioId, telefone, nome, mensagem });
+
   res.status(200).json({ ok: true });
 }
 
@@ -55,6 +61,7 @@ async function enviarManual(req, res) {
 }
 
 module.exports = {
+  processarMensagemRecebida,
   receberMensagem: asyncHandler(receberMensagem),
   enviarManual: asyncHandler(enviarManual),
 };

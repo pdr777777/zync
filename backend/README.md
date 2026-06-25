@@ -30,9 +30,10 @@ Roda automaticamente no CI (`.github/workflows/test.yml`) em todo push/PR pra `m
 | `GET/POST /api/leads`, `GET/PUT/DELETE /api/leads/:id` | Sim | CRUD de leads |
 | `GET/POST /api/leads/:leadId/mensagens` | Sim | Histórico de conversa do lead |
 | `GET /api/dashboard` | Sim | Métricas (leads, conversões, mensagens, % IA) |
-| `POST /api/leads/:leadId/ia/responder` | Sim | IA de atendimento (mock, ver `src/services/iaService.js`) |
-| `POST /api/leads/:leadId/whatsapp/enviar` | Sim | Envio manual de mensagem (mock, ver `src/services/whatsappService.js`) |
-| `POST /api/webhooks/whatsapp/:usuarioId` | Não | Webhook público para receber mensagens do WhatsApp |
+| `POST /api/leads/:leadId/ia/responder` | Sim | IA de atendimento (ver `src/services/iaService.js`) |
+| `POST /api/leads/:leadId/whatsapp/enviar` | Sim | Envio manual de mensagem (ver `src/services/whatsappService.js`) |
+| `POST /api/webhooks/whatsapp/:usuarioId` | Bearer token (`WHATSAPP_WEBHOOK_TOKEN`) | Webhook genérico p/ receber mensagem já normalizada (`{telefone, nome, mensagem}`) — uso interno/teste |
+| `GET/POST /api/webhooks/whatsapp-meta` | Verify token / assinatura HMAC | Webhook real do WhatsApp Cloud API (Meta) — ver seção própria abaixo |
 | `GET /health` | Não | Health check (testa conexão com o banco) — usado por uptime monitor |
 
 ## Integrações externas
@@ -41,8 +42,30 @@ Roda automaticamente no CI (`.github/workflows/test.yml`) em todo push/PR pra `m
 |---|---|
 | E-mail (`src/services/emailService.js`) | Real via SendGrid — precisa de `SENDGRID_API_KEY` e `EMAIL_FROM` (e-mail verificado em Single Sender Verification). Sem essas variáveis, cai no mock (`console.log`) — é o que acontece localmente/nos testes. |
 | Pagamento (`src/services/syncpayService.js`) | Real, já configurado em produção (`SYNCPAY_*`). |
-| WhatsApp (`src/services/whatsappService.js`) | Mock — webhook recebe mensagens reais, mas o envio ainda não chama nenhuma API real (Meta Cloud API/Twilio). |
+| WhatsApp (`src/services/whatsappService.js`) | Real via WhatsApp Cloud API (Meta) — precisa de `WHATSAPP_ACCESS_TOKEN`/`WHATSAPP_PHONE_NUMBER_ID` (envio) e `WHATSAPP_VERIFY_TOKEN`/`WHATSAPP_APP_SECRET` (recebimento, ver seção abaixo). Sem essas variáveis, cai no mock (`console.log`/webhook bloqueado) — é o que acontece localmente/nos testes. |
 | IA de atendimento (`src/services/iaService.js`) | Real via Claude (Anthropic) — precisa de `ANTHROPIC_API_KEY` (console.anthropic.com). Sem ela, cai no mock por palavra-chave — é o que acontece localmente/nos testes. Se a chamada à API falhar por qualquer motivo, também cai no mock em vez de quebrar o atendimento. |
+
+### Webhook de recebimento do WhatsApp (Meta Cloud API)
+
+Pra mensagens de cliente chegarem de verdade no Zync (não só o envio), precisa
+cadastrar o webhook no painel da Meta:
+
+1. **Meta for Developers** → seu app → **WhatsApp** → **Configuration**
+2. **Callback URL**: `https://<seu-backend>/api/webhooks/whatsapp-meta`
+3. **Verify token**: o mesmo valor que você colocar em `WHATSAPP_VERIFY_TOKEN`
+4. Clica em **Verify and save** (a Meta faz uma chamada `GET` nesse momento — é
+   o handshake de verificação, ver `whatsappMetaWebhookController.verificar`)
+5. Assina o campo (`field`) **messages**
+
+Cada mensagem recebida depois disso vem assinada com `X-Hub-Signature-256`
+(HMAC-SHA256 usando o **App Secret** do app — `WHATSAPP_APP_SECRET`), validado
+em `whatsappMetaWebhookController.receber` antes de processar qualquer coisa.
+
+Como a Meta chama essa mesma URL pra todos os números/tenants (não tem
+`usuarioId` na URL), cada usuário precisa ter o próprio
+`whatsapp_phone_number_id` (o "Phone number ID" da Meta, não o número de
+telefone) salvo na tabela `usuarios` — é assim que o webhook descobre de qual
+conta é a mensagem recebida.
 
 ## Monitoramento
 

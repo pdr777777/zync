@@ -17,7 +17,8 @@ async function create({ nome, email, senha_hash }) {
 async function buscarPorId(id) {
   const { rows } = await db.query(
     `SELECT id, nome, email, criado_em, is_admin,
-            foto_url, idade, cpf, instagram, facebook, telefone, nome_empresa
+            foto_url, idade, cpf, instagram, facebook, telefone, nome_empresa,
+            whatsapp_phone_number_id
      FROM usuarios WHERE id = $1`,
     [id]
   );
@@ -32,6 +33,7 @@ async function buscarPorIdComSenha(id) {
 const CAMPOS_ATUALIZAVEIS = [
   'nome', 'email', 'senha_hash',
   'foto_url', 'idade', 'cpf', 'instagram', 'facebook', 'telefone', 'nome_empresa',
+  'whatsapp_phone_number_id',
 ];
 
 async function atualizar(id, dados) {
@@ -112,6 +114,14 @@ async function buscarPorSlugCatalogo(slug) {
   return rows[0];
 }
 
+async function buscarPorWhatsappPhoneNumberId(phoneNumberId) {
+  const { rows } = await db.query(
+    'SELECT id, nome FROM usuarios WHERE whatsapp_phone_number_id = $1',
+    [phoneNumberId]
+  );
+  return rows[0];
+}
+
 module.exports = {
   findByEmail,
   create,
@@ -126,4 +136,5 @@ module.exports = {
   invalidarSessoes,
   garantirSlugCatalogo,
   buscarPorSlugCatalogo,
+  buscarPorWhatsappPhoneNumberId,
 };

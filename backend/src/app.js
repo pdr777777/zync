@@ -31,7 +31,12 @@ app.use(
     },
   })
 );
-app.use(express.json({ limit: '3mb' }));
+app.use(express.json({
+  limit: '3mb',
+  verify: (req, res, buf) => {
+    req.rawBody = buf;
+  },
+}));
 
 app.get('/health', async (req, res) => {
   try {
