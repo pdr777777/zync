@@ -17,6 +17,14 @@ async function register(req, res) {
     return res.status(400).json({ error: 'email inválido' });
   }
 
+  if (!validators.dentroDoTamanho(nome, 120)) {
+    return res.status(400).json({ error: 'nome deve ter no máximo 120 caracteres' });
+  }
+
+  if (!validators.dentroDoTamanho(email, 160)) {
+    return res.status(400).json({ error: 'email deve ter no máximo 160 caracteres' });
+  }
+
   if (!validators.senhaValida(senha)) {
     return res.status(400).json({ error: 'senha deve ter pelo menos 8 caracteres, com letras e números' });
   }
@@ -80,12 +88,17 @@ async function atualizarMe(req, res) {
 
   if (nome !== undefined) {
     if (!nome) return res.status(400).json({ error: 'nome não pode ser vazio' });
+    if (!validators.dentroDoTamanho(nome, 120)) return res.status(400).json({ error: 'nome deve ter no máximo 120 caracteres' });
     dados.nome = nome;
   }
 
   if (email !== undefined) {
     if (!validators.emailValido(email)) {
       return res.status(400).json({ error: 'email inválido' });
+    }
+
+    if (!validators.dentroDoTamanho(email, 160)) {
+      return res.status(400).json({ error: 'email deve ter no máximo 160 caracteres' });
     }
 
     const existente = await usuarioModel.findByEmail(email);

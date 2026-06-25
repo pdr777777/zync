@@ -22,6 +22,10 @@ function valorPositivo(valor) {
   return !isNaN(numero) && numero >= 0;
 }
 
+function dentroDoTamanho(valor, max) {
+  return valor === undefined || valor === null || (typeof valor === 'string' && valor.length <= max);
+}
+
 function cpfValido(cpf) {
   if (typeof cpf !== 'string') return false;
   const digitos = cpf.replace(/\D/g, '');
@@ -45,6 +49,7 @@ module.exports = {
   dataValida,
   valorPositivo,
   cpfValido,
+  dentroDoTamanho,
   STATUS_LEAD,
   STATUS_AGENDAMENTO,
   ENVIADO_POR,

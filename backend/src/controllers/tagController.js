@@ -2,6 +2,7 @@ const tagModel = require('../models/tagModel');
 const leadModel = require('../models/leadModel');
 const logModel = require('../models/logModel');
 const asyncHandler = require('../utils/asyncHandler');
+const validators = require('../utils/validators');
 
 async function listar(req, res) {
   const tags = await tagModel.listarPorUsuario(req.usuario.id);
@@ -11,6 +12,7 @@ async function listar(req, res) {
 async function criar(req, res) {
   const { nome } = req.body;
   if (!nome) return res.status(400).json({ error: 'nome é obrigatório' });
+  if (!validators.dentroDoTamanho(nome, 60)) return res.status(400).json({ error: 'nome deve ter no máximo 60 caracteres' });
 
   const tag = await tagModel.criar({ usuarioId: req.usuario.id, nome });
   res.status(201).json(tag);

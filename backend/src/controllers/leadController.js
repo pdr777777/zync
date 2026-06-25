@@ -16,6 +16,11 @@ function validarStatusEValor(dados) {
     return 'valor deve ser um número positivo';
   }
 
+  if (!validators.dentroDoTamanho(dados.nome, 120)) return 'nome deve ter no máximo 120 caracteres';
+  if (!validators.dentroDoTamanho(dados.servico, 120)) return 'servico deve ter no máximo 120 caracteres';
+  if (!validators.dentroDoTamanho(dados.origem, 60)) return 'origem deve ter no máximo 60 caracteres';
+  if (!validators.dentroDoTamanho(dados.telefone, 20)) return 'telefone deve ter no máximo 20 caracteres';
+
   return null;
 }
 

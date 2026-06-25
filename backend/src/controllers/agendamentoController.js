@@ -14,6 +14,8 @@ function validarDadosAgendamento(dados) {
     return `status deve ser um de: ${validators.STATUS_AGENDAMENTO.join(', ')}`;
   }
 
+  if (!validators.dentroDoTamanho(dados.servico, 120)) return 'servico deve ter no máximo 120 caracteres';
+
   return null;
 }
 
