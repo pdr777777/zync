@@ -81,14 +81,23 @@ async function solicitar(req, res) {
   const produto = await produtoModel.buscarPorId(produtoId, usuario.id);
   if (!produto || !produto.ativo) return res.status(404).json({ error: 'Produto não encontrado' });
 
-  const lead = await leadModel.criar({
-    usuarioId: usuario.id,
-    nome: nomeCliente,
-    telefone: telefoneCliente,
-    servico: produto.nome,
-    origem: 'catalogo',
-    valor: produto.preco,
-  });
+  let lead;
+  try {
+    lead = await leadModel.criar({
+      usuarioId: usuario.id,
+      nome: nomeCliente,
+      telefone: telefoneCliente,
+      servico: produto.nome,
+      origem: 'catalogo',
+      valor: produto.preco,
+    });
+  } catch (err) {
+    // telefone já é de outro lead desse usuario (UNIQUE usuario_id+telefone) --
+    // do ponto de vista do cliente final o pedido foi recebido normalmente,
+    // o vendedor já tem esse contato e vai falar com ele sobre os dois pedidos.
+    if (err.code === '23505') return res.status(201).json({ sucesso: true });
+    throw err;
+  }
 
   await logModel.registrar({
     usuarioId: usuario.id,

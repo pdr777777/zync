@@ -7,6 +7,7 @@ router.use(autenticar);
 
 router.get('/', campoPersonalizadoController.listar);
 router.post('/', campoPersonalizadoController.criar);
+router.patch('/:id', campoPersonalizadoController.atualizar);
 router.delete('/:id', campoPersonalizadoController.remover);
 
 module.exports = router;

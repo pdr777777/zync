@@ -62,6 +62,27 @@ describe('Catálogo público', () => {
     expect(Number(leads.body[0].valor)).toBe(200);
   });
 
+  test('segundo pedido com o mesmo telefone não quebra (telefone duplicado)', async () => {
+    const { token } = await criarUsuarioEToken(app, request);
+    const produto1 = await criarProduto(token, { nome: 'Produto 1', preco: 100 });
+    const produto2 = await criarProduto(token, { nome: 'Produto 2', preco: 200 });
+    const slug = await obterSlug(token);
+
+    const primeiro = await request(app)
+      .post(`/api/catalogo-publico/${slug}/solicitar`)
+      .send({ produtoId: produto1.id, nomeCliente: 'Cliente Repetido', telefoneCliente: '11977776666' });
+    expect(primeiro.status).toBe(201);
+
+    const segundo = await request(app)
+      .post(`/api/catalogo-publico/${slug}/solicitar`)
+      .send({ produtoId: produto2.id, nomeCliente: 'Cliente Repetido', telefoneCliente: '11977776666' });
+    expect(segundo.status).toBe(201);
+    expect(segundo.body.sucesso).toBe(true);
+
+    const leads = await request(app).get('/api/leads').set('Authorization', `Bearer ${token}`);
+    expect(leads.body).toHaveLength(1);
+  });
+
   test('rejeita solicitar produto de outro usuário', async () => {
     const { token: tokenA } = await criarUsuarioEToken(app, request);
     const { token: tokenB } = await criarUsuarioEToken(app, request);

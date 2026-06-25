@@ -91,6 +91,53 @@ describe('Campos personalizados (definição)', () => {
     const resposta = await request(app).get('/api/campos-personalizados');
     expect(resposta.status).toBe(401);
   });
+
+  test('atualiza o nome do campo', async () => {
+    const { token } = await criarUsuarioEToken(app, request);
+    const campo = await criarCampo(token, { nome: 'Nome Antigo', tipo: 'texto' });
+
+    const resposta = await request(app)
+      .patch(`/api/campos-personalizados/${campo.body.id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ nome: 'Nome Novo' });
+    expect(resposta.status).toBe(200);
+    expect(resposta.body.nome).toBe('Nome Novo');
+  });
+
+  test('atualiza as opcoes de um campo selecao', async () => {
+    const { token } = await criarUsuarioEToken(app, request);
+    const campo = await criarCampo(token, { nome: 'Plano', tipo: 'selecao', opcoes: ['Básico'] });
+
+    const resposta = await request(app)
+      .patch(`/api/campos-personalizados/${campo.body.id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ opcoes: ['Básico', 'Pro', 'Enterprise'] });
+    expect(resposta.status).toBe(200);
+    expect(resposta.body.opcoes).toEqual(['Básico', 'Pro', 'Enterprise']);
+  });
+
+  test('rejeita atualizar opcoes em campo que não é selecao', async () => {
+    const { token } = await criarUsuarioEToken(app, request);
+    const campo = await criarCampo(token, { nome: 'Convênio', tipo: 'texto' });
+
+    const resposta = await request(app)
+      .patch(`/api/campos-personalizados/${campo.body.id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ opcoes: ['A', 'B'] });
+    expect(resposta.status).toBe(400);
+  });
+
+  test('404 ao atualizar campo de outro usuário', async () => {
+    const { token: tokenA } = await criarUsuarioEToken(app, request);
+    const { token: tokenB } = await criarUsuarioEToken(app, request);
+    const campo = await criarCampo(tokenA, { nome: 'Privado', tipo: 'texto' });
+
+    const resposta = await request(app)
+      .patch(`/api/campos-personalizados/${campo.body.id}`)
+      .set('Authorization', `Bearer ${tokenB}`)
+      .send({ nome: 'Hackeado' });
+    expect(resposta.status).toBe(404);
+  });
 });
 
 describe('Valores de campos personalizados por lead', () => {

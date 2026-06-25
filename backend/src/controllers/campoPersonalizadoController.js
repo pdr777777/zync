@@ -35,6 +35,31 @@ async function criar(req, res) {
   res.status(201).json(campo);
 }
 
+async function atualizar(req, res) {
+  const campo = await campoPersonalizadoModel.buscarPorId(req.params.id, req.usuario.id);
+  if (!campo) return res.status(404).json({ error: 'Campo não encontrado' });
+
+  const { nome, opcoes } = req.body;
+
+  if (nome !== undefined) {
+    if (!nome) return res.status(400).json({ error: 'nome é obrigatório' });
+    if (!validators.dentroDoTamanho(nome, 60)) return res.status(400).json({ error: 'nome deve ter no máximo 60 caracteres' });
+  }
+
+  if (opcoes !== undefined) {
+    if (campo.tipo !== 'selecao') return res.status(400).json({ error: 'opcoes só pode ser definido em campos do tipo selecao' });
+    if (!Array.isArray(opcoes) || opcoes.length === 0) {
+      return res.status(400).json({ error: 'opcoes deve ser uma lista com pelo menos um item' });
+    }
+    if (!opcoes.every((o) => typeof o === 'string' && validators.dentroDoTamanho(o, 60))) {
+      return res.status(400).json({ error: 'cada opção deve ter no máximo 60 caracteres' });
+    }
+  }
+
+  const atualizado = await campoPersonalizadoModel.atualizar(req.params.id, req.usuario.id, { nome, opcoes });
+  res.json(atualizado);
+}
+
 async function remover(req, res) {
   const campo = await campoPersonalizadoModel.buscarPorId(req.params.id, req.usuario.id);
   if (!campo) return res.status(404).json({ error: 'Campo não encontrado' });
@@ -98,6 +123,7 @@ async function removerValorDoLead(req, res) {
 module.exports = {
   listar: asyncHandler(listar),
   criar: asyncHandler(criar),
+  atualizar: asyncHandler(atualizar),
   remover: asyncHandler(remover),
   listarValoresDoLead: asyncHandler(listarValoresDoLead),
   definirValorDoLead: asyncHandler(definirValorDoLead),

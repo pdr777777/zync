@@ -283,6 +283,10 @@ function renderIntegracoes(lista) {
           ${it.eventos.map((ev) => `<span class="tag-chip">${escapeHtml(ROTULOS_EVENTO[ev] || ev)}</span>`).join('')}
           <span class="badge ${it.ativo ? 'badge-ativa' : 'badge-cancelada'}">${it.ativo ? 'Ativo' : 'Inativo'}</span>
         </div>
+        <div class="integracao-secret">
+          Segredo (pra validar a assinatura): ${escapeHtml(it.secret.slice(0, 12))}…
+          <button type="button" data-acao="copiar-secret" data-secret="${escapeHtml(it.secret)}">Copiar</button>
+        </div>
       </div>
       <div class="integracao-actions">
         <button type="button" class="btn btn-secondary btn-sm" data-acao="testar">Testar</button>
@@ -297,6 +301,12 @@ function renderIntegracoes(lista) {
     const item = lista.find((i) => String(i.id) === id);
 
     btn.addEventListener('click', async () => {
+      if (btn.dataset.acao === 'copiar-secret') {
+        await navigator.clipboard.writeText(btn.dataset.secret);
+        showToast('Segredo copiado!', 'success');
+        return;
+      }
+
       if (btn.dataset.acao === 'testar') {
         btn.disabled = true;
         try {

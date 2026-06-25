@@ -200,6 +200,7 @@ async function loadCampos() {
 }
 
 const camposModal = document.getElementById('campos-modal');
+let campoEditandoId = null;
 
 function abrirCamposModal() {
   camposModal.classList.add('visible');
@@ -207,10 +208,33 @@ function abrirCamposModal() {
   document.getElementById('nc-nome').focus();
 }
 
-function fecharCamposModal() {
-  camposModal.classList.remove('visible');
+function sairDoModoEdicaoCampo() {
+  campoEditandoId = null;
   document.getElementById('new-campo-form').reset();
   document.getElementById('nc-opcoes').classList.add('hidden');
+  document.getElementById('nc-tipo').disabled = false;
+  document.getElementById('nc-submit').textContent = 'Adicionar';
+}
+
+function fecharCamposModal() {
+  camposModal.classList.remove('visible');
+  sairDoModoEdicaoCampo();
+}
+
+function abrirEdicaoCampo(campo) {
+  campoEditandoId = campo.id;
+  document.getElementById('nc-nome').value = campo.nome;
+  document.getElementById('nc-tipo').value = campo.tipo;
+  document.getElementById('nc-tipo').disabled = true;
+  const opcoesInput = document.getElementById('nc-opcoes');
+  if (campo.tipo === 'selecao') {
+    opcoesInput.value = (campo.opcoes || []).join(', ');
+    opcoesInput.classList.remove('hidden');
+  } else {
+    opcoesInput.classList.add('hidden');
+  }
+  document.getElementById('nc-submit').textContent = 'Salvar alterações';
+  document.getElementById('nc-nome').focus();
 }
 
 document.getElementById('open-campos').addEventListener('click', abrirCamposModal);
@@ -231,9 +255,19 @@ function renderCamposManageList() {
   list.innerHTML = camposCache.map((c) => `
     <div class="campo-manage-row" data-campo-id="${c.id}">
       <span>${escapeHtml(c.nome)} <span class="badge badge-ativa">${TIPO_CAMPO_LABELS[c.tipo] || c.tipo}</span></span>
-      <button type="button" class="btn btn-ghost btn-sm campo-manage-remove" data-campo-id="${c.id}" aria-label="Excluir campo ${escapeHtml(c.nome)}">${icon('x', 14)}</button>
+      <span>
+        <button type="button" class="btn btn-ghost btn-sm campo-manage-editar" data-campo-id="${c.id}" aria-label="Editar campo ${escapeHtml(c.nome)}">Editar</button>
+        <button type="button" class="btn btn-ghost btn-sm campo-manage-remove" data-campo-id="${c.id}" aria-label="Excluir campo ${escapeHtml(c.nome)}">${icon('x', 14)}</button>
+      </span>
     </div>
   `).join('');
+
+  list.querySelectorAll('.campo-manage-editar').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const campo = camposCache.find((c) => String(c.id) === btn.dataset.campoId);
+      if (campo) abrirEdicaoCampo(campo);
+    });
+  });
 
   list.querySelectorAll('.campo-manage-remove').forEach((btn) => {
     btn.addEventListener('click', async () => {
@@ -242,6 +276,7 @@ function renderCamposManageList() {
 
       try {
         await Api.camposPersonalizados.remover(campoId);
+        if (String(campoEditandoId) === campoId) sairDoModoEdicaoCampo();
         await loadCampos();
         renderCamposManageList();
         showToast('Campo excluído', 'success');
@@ -259,22 +294,31 @@ document.getElementById('new-campo-form').addEventListener('submit', async (e) =
   const tipo = document.getElementById('nc-tipo').value;
   if (!nome) return;
 
-  const dados = { nome, tipo };
+  let opcoes;
   if (tipo === 'selecao') {
-    dados.opcoes = document.getElementById('nc-opcoes').value.split(',').map((s) => s.trim()).filter(Boolean);
-    if (dados.opcoes.length === 0) {
+    opcoes = document.getElementById('nc-opcoes').value.split(',').map((s) => s.trim()).filter(Boolean);
+    if (opcoes.length === 0) {
       showToast('Informe pelo menos uma opção separada por vírgula', 'error');
       return;
     }
   }
 
   try {
-    await Api.camposPersonalizados.criar(dados);
-    document.getElementById('new-campo-form').reset();
-    document.getElementById('nc-opcoes').classList.add('hidden');
+    if (campoEditandoId) {
+      const dados = { nome };
+      if (opcoes) dados.opcoes = opcoes;
+      await Api.camposPersonalizados.atualizar(campoEditandoId, dados);
+      showToast('Campo atualizado', 'success');
+    } else {
+      const dados = { nome, tipo };
+      if (opcoes) dados.opcoes = opcoes;
+      await Api.camposPersonalizados.criar(dados);
+      showToast('Campo criado', 'success');
+    }
+
+    sairDoModoEdicaoCampo();
     await loadCampos();
     renderCamposManageList();
-    showToast('Campo criado', 'success');
     if (currentLeadId) await carregarCamposDoLead(currentLeadId);
   } catch (err) {
     showToast(err.message, 'error');

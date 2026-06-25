@@ -163,6 +163,7 @@ const Api = {
   camposPersonalizados: {
     listar: () => apiRequest('/campos-personalizados'),
     criar: (dados) => apiRequest('/campos-personalizados', { method: 'POST', body: dados }),
+    atualizar: (id, dados) => apiRequest(`/campos-personalizados/${id}`, { method: 'PATCH', body: dados }),
     remover: (id) => apiRequest(`/campos-personalizados/${id}`, { method: 'DELETE' }),
     doLead: (leadId) => apiRequest(`/leads/${leadId}/campos-personalizados`),
     definir: (leadId, campoId, valor) => apiRequest(`/leads/${leadId}/campos-personalizados/${campoId}`, { method: 'PUT', body: { valor } }),

@@ -18,6 +18,24 @@ async function criar({ usuarioId, nome, tipo, opcoes }) {
   return buscarPorId(rows[0].id, usuarioId);
 }
 
+async function atualizar(id, usuarioId, { nome, opcoes }) {
+  const campos = [];
+  const valores = [];
+  let i = 1;
+
+  if (nome !== undefined) { campos.push(`nome = $${i++}`); valores.push(nome); }
+  if (opcoes !== undefined) { campos.push(`opcoes = $${i++}`); valores.push(JSON.stringify(opcoes)); }
+
+  if (campos.length === 0) return buscarPorId(id, usuarioId);
+
+  valores.push(id, usuarioId);
+  await db.query(
+    `UPDATE campos_personalizados SET ${campos.join(', ')} WHERE id = $${i++} AND usuario_id = $${i}`,
+    valores
+  );
+  return buscarPorId(id, usuarioId);
+}
+
 async function remover(id, usuarioId) {
   await db.query('DELETE FROM campos_personalizados WHERE id = $1 AND usuario_id = $2', [id, usuarioId]);
 }
@@ -50,6 +68,7 @@ module.exports = {
   listarPorUsuario,
   buscarPorId,
   criar,
+  atualizar,
   remover,
   listarValoresPorLead,
   definirValor,
