@@ -1,7 +1,10 @@
+const Sentry = require('../config/sentry');
+
 function tratarErro(err, req, res, next) {
   console.error(err);
 
   if (err.code === 'ECONNREFUSED') {
+    Sentry.captureException(err);
     return res.status(503).json({ error: 'Banco de dados indisponível, tente novamente em breve' });
   }
 
@@ -13,6 +16,7 @@ function tratarErro(err, req, res, next) {
     return res.status(403).json({ error: err.message });
   }
 
+  Sentry.captureException(err);
   res.status(500).json({ error: 'Erro interno do servidor' });
 }
 

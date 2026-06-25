@@ -31,6 +31,22 @@ Usa Jest + Supertest contra um schema Postgres separado (`zync_test`), criado e 
 | `POST /api/leads/:leadId/ia/responder` | Sim | IA de atendimento (mock, ver `src/services/iaService.js`) |
 | `POST /api/leads/:leadId/whatsapp/enviar` | Sim | Envio manual de mensagem (mock, ver `src/services/whatsappService.js`) |
 | `POST /api/webhooks/whatsapp/:usuarioId` | Não | Webhook público para receber mensagens do WhatsApp |
+| `GET /health` | Não | Health check (testa conexão com o banco) — usado por uptime monitor |
+
+## Monitoramento
+
+- **Erros**: `@sentry/node` captura exceções não tratadas e erros 500/503
+  automaticamente (ver `src/middleware/errorMiddleware.js` e
+  `src/config/sentry.js`). Só ativa se a env var `SENTRY_DSN` estiver
+  configurada — sem ela, fica desligado (padrão em dev/teste). Pra ativar em
+  produção: cria um projeto Node/Express grátis em sentry.io, pega o DSN, e
+  configura `SENTRY_DSN` no Railway (`railway variables --set "SENTRY_DSN=..."`).
+  Configura os alertas de e-mail/Slack direto no painel do Sentry.
+- **Uptime**: `GET /health` retorna `200 {"status":"ok"}` se a API e o banco
+  estiverem respondendo (ou `503` se o banco estiver fora). Pra monitorar:
+  cria uma conta grátis no UptimeRobot (ou similar), aponta um monitor HTTP
+  pra `https://zync-backend-production.up.railway.app/health` a cada 5 min,
+  e configura o contato de alerta (e-mail/Discord/Slack).
 
 ## Produção (Railway)
 

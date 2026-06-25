@@ -1,8 +1,11 @@
+require('dotenv').config();
+require('./config/sentry');
+
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
-require('dotenv').config();
 
+const db = require('./config/db');
 const routes = require('./routes');
 const { apiLimiter } = require('./middleware/rateLimiter');
 const { tratarErro, rotaNaoEncontrada } = require('./middleware/errorMiddleware');
@@ -28,6 +31,16 @@ app.use(
   })
 );
 app.use(express.json({ limit: '3mb' }));
+
+app.get('/health', async (req, res) => {
+  try {
+    await db.query('SELECT 1');
+    res.json({ status: 'ok' });
+  } catch (err) {
+    res.status(503).json({ status: 'erro', detalhe: 'banco de dados indisponível' });
+  }
+});
+
 app.use('/api', apiLimiter, routes);
 app.use(rotaNaoEncontrada);
 app.use(tratarErro);
