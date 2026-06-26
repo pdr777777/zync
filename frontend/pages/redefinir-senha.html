@@ -9,41 +9,44 @@
 </head>
 <body>
 
-<a href="../../index.html" class="auth-back">← Voltar para o site</a>
+<a href="../../index.html" class="auth-back" data-i18n="auth.voltarSite">← Voltar para o site</a>
 
 <div class="auth-screen">
   <div class="auth-orb"></div>
 
   <div class="auth-card">
     <div class="auth-logo"><span>Zync</span></div>
-    <div class="auth-title">Crie uma nova senha</div>
-    <div class="auth-sub">O link de redefinição é válido por 1 hora.</div>
+    <div class="auth-title" data-i18n="auth.criarNovaSenha">Crie uma nova senha</div>
+    <div class="auth-sub" data-i18n="auth.linkValido1h">O link de redefinição é válido por 1 hora.</div>
 
     <div class="auth-alert" id="alert"></div>
 
     <form class="auth-form" id="redefinir-form" novalidate>
       <div class="field">
-        <label for="senha">Nova senha</label>
+        <label for="senha" data-i18n="auth.novaSenha">Nova senha</label>
         <input type="password" id="senha" placeholder="Mínimo 8 caracteres, com letras e números" minlength="8" required autocomplete="new-password">
       </div>
       <div class="field">
-        <label for="confirmar">Confirmar nova senha</label>
+        <label for="confirmar" data-i18n="auth.confirmarNovaSenha">Confirmar nova senha</label>
         <input type="password" id="confirmar" placeholder="Repita a senha" minlength="8" required autocomplete="new-password">
       </div>
 
       <button type="submit" class="btn btn-primary btn-block" id="submit-btn">
-        <span id="submit-label">Redefinir senha</span>
+        <span id="submit-label" data-i18n="auth.redefinirSenha">Redefinir senha</span>
       </button>
     </form>
 
     <div class="auth-foot" id="foot-links">
-      <a href="login.html">← Voltar para o login</a>
+      <a href="login.html" data-i18n="auth.voltarLogin">← Voltar para o login</a>
     </div>
   </div>
 </div>
 
 <script src="../assets/js/api.js"></script>
+<script src="../assets/js/i18n.js"></script>
 <script>
+  Lang.aplicar();
+
   const params = new URLSearchParams(window.location.search);
   const token = params.get('token');
 
@@ -54,9 +57,9 @@
 
   if (!token) {
     form.classList.add('hidden');
-    alertBox.textContent = 'Link inválido — falta o token de redefinição. Solicite um novo link.';
+    alertBox.textContent = Lang.t('auth.linkInvalido');
     alertBox.classList.add('visible');
-    document.getElementById('foot-links').innerHTML = '<a href="esqueci-senha.html">Solicitar novo link</a>';
+    document.getElementById('foot-links').innerHTML = `<a href="esqueci-senha.html">${Lang.t('auth.solicitarNovoLink')}</a>`;
   }
 
   form.addEventListener('submit', async (e) => {
@@ -67,7 +70,7 @@
     const confirmar = document.getElementById('confirmar').value;
 
     if (senha !== confirmar) {
-      alertBox.textContent = 'As senhas não coincidem';
+      alertBox.textContent = Lang.t('auth.senhasNaoCoincidem');
       alertBox.classList.add('visible');
       return;
     }
@@ -78,14 +81,14 @@
     try {
       await Api.auth.redefinirSenha(token, senha);
       form.classList.add('hidden');
-      alertBox.textContent = 'Senha redefinida com sucesso. Você já pode entrar com a nova senha.';
+      alertBox.textContent = Lang.t('auth.senhaRedefinidaSucesso');
       alertBox.classList.add('visible', 'success');
-      document.getElementById('foot-links').innerHTML = '<a href="login.html">Ir para o login →</a>';
+      document.getElementById('foot-links').innerHTML = `<a href="login.html">${Lang.t('auth.irParaLogin')}</a>`;
     } catch (err) {
       alertBox.textContent = err.message;
       alertBox.classList.add('visible');
       submitBtn.disabled = false;
-      submitLabel.textContent = 'Redefinir senha';
+      submitLabel.textContent = Lang.t('auth.redefinirSenha');
     }
   });
 </script>

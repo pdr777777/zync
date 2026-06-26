@@ -238,6 +238,17 @@ CREATE TABLE IF NOT EXISTS comissoes_afiliado (
 
 CREATE INDEX IF NOT EXISTS idx_comissoes_afiliado_status ON comissoes_afiliado (afiliado_id, status);
 
+-- Contagem de rate limit (ver backend/src/middleware/postgresRateLimitStore.js).
+-- Fica no Postgres em vez de em memoria pra funcionar com mais de uma
+-- instancia do backend rodando ao mesmo tempo, sem precisar de Redis.
+CREATE TABLE IF NOT EXISTS rate_limit_hits (
+  chave VARCHAR(150) PRIMARY KEY,
+  contagem INT NOT NULL DEFAULT 1,
+  expira_em TIMESTAMPTZ NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_rate_limit_hits_expira ON rate_limit_hits (expira_em);
+
 -- RLS em todas as tabelas. O backend conecta direto como usuario "postgres"
 -- (table owner), que sempre ignora RLS - entao isso nao afeta o backend. O
 -- efeito e fechar a API publica do Supabase (PostgREST/anon key), que
@@ -262,3 +273,4 @@ ALTER TABLE webhooks ENABLE ROW LEVEL SECURITY;
 ALTER TABLE produtos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE afiliados ENABLE ROW LEVEL SECURITY;
 ALTER TABLE comissoes_afiliado ENABLE ROW LEVEL SECURITY;
+ALTER TABLE rate_limit_hits ENABLE ROW LEVEL SECURITY;

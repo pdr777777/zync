@@ -12,7 +12,7 @@
 <div class="loja-screen">
   <div class="loja-header">
     <h1 id="loja-nome">Carregando...</h1>
-    <p>Escolha um produto e faça seu pedido</p>
+    <p data-i18n="loja.escolhaProduto">Escolha um produto e faça seu pedido</p>
   </div>
 
   <div class="loja-grid" id="loja-grid"></div>
@@ -22,28 +22,28 @@
 <div class="modal-overlay" id="solicitar-modal">
   <div class="modal-box" style="max-width: 400px;">
     <div class="modal-header">
-      <div class="modal-title" id="solicitar-titulo">Pedir produto</div>
+      <div class="modal-title" id="solicitar-titulo" data-i18n="loja.pedirProduto">Pedir produto</div>
       <button class="modal-close" data-close-modal aria-label="Fechar" data-icon="x"></button>
     </div>
 
     <form id="form-solicitar" novalidate>
       <div class="field">
-        <label for="solicitar-nome">Seu nome</label>
+        <label for="solicitar-nome" data-i18n="loja.seuNome">Seu nome</label>
         <input type="text" id="solicitar-nome" required maxlength="120">
       </div>
       <div class="field">
-        <label for="solicitar-telefone">Seu telefone (WhatsApp)</label>
+        <label for="solicitar-telefone" data-i18n="loja.seuTelefoneWhatsapp">Seu telefone (WhatsApp)</label>
         <input type="text" id="solicitar-telefone" placeholder="(11) 99999-9999" maxlength="20">
       </div>
       <div class="field">
-        <label for="solicitar-mensagem">Mensagem (opcional)</label>
+        <label for="solicitar-mensagem" data-i18n="loja.mensagemOpcional">Mensagem (opcional)</label>
         <input type="text" id="solicitar-mensagem" maxlength="500">
       </div>
 
       <div class="modal-actions">
-        <button type="button" class="btn btn-secondary" data-close-modal>Cancelar</button>
+        <button type="button" class="btn btn-secondary" data-close-modal data-i18n="loja.cancelar">Cancelar</button>
         <button type="submit" class="btn btn-primary" id="solicitar-submit">
-          <span id="solicitar-submit-label">Enviar pedido</span>
+          <span id="solicitar-submit-label" data-i18n="loja.enviarPedido">Enviar pedido</span>
         </button>
       </div>
     </form>
@@ -52,6 +52,7 @@
 
 <script src="../assets/js/api.js"></script>
 <script src="../assets/js/icons.js"></script>
+<script src="../assets/js/i18n.js"></script>
 <script src="../assets/js/loja.js"></script>
 
 </body>

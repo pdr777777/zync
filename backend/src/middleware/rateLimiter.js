@@ -1,5 +1,6 @@
 const { rateLimit, ipKeyGenerator } = require('express-rate-limit');
 const jwt = require('jsonwebtoken');
+const PostgresRateLimitStore = require('./postgresRateLimitStore');
 
 const skipEmTeste = () => process.env.NODE_ENV === 'test';
 
@@ -24,6 +25,7 @@ const apiLimiter = rateLimit({
   legacyHeaders: false,
   skip: skipEmTeste,
   keyGenerator: keyPorUsuarioOuIp,
+  store: new PostgresRateLimitStore('api'),
   message: { error: 'Muitas requisições. Tente novamente em alguns minutos.' },
 });
 
@@ -33,6 +35,7 @@ const authLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   skip: skipEmTeste,
+  store: new PostgresRateLimitStore('auth'),
   message: { error: 'Muitas tentativas. Tente novamente em alguns minutos.' },
 });
 
@@ -42,6 +45,7 @@ const webhookLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   skip: skipEmTeste,
+  store: new PostgresRateLimitStore('webhook'),
   message: { error: 'Muitas requisições. Tente novamente em breve.' },
 });
 
@@ -51,6 +55,7 @@ const catalogoPublicoLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   skip: skipEmTeste,
+  store: new PostgresRateLimitStore('catalogo'),
   message: { error: 'Muitas requisições. Tente novamente em alguns minutos.' },
 });
 

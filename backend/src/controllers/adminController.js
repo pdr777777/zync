@@ -5,6 +5,7 @@ const suporteModel = require('../models/suporteModel');
 const assinaturaModel = require('../models/assinaturaModel');
 const afiliadoModel = require('../models/afiliadoModel');
 const comissaoAfiliadoModel = require('../models/comissaoAfiliadoModel');
+const logModel = require('../models/logModel');
 const asyncHandler = require('../utils/asyncHandler');
 const validators = require('../utils/validators');
 
@@ -32,6 +33,13 @@ async function definirAdmin(req, res) {
   }
 
   await usuarioModel.definirAdmin(req.params.id, isAdmin);
+
+  await logModel.registrar({
+    usuarioId: req.usuario.id,
+    acao: 'admin_definiu_admin',
+    detalhes: { usuarioAlvoId: Number(req.params.id), isAdmin },
+  });
+
   res.json({ ok: true });
 }
 
@@ -44,6 +52,13 @@ async function removerUsuario(req, res) {
   }
 
   await adminModel.removerUsuario(req.params.id);
+
+  await logModel.registrar({
+    usuarioId: req.usuario.id,
+    acao: 'admin_removeu_empresa',
+    detalhes: { usuarioAlvoId: Number(req.params.id), usuarioAlvoEmail: usuario.email },
+  });
+
   res.status(204).send();
 }
 
@@ -52,6 +67,13 @@ async function reativarUsuario(req, res) {
   if (!usuario) return res.status(404).json({ error: 'Usuário não encontrado' });
 
   await adminModel.reativarUsuario(req.params.id);
+
+  await logModel.registrar({
+    usuarioId: req.usuario.id,
+    acao: 'admin_reativou_empresa',
+    detalhes: { usuarioAlvoId: Number(req.params.id), usuarioAlvoEmail: usuario.email },
+  });
+
   res.status(204).send();
 }
 
@@ -62,6 +84,13 @@ async function cancelarAssinatura(req, res) {
   }
 
   await assinaturaModel.cancelar(assinatura.id, req.params.id);
+
+  await logModel.registrar({
+    usuarioId: req.usuario.id,
+    acao: 'admin_cancelou_assinatura',
+    detalhes: { usuarioAlvoId: Number(req.params.id), plano: assinatura.plano_nome },
+  });
+
   res.status(204).send();
 }
 
@@ -86,6 +115,13 @@ async function criarPlano(req, res) {
   }
 
   const plano = await planoModel.criar({ nome, preco, intervaloDias });
+
+  await logModel.registrar({
+    usuarioId: req.usuario.id,
+    acao: 'admin_criou_plano',
+    detalhes: { planoId: plano.id, nome, preco },
+  });
+
   res.status(201).json(plano);
 }
 
@@ -105,6 +141,13 @@ async function atualizarPlano(req, res) {
   }
 
   const atualizado = await planoModel.atualizar(req.params.id, req.body);
+
+  await logModel.registrar({
+    usuarioId: req.usuario.id,
+    acao: 'admin_atualizou_plano',
+    detalhes: { planoId: Number(req.params.id), mudancas: req.body },
+  });
+
   res.json(atualizado);
 }
 
@@ -176,6 +219,13 @@ async function marcarComissaoPaga(req, res) {
   if (!comissao) return res.status(404).json({ error: 'Comissão não encontrada' });
 
   await comissaoAfiliadoModel.marcarPaga(req.params.id);
+
+  await logModel.registrar({
+    usuarioId: req.usuario.id,
+    acao: 'admin_marcou_comissao_paga',
+    detalhes: { comissaoId: Number(req.params.id) },
+  });
+
   res.status(204).send();
 }
 

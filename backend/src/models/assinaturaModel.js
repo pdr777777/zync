@@ -64,6 +64,21 @@ async function cancelar(id, usuarioId) {
   );
 }
 
+async function listarAtivasExpiradas() {
+  const { rows } = await db.query(
+    `SELECT a.id, a.usuario_id, u.email AS usuario_email, u.nome AS usuario_nome, p.nome AS plano_nome
+     FROM assinaturas a
+     JOIN usuarios u ON u.id = a.usuario_id
+     JOIN planos p ON p.id = a.plano_id
+     WHERE a.status = 'ativa' AND a.expira_em < NOW()`
+  );
+  return rows;
+}
+
+async function marcarExpirada(id) {
+  await db.query("UPDATE assinaturas SET status = 'expirada' WHERE id = $1 AND status = 'ativa'", [id]);
+}
+
 module.exports = {
   criar,
   buscarPorId,
@@ -73,4 +88,6 @@ module.exports = {
   marcarFalha,
   listarPorUsuario,
   cancelar,
+  listarAtivasExpiradas,
+  marcarExpirada,
 };

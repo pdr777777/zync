@@ -1,6 +1,7 @@
 const app = require('./src/app');
 const db = require('./src/config/db');
 const { enviarLembretesPendentes } = require('./src/jobs/lembreteAgendamentoJob');
+const { verificarAssinaturasExpiradas } = require('./src/jobs/verificarExpiracaoJob');
 
 const PORT = process.env.PORT || 3001;
 const server = app.listen(PORT, () => {
@@ -14,9 +15,17 @@ function executarJobLembretes() {
 executarJobLembretes();
 const lembreteIntervalId = setInterval(executarJobLembretes, INTERVALO_LEMBRETES_MS);
 
+const INTERVALO_EXPIRACAO_MS = 60 * 60 * 1000;
+function executarJobExpiracao() {
+  verificarAssinaturasExpiradas().catch((err) => console.error('Erro ao verificar assinaturas expiradas:', err.message));
+}
+executarJobExpiracao();
+const expiracaoIntervalId = setInterval(executarJobExpiracao, INTERVALO_EXPIRACAO_MS);
+
 function encerrarGraciosamente(sinal) {
   console.log(`${sinal} recebido, encerrando requisições em andamento...`);
   clearInterval(lembreteIntervalId);
+  clearInterval(expiracaoIntervalId);
 
   server.close(async () => {
     await db.end();

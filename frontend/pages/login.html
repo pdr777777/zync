@@ -9,46 +9,48 @@
 </head>
 <body>
 
-<a href="../../index.html" class="auth-back">← Voltar para o site</a>
+<a href="../../index.html" class="auth-back" data-i18n="auth.voltarSite">← Voltar para o site</a>
 
 <div class="auth-screen">
   <div class="auth-orb"></div>
 
   <div class="auth-card">
     <div class="auth-logo"><span>Zync</span></div>
-    <div class="auth-title">Bem-vindo de volta</div>
-    <div class="auth-sub">Entre para acessar seu painel de leads e conversas.</div>
+    <div class="auth-title" data-i18n="auth.bemVindoDeVolta">Bem-vindo de volta</div>
+    <div class="auth-sub" data-i18n="auth.entrarSub">Entre para acessar seu painel de leads e conversas.</div>
 
     <div class="auth-alert" id="alert"></div>
 
     <form class="auth-form" id="login-form" novalidate>
       <div class="field">
-        <label for="email">E-mail</label>
+        <label for="email" data-i18n="auth.email">E-mail</label>
         <input type="email" id="email" name="email" placeholder="voce@empresa.com" required autocomplete="email">
       </div>
 
       <div class="field">
-        <label for="senha">Senha</label>
+        <label for="senha" data-i18n="auth.senha">Senha</label>
         <input type="password" id="senha" name="senha" placeholder="••••••••" required autocomplete="current-password">
         <div style="text-align:right; margin-top:0.5rem;">
-          <a href="esqueci-senha.html" style="color:var(--azul-claro); font-size:0.82rem; text-decoration:none;">Esqueci minha senha</a>
+          <a href="esqueci-senha.html" style="color:var(--azul-claro); font-size:0.82rem; text-decoration:none;" data-i18n="auth.esqueciSenha">Esqueci minha senha</a>
         </div>
       </div>
 
       <button type="submit" class="btn btn-primary btn-block" id="submit-btn">
-        <span id="submit-label">Entrar</span>
+        <span id="submit-label" data-i18n="auth.entrar">Entrar</span>
       </button>
     </form>
 
     <div class="auth-foot">
-      Ainda não tem conta? <a href="registro.html">Criar conta gratuita</a>
+      <span data-i18n="auth.semConta">Ainda não tem conta?</span> <a href="registro.html" data-i18n="auth.criarConta">Criar conta</a>
     </div>
   </div>
 </div>
 
 <script src="../assets/js/api.js"></script>
+<script src="../assets/js/i18n.js"></script>
 <script>
   Auth.redirectIfAuthenticated();
+  Lang.aplicar();
 
   const form = document.getElementById('login-form');
   const alertBox = document.getElementById('alert');
@@ -57,7 +59,7 @@
 
   function setLoading(loading) {
     submitBtn.disabled = loading;
-    submitLabel.innerHTML = loading ? '<span class="spinner"></span>' : 'Entrar';
+    submitLabel.innerHTML = loading ? '<span class="spinner"></span>' : Lang.t('auth.entrar');
   }
 
   function showAlert(message) {

@@ -9,7 +9,7 @@
 </head>
 <body>
 
-<a href="../../index.html" class="auth-back">← Voltar para o site</a>
+<a href="../../index.html" class="auth-back" data-i18n="auth.voltarSite">← Voltar para o site</a>
 
 <div class="checkout-screen">
   <div class="checkout-orb"></div>
@@ -19,21 +19,21 @@
       <div class="checkout-logo"><span>Zync</span></div>
 
       <div id="summary-teaser">
-        <div class="checkout-plan-badge" data-icon="sparkle" data-icon-size="12"> Assine o Zync</div>
+        <div class="checkout-plan-badge" data-icon="sparkle" data-icon-size="12"> <span data-i18n="checkout.assineZync">Assine o Zync</span></div>
         <ul class="checkout-features">
-          <li><div class="check" data-icon="check" data-icon-size="10"></div> CRM completo + Kanban</li>
-          <li><div class="check" data-icon="check" data-icon-size="10"></div> WhatsApp + IA de atendimento</li>
-          <li><div class="check" data-icon="check" data-icon-size="10"></div> Tags, agenda e relatórios</li>
+          <li><div class="check" data-icon="check" data-icon-size="10"></div> <span data-i18n="checkout.feature1">CRM completo + Kanban</span></li>
+          <li><div class="check" data-icon="check" data-icon-size="10"></div> <span data-i18n="checkout.feature2">WhatsApp + IA de atendimento</span></li>
+          <li><div class="check" data-icon="check" data-icon-size="10"></div> <span data-i18n="checkout.feature3">Tags, agenda e relatórios</span></li>
         </ul>
-        <p style="font-size:0.85rem; color:var(--cinza);">Crie sua conta para ver os planos e preços disponíveis.</p>
+        <p style="font-size:0.85rem; color:var(--cinza);" data-i18n="checkout.crieContaTeaser">Crie sua conta para ver os planos e preços disponíveis.</p>
       </div>
 
       <div id="summary-plans" class="hidden">
-        <div class="checkout-section-title" style="margin-top:0;">Escolha seu plano</div>
+        <div class="checkout-section-title" style="margin-top:0;" data-i18n="checkout.escolhaPlano">Escolha seu plano</div>
         <div class="plan-options" id="plan-options"></div>
         <hr class="price-divider">
         <div class="checkout-total-row total">
-          <span>Total</span>
+          <span data-i18n="checkout.total">Total</span>
           <span id="co-total">—</span>
         </div>
       </div>
@@ -41,75 +41,75 @@
 
     <main class="checkout-form-panel">
       <form id="account-form">
-        <div class="checkout-section-title" style="margin-top:0;">Sua conta</div>
+        <div class="checkout-section-title" style="margin-top:0;" data-i18n="checkout.suaConta">Sua conta</div>
         <div class="field">
-          <label for="co-nome">Nome completo</label>
+          <label for="co-nome" data-i18n="checkout.nomeCompleto">Nome completo</label>
           <input type="text" id="co-nome" placeholder="Seu nome" required>
         </div>
         <div class="field-row">
           <div class="field">
-            <label for="co-email">E-mail</label>
+            <label for="co-email" data-i18n="auth.email">E-mail</label>
             <input type="email" id="co-email" placeholder="voce@empresa.com" required>
           </div>
           <div class="field">
-            <label for="co-senha">Senha</label>
+            <label for="co-senha" data-i18n="auth.senha">Senha</label>
             <input type="password" id="co-senha" placeholder="Mínimo 8 caracteres, com letras e números" minlength="8" required>
           </div>
         </div>
         <button type="submit" class="btn btn-primary btn-block" id="account-submit">
-          <span id="account-submit-label">Criar conta e continuar</span>
+          <span id="account-submit-label" data-i18n="checkout.criarContaContinuar">Criar conta e continuar</span>
         </button>
       </form>
 
       <div id="checkout-section" class="hidden">
-        <div class="checkout-section-title" style="margin-top:0;">Forma de pagamento</div>
+        <div class="checkout-section-title" style="margin-top:0;" data-i18n="checkout.formaPagamento">Forma de pagamento</div>
         <div class="checkout-method-tabs">
           <button type="button" class="method-tab active" data-method="pix" data-icon="zap"> Pix</button>
-          <button type="button" class="method-tab" data-method="cartao" data-icon="creditCard"> Cartão</button>
-          <button type="button" class="method-tab" data-method="boleto" data-icon="fileText"> Boleto</button>
+          <button type="button" class="method-tab" data-method="cartao" data-icon="creditCard"> <span data-i18n="checkout.cartao">Cartão</span></button>
+          <button type="button" class="method-tab" data-method="boleto" data-icon="fileText"> <span data-i18n="checkout.boleto">Boleto</span></button>
         </div>
 
         <form id="checkout-form" novalidate>
           <div class="payment-panel" id="panel-pix">
             <div class="field">
-              <label for="co-cpf">CPF</label>
+              <label for="co-cpf" data-i18n="checkout.cpf">CPF</label>
               <input type="text" id="co-cpf" inputmode="numeric" placeholder="000.000.000-00" maxlength="14" required>
             </div>
             <div class="field">
-              <label for="co-telefone">Telefone (WhatsApp)</label>
+              <label for="co-telefone" data-i18n="checkout.telefoneWhatsapp">Telefone (WhatsApp)</label>
               <input type="text" id="co-telefone" inputmode="numeric" placeholder="(11) 99999-9999" maxlength="15" required>
             </div>
 
             <button type="submit" class="btn btn-primary btn-block" id="checkout-submit">
-              <span id="checkout-submit-label">Gerar Pix e assinar</span>
+              <span id="checkout-submit-label" data-i18n="checkout.gerarPixAssinar">Gerar Pix e assinar</span>
             </button>
 
-            <div class="checkout-trust" data-icon="lock" data-icon-size="14"> Cobrança processada via SyncPay · Pix aprovado na hora</div>
+            <div class="checkout-trust" data-icon="lock" data-icon-size="14"> <span data-i18n="checkout.cobrancaTrust">Cobrança processada via SyncPay · Pix aprovado na hora</span></div>
           </div>
 
           <div class="payment-panel hidden" id="panel-cartao">
-            <div class="pix-box" data-icon="creditCard"> Pagamento por cartão chega em breve. Por enquanto, use o Pix — é aprovado na hora.</div>
+            <div class="pix-box" data-icon="creditCard"> <span data-i18n="checkout.cartaoEmBreve">Pagamento por cartão chega em breve. Por enquanto, use o Pix — é aprovado na hora.</span></div>
           </div>
 
           <div class="payment-panel hidden" id="panel-boleto">
-            <div class="boleto-box" data-icon="fileText"> Boleto chega em breve. Por enquanto, use o Pix — é aprovado na hora.</div>
+            <div class="boleto-box" data-icon="fileText"> <span data-i18n="checkout.boletoEmBreve">Boleto chega em breve. Por enquanto, use o Pix — é aprovado na hora.</span></div>
           </div>
         </form>
       </div>
 
       <div id="pix-result" class="hidden">
-        <div class="checkout-section-title" style="margin-top:0;">Pague com Pix</div>
+        <div class="checkout-section-title" style="margin-top:0;" data-i18n="checkout.pagueComPix">Pague com Pix</div>
         <div class="pix-amount" id="pix-amount">—</div>
         <div class="pix-code-box" id="pix-code-text"></div>
-        <button type="button" class="btn btn-secondary btn-block" id="pix-copy">Copiar código Pix</button>
-        <div class="pix-status" id="pix-status"><span class="spinner"></span> Aguardando pagamento…</div>
+        <button type="button" class="btn btn-secondary btn-block" id="pix-copy" data-i18n="checkout.copiarCodigoPix">Copiar código Pix</button>
+        <div class="pix-status" id="pix-status"><span class="spinner"></span> <span data-i18n="checkout.aguardandoPagamento">Aguardando pagamento…</span></div>
       </div>
 
       <div class="checkout-success hidden" id="checkout-success">
         <div class="success-check" data-icon="check" data-icon-size="28"></div>
-        <h2>Assinatura confirmada!</h2>
-        <p>Pagamento aprovado. Você já pode acessar todos os recursos do Zync.</p>
-        <a href="dashboard.html" class="btn btn-primary">Ir para o dashboard →</a>
+        <h2 data-i18n="checkout.assinaturaConfirmada">Assinatura confirmada!</h2>
+        <p data-i18n="checkout.pagamentoAprovado">Pagamento aprovado. Você já pode acessar todos os recursos do Zync.</p>
+        <a href="dashboard.html" class="btn btn-primary" data-i18n="checkout.irParaDashboard">Ir para o dashboard →</a>
       </div>
     </main>
   </div>
@@ -117,6 +117,7 @@
 
 <script src="../assets/js/api.js"></script>
 <script src="../assets/js/icons.js"></script>
+<script src="../assets/js/i18n.js"></script>
 <script src="../assets/js/checkout.js"></script>
 
 </body>

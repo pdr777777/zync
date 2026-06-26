@@ -1,3 +1,5 @@
+Lang.aplicar();
+
 let planosCache = [];
 let planoSelecionadoId = null;
 let pollHandle = null;
