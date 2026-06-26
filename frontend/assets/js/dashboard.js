@@ -471,17 +471,35 @@ function renderKanban() {
   });
 }
 
+const CORES_STATUS_KANBAN = {
+  novo: 'var(--azul-claro)',
+  em_contato: 'var(--ciano)',
+  proposta_enviada: 'var(--amber)',
+  fechado: 'var(--verde)',
+};
+
+function iniciaisNome(nome) {
+  const partes = nome.trim().split(/\s+/).filter(Boolean);
+  if (partes.length === 0) return '?';
+  if (partes.length === 1) return partes[0].slice(0, 2).toUpperCase();
+  return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
+}
+
 function criarLeadCard(lead) {
   const card = document.createElement('div');
   card.className = 'lead-card anim-entrada';
   card.draggable = true;
   card.dataset.id = lead.id;
+  card.style.borderLeftColor = CORES_STATUS_KANBAN[lead.status] || 'var(--azul-claro)';
 
   const valor = formatMoeda(lead.valor);
   const meta = [lead.servico, lead.origem].filter(Boolean).join(' • ') || 'Sem detalhes';
 
   card.innerHTML = `
-    <div class="lead-card-name">${escapeHtml(lead.nome)}</div>
+    <div class="lead-card-top">
+      <div class="lead-card-avatar">${escapeHtml(iniciaisNome(lead.nome))}</div>
+      <div class="lead-card-name">${escapeHtml(lead.nome)}</div>
+    </div>
     <div class="lead-card-meta">${escapeHtml(meta)}</div>
     <div class="lead-card-foot">
       ${lead.origem ? `<span class="k-tag">${escapeHtml(lead.origem)}</span>` : '<span></span>'}
@@ -1157,6 +1175,8 @@ function renderFunil(dados) {
 
   if (!totalGeral) {
     container.innerHTML = '<div class="empty-state" style="padding:1.5rem;">Sem leads ainda</div>';
+    document.getElementById('funil-gauge').style.setProperty('--value', 0);
+    document.getElementById('funil-gauge-num').textContent = '—';
     return;
   }
 
@@ -1168,7 +1188,10 @@ function renderFunil(dados) {
         <div class="barlist-track"><div class="barlist-fill" style="width:${(total / totalGeral) * 100}%"></div></div>
       </div>
     `;
-  }).join('') + `<div class="funil-resumo">${taxaConversao}% dos leads chegam a fechar</div>`;
+  }).join('');
+
+  document.getElementById('funil-gauge').style.setProperty('--value', taxaConversao);
+  document.getElementById('funil-gauge-num').textContent = `${taxaConversao}%`;
 }
 
 function renderFaturamento(dados, dias) {

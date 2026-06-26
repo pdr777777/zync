@@ -140,7 +140,15 @@
 
         <div class="chart-card">
           <div class="chart-card-header"><div class="chart-title">Funil de conversão</div></div>
-          <div class="barlist" id="chart-funil"><div class="empty-state" style="padding:1.5rem;"><span class="spinner"></span></div></div>
+          <div class="gauge-row">
+            <div class="gauge" id="funil-gauge">
+              <div class="gauge-center">
+                <div class="gauge-num" id="funil-gauge-num">—</div>
+                <div class="gauge-label">conversão</div>
+              </div>
+            </div>
+            <div class="barlist" id="chart-funil" style="flex:1; min-width:160px;"><div class="empty-state" style="padding:1.5rem;"><span class="spinner"></span></div></div>
+          </div>
         </div>
       </div>
     </section>

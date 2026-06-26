@@ -614,6 +614,7 @@ a { color: inherit; text-decoration: none; }
 .lead-card {
   background: var(--preto2);
   border: 1px solid rgba(var(--overlay-rgb),0.07);
+  border-left: 3px solid var(--azul-claro);
   border-radius: 10px;
   padding: 0.8rem 0.85rem;
   margin-bottom: 0.6rem;
@@ -624,8 +625,23 @@ a { color: inherit; text-decoration: none; }
 .lead-card.dragging { opacity: 0.4; }
 .lead-card:active { cursor: grabbing; }
 
-.lead-card-name { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.2rem; }
-.lead-card-meta { font-size: 0.74rem; color: var(--cinza); }
+.lead-card-top { display: flex; align-items: center; gap: 0.55rem; margin-bottom: 0.55rem; }
+.lead-card-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--azul-claro), var(--azul));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: var(--branco);
+  flex-shrink: 0;
+}
+
+.lead-card-name { font-size: 0.85rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lead-card-meta { font-size: 0.74rem; color: var(--cinza); padding-left: 2.05rem; }
 
 .lead-card-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 0.5rem; }
 
@@ -1817,6 +1833,119 @@ a { color: inherit; text-decoration: none; }
   flex-shrink: 0;
   color: var(--azul-claro);
 }
+
+/* ---------- GAUGE (anel de progresso) ---------- */
+.gauge-row { display: flex; align-items: center; gap: 1.4rem; flex-wrap: wrap; }
+
+.gauge {
+  --value: 0;
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  position: relative;
+  flex-shrink: 0;
+  background: conic-gradient(var(--azul-claro) calc(var(--value) * 1%), rgba(var(--overlay-rgb),0.07) 0);
+  transition: background 0.6s var(--ease);
+}
+.gauge::before {
+  content: '';
+  position: absolute;
+  inset: 11px;
+  border-radius: 50%;
+  background: var(--preto3);
+}
+.gauge-center {
+  position: absolute;
+  inset: 11px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.15rem;
+}
+.gauge-num { font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; font-weight: 700; }
+.gauge-label { font-size: 0.7rem; color: var(--cinza); padding: 0 0.4rem; line-height: 1.2; }
+.gauge-sub { display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.82rem; flex: 1; min-width: 140px; }
+.gauge-sub-row { display: flex; align-items: center; gap: 0.5rem; color: var(--cinza); }
+.gauge-sub-row strong { color: var(--branco); margin-left: auto; font-weight: 600; }
+.gauge-sub-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* ---------- DATA TABLE ---------- */
+.data-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.data-table th {
+  text-align: left;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--cinza);
+  font-weight: 600;
+  padding: 0 0.6rem 0.7rem;
+  border-bottom: 1px solid var(--borda);
+}
+.data-table td {
+  padding: 0.65rem 0.6rem;
+  border-bottom: 1px solid rgba(var(--overlay-rgb),0.05);
+  vertical-align: middle;
+}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: rgba(var(--overlay-rgb),0.025); }
+
+.table-cell-empresa { display: flex; align-items: center; gap: 0.7rem; }
+.table-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--azul-claro), var(--azul));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.72rem;
+  flex-shrink: 0;
+  color: var(--branco);
+}
+.table-empresa-nome { font-weight: 600; color: var(--branco); }
+.table-empresa-email { font-size: 0.76rem; color: var(--cinza); }
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.25rem 0.65rem;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+.status-pill::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.status-pill.ativa { background: rgba(52,211,153,0.15); color: var(--verde); }
+.status-pill.pendente { background: rgba(245,158,11,0.15); color: var(--amber); }
+.status-pill.cancelada { background: rgba(248,113,113,0.15); color: var(--vermelho); }
+.status-pill.sem_assinatura { background: rgba(var(--overlay-rgb),0.06); color: var(--cinza); }
+
+/* ---------- MINI LISTA (suporte recente, etc.) ---------- */
+.mini-list { display: flex; flex-direction: column; gap: 0.1rem; }
+.mini-list-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding: 0.65rem 0.2rem;
+  border-bottom: 1px solid rgba(var(--overlay-rgb),0.05);
+}
+.mini-list-row:last-child { border-bottom: none; }
+.mini-list-body { flex: 1; min-width: 0; }
+.mini-list-title { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 0.4rem; }
+.mini-list-msg {
+  font-size: 0.8rem;
+  color: var(--cinza);
+  margin-top: 0.15rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mini-list-time { font-size: 0.7rem; color: var(--cinza); flex-shrink: 0; white-space: nowrap; }
+.mini-list-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--amber); flex-shrink: 0; }
 
 /* ---------- FEATURE CARDS (suporte/contato) ---------- */
 .features-grid {

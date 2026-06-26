@@ -81,6 +81,70 @@
         <div class="stat-num-row"><div class="stat-num" id="adm-pendentes"><span class="skeleton" style="width:40px;height:1.8rem;"></span></div></div>
       </div>
     </section>
+
+    <section class="analytics-grid">
+      <div class="chart-card chart-card-featured">
+        <div class="chart-card-header">
+          <div class="chart-eyebrow">Novas empresas</div>
+          <div class="chart-big-num" id="adm-novas-empresas">—</div>
+          <div class="chart-sub">cadastros nos últimos 30 dias</div>
+        </div>
+        <svg id="adm-cadastros-chart" class="sparkline-lg" viewBox="0 0 560 150" preserveAspectRatio="none"></svg>
+        <div class="sparkline-labels" id="adm-cadastros-labels"></div>
+      </div>
+
+      <div class="analytics-side">
+        <div class="chart-card">
+          <div class="chart-card-header"><div class="chart-title">Assinaturas ativas</div></div>
+          <div class="gauge-row">
+            <div class="gauge" id="adm-gauge-ativas">
+              <div class="gauge-center">
+                <div class="gauge-num" id="adm-gauge-num">—</div>
+                <div class="gauge-label">do total</div>
+              </div>
+            </div>
+            <div class="gauge-sub" id="adm-gauge-sub"></div>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-card-header"><div class="chart-title">Receita por plano</div></div>
+          <div class="barlist" id="analise-receita-home"><div class="empty-state" style="padding:1.5rem;"><span class="spinner"></span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="kanban-header">
+      <div class="app-title" style="font-size:1.15rem;">Empresas recentes</div>
+      <a href="admin-clientes.html" class="btn btn-ghost btn-sm">Ver todas</a>
+    </div>
+
+    <section class="chart-card" style="margin-bottom:1.6rem; overflow-x:auto;">
+      <table class="data-table" id="adm-tabela-empresas">
+        <thead>
+          <tr>
+            <th>Empresa</th>
+            <th>Plano</th>
+            <th>Status</th>
+            <th>Cadastrado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="4"><div class="empty-state" style="padding:1.5rem;"><span class="spinner"></span></div></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <div class="kanban-header">
+      <div class="app-title" style="font-size:1.15rem; display:flex; align-items:center; gap:0.6rem;">Suporte pendente <span class="stat-badge hidden" id="adm-suporte-count" style="background:rgba(245,158,11,0.15); color:var(--amber);"></span></div>
+      <a href="suporte.html" class="btn btn-ghost btn-sm">Ver tudo</a>
+    </div>
+
+    <section class="chart-card">
+      <div class="mini-list" id="adm-suporte-pendente">
+        <div class="empty-state" style="padding:1.5rem;"><span class="spinner"></span></div>
+      </div>
+    </section>
   </main>
 </div>
 
