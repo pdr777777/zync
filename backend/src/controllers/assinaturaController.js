@@ -1,7 +1,9 @@
 const planoModel = require('../models/planoModel');
 const assinaturaModel = require('../models/assinaturaModel');
 const usoModel = require('../models/usoModel');
+const usuarioModel = require('../models/usuarioModel');
 const syncpayService = require('../services/syncpayService');
+const emailService = require('../services/emailService');
 const logModel = require('../models/logModel');
 const asyncHandler = require('../utils/asyncHandler');
 const validators = require('../utils/validators');
@@ -89,6 +91,15 @@ async function cancelar(req, res) {
     acao: 'assinatura_cancelada',
     detalhes: { plano: assinatura.plano_nome },
   });
+
+  const usuario = await usuarioModel.buscarPorId(req.usuario.id);
+  if (usuario) {
+    emailService.enviarEmail(
+      usuario.email,
+      'Assinatura cancelada - Zync',
+      `Oi, ${usuario.nome}. Confirmamos o cancelamento da sua assinatura do plano ${assinatura.plano_nome}. Se quiser voltar, é só assinar de novo em Configurações quando quiser.`
+    );
+  }
 
   res.status(204).send();
 }

@@ -13,4 +13,47 @@ function paraCsv(linhas, colunas) {
   return [cabecalho, ...corpo].join('\n');
 }
 
-module.exports = { paraCsv };
+function parseLinhaCsv(linha) {
+  const campos = [];
+  let atual = '';
+  let dentroDeAspas = false;
+
+  for (let i = 0; i < linha.length; i++) {
+    const char = linha[i];
+
+    if (dentroDeAspas) {
+      if (char === '"') {
+        if (linha[i + 1] === '"') { atual += '"'; i++; }
+        else dentroDeAspas = false;
+      } else {
+        atual += char;
+      }
+    } else if (char === '"') {
+      dentroDeAspas = true;
+    } else if (char === ',') {
+      campos.push(atual);
+      atual = '';
+    } else {
+      atual += char;
+    }
+  }
+
+  campos.push(atual);
+  return campos;
+}
+
+function deCsv(texto) {
+  const linhas = texto.split(/\r\n|\n|\r/).filter((linha) => linha.length > 0);
+  if (linhas.length === 0) return [];
+
+  const cabecalho = parseLinhaCsv(linhas[0]).map((coluna) => coluna.trim().toLowerCase());
+
+  return linhas.slice(1).map((linha) => {
+    const campos = parseLinhaCsv(linha);
+    const objeto = {};
+    cabecalho.forEach((coluna, i) => { objeto[coluna] = (campos[i] ?? '').trim(); });
+    return objeto;
+  });
+}
+
+module.exports = { paraCsv, deCsv };

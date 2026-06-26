@@ -26,6 +26,7 @@ const produtoRoutes = require('./produtoRoutes');
 const catalogoPublicoRoutes = require('./catalogoPublicoRoutes');
 const campoPersonalizadoRoutes = require('./campoPersonalizadoRoutes');
 const leadCampoPersonalizadoRoutes = require('./leadCampoPersonalizadoRoutes');
+const npsRoutes = require('./npsRoutes');
 
 router.get('/health', (req, res) => {
   res.json({ status: 'ok' });
@@ -56,5 +57,6 @@ router.use('/catalogo', produtoRoutes);
 router.use('/catalogo-publico/:slug', catalogoPublicoRoutes);
 router.use('/campos-personalizados', campoPersonalizadoRoutes);
 router.use('/leads/:leadId/campos-personalizados', leadCampoPersonalizadoRoutes);
+router.use('/nps', npsRoutes);
 
 module.exports = router;

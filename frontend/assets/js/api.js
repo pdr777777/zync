@@ -153,12 +153,19 @@ const Api = {
     criar: (mensagem, videoUrl) => apiRequest('/suporte', { method: 'POST', body: { mensagem, videoUrl } }),
   },
 
+  nps: {
+    elegivel: () => apiRequest('/nps/elegivel'),
+    enviar: (nota, comentario) => apiRequest('/nps', { method: 'POST', body: { nota, comentario } }),
+    dispensar: () => apiRequest('/nps/dispensar', { method: 'POST' }),
+  },
+
   leads: {
     listar: (tagId) => apiRequest(tagId ? `/leads?tagId=${encodeURIComponent(tagId)}` : '/leads'),
     buscar: (id) => apiRequest(`/leads/${id}`),
     criar: (dados) => apiRequest('/leads', { method: 'POST', body: dados }),
     atualizar: (id, dados) => apiRequest(`/leads/${id}`, { method: 'PUT', body: dados }),
     remover: (id) => apiRequest(`/leads/${id}`, { method: 'DELETE' }),
+    importar: (csv) => apiRequest('/leads/importar', { method: 'POST', body: { csv } }),
   },
 
   tags: {

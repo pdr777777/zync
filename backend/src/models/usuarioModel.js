@@ -19,7 +19,7 @@ async function buscarPorId(id) {
     `SELECT id, nome, email, criado_em, is_admin,
             foto_url, idade, cpf, instagram, facebook, telefone, nome_empresa,
             whatsapp_phone_number_id, indicado_por_afiliado_id,
-            ia_o_que_vende, ia_horario_funcionamento, ia_tom_de_voz
+            ia_o_que_vende, ia_horario_funcionamento, ia_tom_de_voz, nps_dispensado_em
      FROM usuarios WHERE id = $1`,
     [id]
   );
@@ -129,6 +129,10 @@ async function definirAfiliadoIndicador(usuarioId, afiliadoId) {
   await db.query('UPDATE usuarios SET indicado_por_afiliado_id = $1 WHERE id = $2', [afiliadoId, usuarioId]);
 }
 
+async function marcarNpsDispensado(id) {
+  await db.query('UPDATE usuarios SET nps_dispensado_em = NOW() WHERE id = $1', [id]);
+}
+
 module.exports = {
   findByEmail,
   create,
@@ -145,4 +149,5 @@ module.exports = {
   buscarPorSlugCatalogo,
   buscarPorWhatsappPhoneNumberId,
   definirAfiliadoIndicador,
+  marcarNpsDispensado,
 };

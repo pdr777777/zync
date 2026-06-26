@@ -5,9 +5,10 @@ const webhookService = require('../services/webhookService');
 const usoService = require('../services/usoService');
 const asyncHandler = require('../utils/asyncHandler');
 const validators = require('../utils/validators');
-const { paraCsv } = require('../utils/csv');
+const { paraCsv, deCsv } = require('../utils/csv');
 
 const COLUNAS_EXPORT = ['id', 'nome', 'servico', 'origem', 'telefone', 'status', 'valor', 'criado_em'];
+const MAX_LEADS_POR_IMPORTACAO = 1000;
 
 function validarStatusEValor(dados) {
   if (dados.status !== undefined && !validators.STATUS_LEAD.includes(dados.status)) {
@@ -163,10 +164,74 @@ async function remover(req, res) {
   res.status(204).send();
 }
 
+async function importar(req, res) {
+  const { csv } = req.body;
+  if (!csv || typeof csv !== 'string') {
+    return res.status(400).json({ error: 'csv é obrigatório' });
+  }
+
+  const linhas = deCsv(csv);
+  if (linhas.length === 0) {
+    return res.status(400).json({ error: 'CSV vazio ou sem linhas de dados' });
+  }
+  if (linhas.length > MAX_LEADS_POR_IMPORTACAO) {
+    return res.status(400).json({ error: `Máximo de ${MAX_LEADS_POR_IMPORTACAO} leads por importação` });
+  }
+
+  const resultado = { importados: 0, erros: [] };
+
+  for (let i = 0; i < linhas.length; i++) {
+    const linha = linhas[i];
+    const numeroDaLinha = i + 2;
+
+    if (!linha.nome) {
+      resultado.erros.push({ linha: numeroDaLinha, motivo: 'nome é obrigatório' });
+      continue;
+    }
+
+    const dados = {
+      nome: linha.nome,
+      servico: linha.servico || null,
+      origem: linha.origem || null,
+      telefone: linha.telefone || null,
+      status: linha.status || undefined,
+      valor: linha.valor ? Number(linha.valor) : null,
+    };
+
+    const erro = validarStatusEValor(dados);
+    if (erro) {
+      resultado.erros.push({ linha: numeroDaLinha, motivo: erro });
+      continue;
+    }
+
+    try {
+      const lead = await leadModel.criar({ usuarioId: req.usuario.id, ...dados });
+      resultado.importados++;
+
+      webhookService.disparar(req.usuario.id, 'lead_criado', {
+        id: lead.id,
+        nome: lead.nome,
+        servico: lead.servico,
+        origem: lead.origem,
+        status: lead.status,
+      });
+    } catch (err) {
+      resultado.erros.push({ linha: numeroDaLinha, motivo: err.message });
+    }
+  }
+
+  if (resultado.importados > 0) {
+    await usoService.verificarLimitesEAvisar(req.usuario.id);
+  }
+
+  res.status(201).json(resultado);
+}
+
 module.exports = {
   listar: asyncHandler(listar),
   inbox: asyncHandler(inbox),
   exportarCsv: asyncHandler(exportarCsv),
+  importar: asyncHandler(importar),
   buscar: asyncHandler(buscar),
   criar: asyncHandler(criar),
   atualizar: asyncHandler(atualizar),

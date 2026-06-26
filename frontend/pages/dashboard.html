@@ -50,6 +50,31 @@
       </div>
     </div>
 
+    <div class="chart-card" id="onboarding-checklist" style="margin-bottom:1.6rem; display:none;">
+      <div class="chart-card-header" style="display:flex; justify-content:space-between; align-items:flex-start; gap:1rem;">
+        <div>
+          <div class="chart-title" data-i18n="dash.onboardingTitulo">Primeiros passos no Zync</div>
+          <div class="chart-sub" data-i18n="dash.onboardingSub">Termine de configurar sua conta pra aproveitar tudo.</div>
+        </div>
+        <button type="button" class="btn btn-ghost btn-sm" id="onboarding-dismiss" data-icon="x" aria-label="Fechar"></button>
+      </div>
+      <ul class="onboarding-steps" id="onboarding-steps"></ul>
+    </div>
+
+    <div class="chart-card" id="nps-banner" style="margin-bottom:1.6rem; display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; flex-wrap:wrap;">
+        <div>
+          <div class="chart-title" data-i18n="dash.npsPergunta">De 0 a 10, o quanto você recomendaria o Zync pra um colega?</div>
+          <div class="nps-scale" id="nps-scale"></div>
+        </div>
+        <button type="button" class="btn btn-ghost btn-sm" id="nps-dismiss" data-icon="x" aria-label="Fechar"></button>
+      </div>
+      <div id="nps-comentario-wrap" class="hidden" style="margin-top:1rem;">
+        <textarea id="nps-comentario" rows="2" style="width:100%;" data-i18n-placeholder="dash.npsComentarioPlaceholder" placeholder="Quer contar mais? (opcional)"></textarea>
+        <button type="button" class="btn btn-primary btn-sm" id="nps-enviar" style="margin-top:0.6rem;" data-i18n="dash.npsEnviar">Enviar</button>
+      </div>
+    </div>
+
     <section class="stats-grid" id="stats-grid">
       <div class="stat-card">
         <div class="stat-card-top">
@@ -157,6 +182,8 @@
       <div class="app-title" style="font-size:1.15rem;" data-i18n="dash.funilLeads">Funil de leads</div>
       <div style="display:flex; gap:0.6rem;">
         <button class="btn btn-ghost btn-sm" id="export-csv" data-icon="download"> <span data-i18n="dash.exportarCsv">Exportar CSV</span></button>
+        <button class="btn btn-ghost btn-sm" id="import-csv" data-icon="upload"> <span data-i18n="dash.importarCsv">Importar CSV</span></button>
+        <input type="file" id="import-csv-input" accept=".csv,text/csv" class="hidden">
         <button class="btn btn-ghost btn-sm" id="refresh-leads" data-icon="refreshCw"> <span data-i18n="dash.atualizar">Atualizar</span></button>
       </div>
     </div>

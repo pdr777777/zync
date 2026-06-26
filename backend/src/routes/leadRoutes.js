@@ -8,6 +8,7 @@ router.use(autenticar);
 router.get('/', leadController.listar);
 router.get('/inbox', leadController.inbox);
 router.get('/export', leadController.exportarCsv);
+router.post('/importar', leadController.importar);
 router.get('/:id', leadController.buscar);
 router.post('/', leadController.criar);
 router.put('/:id', leadController.atualizar);

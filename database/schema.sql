@@ -25,7 +25,8 @@ CREATE TABLE IF NOT EXISTS usuarios (
   ia_o_que_vende TEXT NULL,
   ia_horario_funcionamento VARCHAR(200) NULL,
   ia_tom_de_voz VARCHAR(20) NULL DEFAULT 'amigavel'
-    CHECK (ia_tom_de_voz IN ('formal', 'casual', 'amigavel'))
+    CHECK (ia_tom_de_voz IN ('formal', 'casual', 'amigavel')),
+  nps_dispensado_em TIMESTAMPTZ NULL
 );
 
 CREATE INDEX IF NOT EXISTS idx_usuarios_reset_token ON usuarios (reset_token_hash);
@@ -249,6 +250,17 @@ CREATE TABLE IF NOT EXISTS rate_limit_hits (
 
 CREATE INDEX IF NOT EXISTS idx_rate_limit_hits_expira ON rate_limit_hits (expira_em);
 
+-- NPS simples dentro do produto.
+CREATE TABLE IF NOT EXISTS pesquisas_nps (
+  id SERIAL PRIMARY KEY,
+  usuario_id INT NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
+  nota INT NOT NULL CHECK (nota BETWEEN 0 AND 10),
+  comentario VARCHAR(500),
+  criado_em TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_pesquisas_nps_usuario ON pesquisas_nps (usuario_id);
+
 -- RLS em todas as tabelas. O backend conecta direto como usuario "postgres"
 -- (table owner), que sempre ignora RLS - entao isso nao afeta o backend. O
 -- efeito e fechar a API publica do Supabase (PostgREST/anon key), que
@@ -274,3 +286,4 @@ ALTER TABLE produtos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE afiliados ENABLE ROW LEVEL SECURITY;
 ALTER TABLE comissoes_afiliado ENABLE ROW LEVEL SECURITY;
 ALTER TABLE rate_limit_hits ENABLE ROW LEVEL SECURITY;
+ALTER TABLE pesquisas_nps ENABLE ROW LEVEL SECURITY;

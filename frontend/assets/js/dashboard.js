@@ -85,10 +85,58 @@ async function loadLeads() {
     popularFiltroOrigem();
     renderKanban();
     renderSparkline();
+    renderOnboardingChecklist();
   } catch (err) {
     showToast(err.message, 'error');
   }
 }
+
+/* ---------- ONBOARDING ---------- */
+async function renderOnboardingChecklist() {
+  const card = document.getElementById('onboarding-checklist');
+
+  if (localStorage.getItem('onboarding_dismissido') === 'true') {
+    card.style.display = 'none';
+    return;
+  }
+
+  let usuario;
+  try {
+    usuario = await Api.auth.me();
+  } catch {
+    card.style.display = 'none';
+    return;
+  }
+
+  const passos = [
+    { id: 'lead', label: Lang.t('dash.onboardingCriarLead'), feito: leadsCache.length > 0 },
+    { id: 'ia', label: Lang.t('dash.onboardingConfigurarIa'), feito: !!usuario.ia_o_que_vende, href: 'configuracoes.html' },
+    { id: 'whatsapp', label: Lang.t('dash.onboardingConectarWhatsapp'), feito: !!usuario.whatsapp_phone_number_id, href: 'configuracoes.html' },
+  ];
+
+  if (passos.every((p) => p.feito)) {
+    card.style.display = 'none';
+    return;
+  }
+
+  card.style.display = 'block';
+  document.getElementById('onboarding-steps').innerHTML = passos.map((p) => `
+    <li class="onboarding-step ${p.feito ? 'feito' : ''}">
+      <span class="onboarding-check">${p.feito ? icon('check', 12) : ''}</span>
+      ${p.href
+        ? `<a href="${p.href}">${escapeHtml(p.label)}</a>`
+        : `<button type="button" class="onboarding-link" data-passo="${p.id}">${escapeHtml(p.label)}</button>`}
+    </li>
+  `).join('');
+
+  const btnCriarLead = document.querySelector('[data-passo="lead"]');
+  if (btnCriarLead) btnCriarLead.addEventListener('click', abrirModal);
+}
+
+document.getElementById('onboarding-dismiss').addEventListener('click', () => {
+  localStorage.setItem('onboarding_dismissido', 'true');
+  document.getElementById('onboarding-checklist').style.display = 'none';
+});
 
 function leadsFiltrados() {
   const termo = leadsFiltro.termo.trim().toLowerCase();
@@ -601,6 +649,41 @@ document.getElementById('export-csv').addEventListener('click', async (e) => {
   btn.disabled = true;
   try {
     await downloadComAuth('/leads/export', 'leads.csv');
+  } catch (err) {
+    showToast(err.message, 'error');
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+/* ---------- IMPORTAR CSV ---------- */
+document.getElementById('import-csv').addEventListener('click', () => {
+  document.getElementById('import-csv-input').click();
+});
+
+document.getElementById('import-csv-input').addEventListener('change', async (e) => {
+  const arquivo = e.target.files[0];
+  e.target.value = '';
+  if (!arquivo) return;
+
+  const btn = document.getElementById('import-csv');
+  btn.disabled = true;
+
+  try {
+    const texto = await arquivo.text();
+    const resultado = await Api.leads.importar(texto);
+
+    if (resultado.erros.length === 0) {
+      showToast(Lang.t('dash.importacaoSucesso', { n: resultado.importados }), 'success');
+    } else {
+      const primeiroErro = resultado.erros[0];
+      showToast(
+        Lang.t('dash.importacaoParcial', { importados: resultado.importados, erros: resultado.erros.length, linha: primeiroErro.linha, motivo: primeiroErro.motivo }),
+        resultado.importados > 0 ? 'success' : 'error'
+      );
+    }
+
+    if (resultado.importados > 0) loadLeads();
   } catch (err) {
     showToast(err.message, 'error');
   } finally {
@@ -1346,9 +1429,51 @@ faturamentoSvg.addEventListener('mouseleave', () => {
   if (marker) marker.classList.add('hidden');
 });
 
+/* ---------- NPS ---------- */
+async function verificarNps() {
+  try {
+    const { elegivel } = await Api.nps.elegivel();
+    if (!elegivel) return;
+
+    const banner = document.getElementById('nps-banner');
+    const escala = document.getElementById('nps-scale');
+    let notaEscolhida = null;
+
+    escala.innerHTML = Array.from({ length: 11 }, (_, n) => `<button type="button" class="nps-nota" data-nota="${n}">${n}</button>`).join('');
+    banner.style.display = 'block';
+
+    escala.querySelectorAll('.nps-nota').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        notaEscolhida = Number(btn.dataset.nota);
+        escala.querySelectorAll('.nps-nota').forEach((b) => b.classList.toggle('selecionada', b === btn));
+        document.getElementById('nps-comentario-wrap').classList.remove('hidden');
+      });
+    });
+
+    document.getElementById('nps-enviar').addEventListener('click', async () => {
+      if (notaEscolhida === null) return;
+      try {
+        await Api.nps.enviar(notaEscolhida, document.getElementById('nps-comentario').value.trim() || undefined);
+        showToast(Lang.t('dash.npsObrigado'), 'success');
+        banner.style.display = 'none';
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    });
+  } catch {
+    /* silencioso -- nao quebra o dashboard por causa do NPS */
+  }
+}
+
+document.getElementById('nps-dismiss').addEventListener('click', async () => {
+  document.getElementById('nps-banner').style.display = 'none';
+  try { await Api.nps.dispensar(); } catch { /* ignora */ }
+});
+
 /* ---------- INIT ---------- */
 loadDashboard();
 loadLeads();
 loadTags();
 loadCampos();
 carregarAnalises();
+verificarNps();
