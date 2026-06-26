@@ -46,15 +46,49 @@
       </div>
     </div>
 
-    <div class="empty-state" style="padding:3rem 1rem;">
-      <div class="empty-state-icon" data-icon="barChart" data-icon-size="36"></div>
-      <h3>Funil de conversão <span class="k-tag">Em breve</span></h3>
-      <p style="color:var(--cinza); font-size:0.85rem; max-width:420px; margin:0.6rem auto 0;">
-        Aqui vai entrar o funil de conversão do Zync — de cadastro até assinatura
-        paga (e o que causa desistência no meio do caminho). Falta decidir quais
-        etapas exatamente esse funil precisa rastrear antes de implementar.
-      </p>
-    </div>
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-card-top">
+          <div class="stat-icon" data-icon="building"></div>
+          <div class="stat-label">Cadastros totais</div>
+        </div>
+        <div class="stat-num-row"><div class="stat-num" id="conv-total"><span class="skeleton" style="width:40px;height:1.8rem;"></span></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-top">
+          <div class="stat-icon" data-icon="checkCircle"></div>
+          <div class="stat-label">Taxa de conversão (cadastro → pagante)</div>
+        </div>
+        <div class="stat-num-row"><div class="stat-num" id="conv-taxa"><span class="skeleton" style="width:50px;height:1.8rem;"></span></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-top">
+          <div class="stat-icon" data-icon="dollarSign"></div>
+          <div class="stat-label">Assinaturas ativas</div>
+        </div>
+        <div class="stat-num-row"><div class="stat-num" id="conv-ativas"><span class="skeleton" style="width:40px;height:1.8rem;"></span></div></div>
+      </div>
+    </section>
+
+    <section class="analytics-side" style="display:flex; gap:1.4rem; flex-wrap:wrap;">
+      <div class="chart-card" style="flex:1; min-width:300px;">
+        <div class="chart-card-header">
+          <div class="chart-title">Funil: cadastro → checkout → pagante</div>
+        </div>
+        <div class="barlist" id="conv-funil">
+          <div class="empty-state"><span class="spinner"></span></div>
+        </div>
+      </div>
+
+      <div class="chart-card" style="flex:1; min-width:300px;">
+        <div class="chart-card-header">
+          <div class="chart-title">Por status de assinatura</div>
+        </div>
+        <div class="barlist" id="conv-status">
+          <div class="empty-state"><span class="spinner"></span></div>
+        </div>
+      </div>
+    </section>
   </main>
 </div>
 
