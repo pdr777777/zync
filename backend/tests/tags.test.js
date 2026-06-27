@@ -177,6 +177,23 @@ describe('Campanha por tag (mensagem em massa)', () => {
     expect(resposta.body).toEqual({ totalLeads: 3, comTelefone: 2 });
   });
 
+  test('POST /api/tags/:id/disparar enfileira um job em vez de disparar na hora', async () => {
+    const { token, usuario } = await criarUsuarioEToken(app, request);
+    const tag = await criarTagComLeads(token, { comTelefone: 2, semTelefone: 1 });
+
+    await request(app)
+      .post(`/api/tags/${tag.id}/disparar`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ mensagem: 'Promoção especial só hoje!' });
+
+    const { rows } = await db.query("SELECT * FROM jobs WHERE tipo = 'disparar_campanha' ORDER BY id DESC LIMIT 1");
+    expect(rows).toHaveLength(1);
+    expect(rows[0].status).toBe('pendente');
+    expect(rows[0].payload.tagId).toBe(tag.id);
+    expect(rows[0].payload.usuarioId).toBe(usuario.id);
+    expect(rows[0].payload.leads).toHaveLength(2);
+  });
+
   test('campanhaService.disparar manda mensagem só pra quem tem telefone e notifica ao concluir', async () => {
     const { token, usuario } = await criarUsuarioEToken(app, request);
     const tag = await criarTagComLeads(token, { comTelefone: 2, semTelefone: 1 });

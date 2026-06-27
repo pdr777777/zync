@@ -215,3 +215,128 @@ describe('Webhook do SyncPay + ciclo de vida da assinatura', () => {
     expect(resposta.status).toBe(400);
   });
 });
+
+async function ativarAssinatura(token, planoId = 1) {
+  const checkout = await fazerCheckout(token, { planoId });
+  await request(app)
+    .post('/api/webhooks/syncpay')
+    .set('Authorization', autorizacaoWebhook())
+    .send({ data: { id: checkout.body.identifier, status: 'completed' } });
+  return checkout.body.identifier;
+}
+
+describe('POST /api/assinaturas/mudar-plano', () => {
+  test('rejeita sem assinatura ativa', async () => {
+    const { token } = await criarUsuarioEToken(app, request);
+    const resposta = await request(app)
+      .post('/api/assinaturas/mudar-plano')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ planoId: 2 });
+    expect(resposta.status).toBe(400);
+  });
+
+  test('rejeita trocar pro mesmo plano que já está ativo', async () => {
+    const { token } = await criarUsuarioEToken(app, request);
+    await ativarAssinatura(token, 1);
+
+    const resposta = await request(app)
+      .post('/api/assinaturas/mudar-plano')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ planoId: 1, cpf: CPF_VALIDO, telefone: '11999998888' });
+    expect(resposta.status).toBe(400);
+  });
+
+  test('rejeita plano inexistente', async () => {
+    const { token } = await criarUsuarioEToken(app, request);
+    await ativarAssinatura(token, 1);
+
+    const resposta = await request(app)
+      .post('/api/assinaturas/mudar-plano')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ planoId: 999999 });
+    expect(resposta.status).toBe(404);
+  });
+
+  test('rejeita sem planoId', async () => {
+    const { token } = await criarUsuarioEToken(app, request);
+    await ativarAssinatura(token, 1);
+
+    const resposta = await request(app)
+      .post('/api/assinaturas/mudar-plano')
+      .set('Authorization', `Bearer ${token}`)
+      .send({});
+    expect(resposta.status).toBe(400);
+  });
+
+  test('rejeita quando falta cpf/telefone (nem no perfil, nem no corpo)', async () => {
+    const { token } = await criarUsuarioEToken(app, request);
+    await ativarAssinatura(token, 1);
+
+    const resposta = await request(app)
+      .post('/api/assinaturas/mudar-plano')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ planoId: 2 });
+    expect(resposta.status).toBe(400);
+  });
+
+  test('rejeita cpf inválido informado no corpo', async () => {
+    const { token } = await criarUsuarioEToken(app, request);
+    await ativarAssinatura(token, 1);
+
+    const resposta = await request(app)
+      .post('/api/assinaturas/mudar-plano')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ planoId: 2, cpf: '11111111111', telefone: '11999998888' });
+    expect(resposta.status).toBe(400);
+  });
+
+  test('gera pix pra trocar de plano, e ao confirmar pagamento ativa o novo e cancela o antigo', async () => {
+    const { token } = await criarUsuarioEToken(app, request);
+    await ativarAssinatura(token, 1);
+
+    const troca = await request(app)
+      .post('/api/assinaturas/mudar-plano')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ planoId: 2, cpf: CPF_VALIDO, telefone: '11999998888' });
+
+    expect(troca.status).toBe(201);
+    expect(troca.body).toHaveProperty('pixCode');
+    expect(troca.body).toHaveProperty('identifier');
+
+    await request(app)
+      .post('/api/webhooks/syncpay')
+      .set('Authorization', autorizacaoWebhook())
+      .send({ data: { id: troca.body.identifier, status: 'completed' } });
+
+    const atual = await request(app).get('/api/assinaturas/atual').set('Authorization', `Bearer ${token}`);
+    expect(atual.body.status).toBe('ativa');
+    expect(atual.body.plano_id).toBe(2);
+
+    const historico = await request(app).get('/api/assinaturas/historico').set('Authorization', `Bearer ${token}`);
+    expect(historico.body).toHaveLength(2);
+    const antiga = historico.body.find((a) => a.plano_id === 1);
+    expect(antiga.status).toBe('cancelada');
+  });
+
+  test('usa cpf/telefone ja salvos no perfil quando nao vem no corpo', async () => {
+    const { token } = await criarUsuarioEToken(app, request);
+    await ativarAssinatura(token, 1);
+
+    await request(app)
+      .put('/api/auth/me')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ cpf: CPF_VALIDO, telefone: '11999998888' });
+
+    const troca = await request(app)
+      .post('/api/assinaturas/mudar-plano')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ planoId: 2 });
+
+    expect(troca.status).toBe(201);
+  });
+
+  test('rejeita sem autenticação', async () => {
+    const resposta = await request(app).post('/api/assinaturas/mudar-plano').send({ planoId: 2 });
+    expect(resposta.status).toBe(401);
+  });
+});

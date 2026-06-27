@@ -47,6 +47,23 @@ describe('POST /api/leads', () => {
     expect(resposta.body.fechado_em).not.toBeNull();
   });
 
+  test('rejeita valor negativo', async () => {
+    const { token } = await criarUsuarioEToken(app, request);
+    const resposta = await criarLead(token, { valor: -10 });
+    expect(resposta.status).toBe(400);
+  });
+
+  test.each([
+    ['nome', 'a'.repeat(121)],
+    ['servico', 'a'.repeat(121)],
+    ['origem', 'a'.repeat(61)],
+    ['telefone', 'a'.repeat(21)],
+  ])('rejeita %s acima do tamanho máximo', async (campo, valor) => {
+    const { token } = await criarUsuarioEToken(app, request);
+    const resposta = await criarLead(token, { [campo]: valor });
+    expect(resposta.status).toBe(400);
+  });
+
   test('exige token de autenticação', async () => {
     const resposta = await request(app).post('/api/leads').send({ nome: 'Sem token' });
     expect(resposta.status).toBe(401);
@@ -101,6 +118,22 @@ describe('GET /api/leads', () => {
     expect(porValor.body[0].nome).toBe('Fechado caro');
   });
 
+  test('rejeita valorMin de filtro inválido', async () => {
+    const { token } = await criarUsuarioEToken(app, request);
+    const resposta = await request(app)
+      .get('/api/leads?valorMin=abc')
+      .set('Authorization', `Bearer ${token}`);
+    expect(resposta.status).toBe(400);
+  });
+
+  test('rejeita valorMax de filtro inválido', async () => {
+    const { token } = await criarUsuarioEToken(app, request);
+    const resposta = await request(app)
+      .get('/api/leads?valorMax=-5')
+      .set('Authorization', `Bearer ${token}`);
+    expect(resposta.status).toBe(400);
+  });
+
   test('rejeita status de filtro inválido', async () => {
     const { token } = await criarUsuarioEToken(app, request);
     const resposta = await request(app)
@@ -141,6 +174,18 @@ describe('GET /api/leads', () => {
 });
 
 describe('GET /api/leads/:id', () => {
+  test('retorna o lead quando ele pertence ao usuário', async () => {
+    const { token } = await criarUsuarioEToken(app, request);
+    const lead = await criarLead(token, { nome: 'Lead próprio' });
+
+    const resposta = await request(app)
+      .get(`/api/leads/${lead.body.id}`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(resposta.status).toBe(200);
+    expect(resposta.body.nome).toBe('Lead próprio');
+  });
+
   test('retorna 404 ao buscar lead de outro usuário', async () => {
     const userA = await criarUsuarioEToken(app, request);
     const userB = await criarUsuarioEToken(app, request);
@@ -152,6 +197,79 @@ describe('GET /api/leads/:id', () => {
       .set('Authorization', `Bearer ${userB.token}`);
 
     expect(resposta.status).toBe(404);
+  });
+});
+
+describe('GET /api/leads/inbox', () => {
+  test('lista leads do usuário com a última mensagem anexada', async () => {
+    const { token } = await criarUsuarioEToken(app, request);
+    const lead = await criarLead(token, { nome: 'Lead com conversa' });
+
+    await request(app)
+      .post(`/api/leads/${lead.body.id}/mensagens`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ conteudo: 'Oi, tudo bem?', enviado_por: 'humano' });
+
+    const resposta = await request(app).get('/api/leads/inbox').set('Authorization', `Bearer ${token}`);
+
+    expect(resposta.status).toBe(200);
+    const item = resposta.body.find((l) => l.id === lead.body.id);
+    expect(item.ultima_mensagem).toBe('Oi, tudo bem?');
+  });
+
+  test('não mistura leads de outro usuário', async () => {
+    const { token: tokenA } = await criarUsuarioEToken(app, request);
+    const { token: tokenB } = await criarUsuarioEToken(app, request);
+    await criarLead(tokenA, { nome: 'Lead de A' });
+
+    const resposta = await request(app).get('/api/leads/inbox').set('Authorization', `Bearer ${tokenB}`);
+    expect(resposta.body).toHaveLength(0);
+  });
+
+  test('exige token de autenticação', async () => {
+    const resposta = await request(app).get('/api/leads/inbox');
+    expect(resposta.status).toBe(401);
+  });
+});
+
+describe('GET /api/leads/export', () => {
+  test('exporta os leads do usuário em csv', async () => {
+    const { token } = await criarUsuarioEToken(app, request);
+    await criarLead(token, { nome: 'Fulano', servico: 'Implante', valor: 150 });
+
+    const resposta = await request(app).get('/api/leads/export').set('Authorization', `Bearer ${token}`);
+
+    expect(resposta.status).toBe(200);
+    expect(resposta.headers['content-type']).toMatch(/text\/csv/);
+    expect(resposta.headers['content-disposition']).toMatch(/leads\.csv/);
+    expect(resposta.text).toContain('Fulano');
+    expect(resposta.text).toContain('Implante');
+  });
+
+  test('respeita os mesmos filtros da listagem', async () => {
+    const { token } = await criarUsuarioEToken(app, request);
+    await criarLead(token, { nome: 'Lead Novo', status: 'novo' });
+    await criarLead(token, { nome: 'Lead Fechado', status: 'fechado' });
+
+    const resposta = await request(app)
+      .get('/api/leads/export?status=fechado')
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(resposta.text).toContain('Lead Fechado');
+    expect(resposta.text).not.toContain('Lead Novo');
+  });
+
+  test('rejeita filtro inválido', async () => {
+    const { token } = await criarUsuarioEToken(app, request);
+    const resposta = await request(app)
+      .get('/api/leads/export?status=status_invalido')
+      .set('Authorization', `Bearer ${token}`);
+    expect(resposta.status).toBe(400);
+  });
+
+  test('exige token de autenticação', async () => {
+    const resposta = await request(app).get('/api/leads/export');
+    expect(resposta.status).toBe(401);
   });
 });
 
@@ -185,6 +303,18 @@ describe('PUT /api/leads/:id', () => {
 
     expect(resposta.status).toBe(404);
   });
+
+  test('rejeita status inválido na atualização', async () => {
+    const { token } = await criarUsuarioEToken(app, request);
+    const lead = await criarLead(token);
+
+    const resposta = await request(app)
+      .put(`/api/leads/${lead.body.id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ status: 'status_invalido' });
+
+    expect(resposta.status).toBe(400);
+  });
 });
 
 describe('DELETE /api/leads/:id', () => {
@@ -201,6 +331,18 @@ describe('DELETE /api/leads/:id', () => {
       .get(`/api/leads/${lead.body.id}`)
       .set('Authorization', `Bearer ${token}`);
     expect(buscar.status).toBe(404);
+  });
+
+  test('não permite remover lead de outro usuário', async () => {
+    const userA = await criarUsuarioEToken(app, request);
+    const userB = await criarUsuarioEToken(app, request);
+    const lead = await criarLead(userA.token, { nome: 'Protegido' });
+
+    const resposta = await request(app)
+      .delete(`/api/leads/${lead.body.id}`)
+      .set('Authorization', `Bearer ${userB.token}`);
+
+    expect(resposta.status).toBe(404);
   });
 });
 
