@@ -25,3 +25,8 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: npm test
+
+      - name: Audita dependencias (nao bloqueia o build)
+        working-directory: backend
+        continue-on-error: true
+        run: npm audit --audit-level=high

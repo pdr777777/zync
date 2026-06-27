@@ -5,6 +5,10 @@ const { verificarAssinaturasExpiradas } = require('./src/jobs/verificarExpiracao
 const { processarFilaCompleta } = require('./src/jobs/jobWorker');
 const logger = require('./src/utils/logger');
 
+if (process.env.NODE_ENV !== 'test' && (process.env.JWT_SECRET || '').length < 32) {
+  logger.warn('JWT_SECRET ausente ou fraco (menos de 32 caracteres) — gere um valor forte e aleatório em produção');
+}
+
 const PORT = process.env.PORT || 3001;
 const server = app.listen(PORT, () => {
   logger.info('Zync API rodando', { porta: PORT });
