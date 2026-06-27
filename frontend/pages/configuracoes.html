@@ -88,6 +88,34 @@
         </div>
       </section>
 
+      <section class="chart-card hidden" style="max-width: 560px;" id="afiliado-card">
+        <div class="chart-card-header">
+          <div class="chart-title" data-i18n="config.programaAfiliados">Programa de afiliados</div>
+        </div>
+        <p style="font-size:0.85rem; color:var(--cinza); margin-bottom:0.8rem;" id="afiliado-resumo"></p>
+        <div class="field">
+          <label data-i18n="config.seuCodigo">Seu código de indicação</label>
+          <div class="catalogo-link-row">
+            <div class="catalogo-link-url" id="afiliado-codigo"></div>
+            <button type="button" class="btn btn-secondary btn-sm" id="afiliado-copiar-codigo" data-icon="fileText"> Copiar</button>
+          </div>
+        </div>
+        <div class="field">
+          <label data-i18n="config.seuLink">Seu link de indicação</label>
+          <div class="catalogo-link-row">
+            <div class="catalogo-link-url" id="afiliado-link"></div>
+            <button type="button" class="btn btn-secondary btn-sm" id="afiliado-copiar-link" data-icon="fileText"> Copiar</button>
+          </div>
+        </div>
+        <div id="afiliado-comissoes-wrap" class="hidden" style="margin-top:1rem;">
+          <div class="chart-eyebrow" data-i18n="config.suasIndicacoes">Suas indicações</div>
+          <table class="data-table">
+            <thead><tr><th>Indicado</th><th>Valor</th><th>Status</th></tr></thead>
+            <tbody id="afiliado-comissoes-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+
       <section class="chart-card" style="max-width: 560px;">
         <div class="chart-card-header">
           <div class="chart-title">Informações da conta</div>

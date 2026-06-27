@@ -32,6 +32,10 @@ const TRADUCOES = {
     'config.trocarPlano': 'Trocar de plano',
     'config.confirmarTroca': 'Confirmar troca',
     'config.cancelarAssinatura': 'Cancelar assinatura',
+    'config.programaAfiliados': 'Programa de afiliados',
+    'config.seuCodigo': 'Seu código de indicação',
+    'config.seuLink': 'Seu link de indicação',
+    'config.suasIndicacoes': 'Suas indicações',
     'config.pixGeradoTroca': 'Pix gerado pro novo plano — pague pra confirmar a troca:',
 
     'dash.boasVindas': 'Bem-vindo de volta',
@@ -267,6 +271,10 @@ const TRADUCOES = {
     'config.confirmarTroca': 'Confirm change',
     'config.cancelarAssinatura': 'Cancel subscription',
     'config.pixGeradoTroca': 'Pix generated for the new plan — pay it to confirm the change:',
+    'config.programaAfiliados': 'Affiliate program',
+    'config.seuCodigo': 'Your referral code',
+    'config.seuLink': 'Your referral link',
+    'config.suasIndicacoes': 'Your referrals',
 
     'dash.boasVindas': 'Welcome back',
     'dash.boasVindasSub': 'Track your leads and conversions in real time.',
@@ -501,6 +509,10 @@ const TRADUCOES = {
     'config.confirmarTroca': 'Confirmar cambio',
     'config.cancelarAssinatura': 'Cancelar suscripción',
     'config.pixGeradoTroca': 'Pix generado para el nuevo plan — págalo para confirmar el cambio:',
+    'config.programaAfiliados': 'Programa de afiliados',
+    'config.seuCodigo': 'Tu código de referido',
+    'config.seuLink': 'Tu enlace de referido',
+    'config.suasIndicacoes': 'Tus referidos',
 
     'dash.boasVindas': 'Bienvenido de nuevo',
     'dash.boasVindasSub': 'Sigue tus leads y conversiones en tiempo real.',

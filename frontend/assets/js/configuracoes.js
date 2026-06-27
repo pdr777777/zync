@@ -542,7 +542,58 @@ async function carregarIntegracoes() {
   });
 })();
 
+const STATUS_COMISSAO_LABELS = { pendente: 'Pendente', paga: 'Paga' };
+
+async function carregarAfiliado() {
+  const card = document.getElementById('afiliado-card');
+  try {
+    const afiliado = await Api.afiliados.meu();
+    if (!afiliado) {
+      card.classList.add('hidden');
+      return;
+    }
+
+    card.classList.remove('hidden');
+    document.getElementById('afiliado-codigo').textContent = afiliado.codigo;
+
+    const link = `${window.location.origin}/pages/registro.html?ref=${afiliado.codigo}`;
+    document.getElementById('afiliado-link').textContent = link;
+
+    document.getElementById('afiliado-resumo').textContent =
+      `Você ganha ${Number(afiliado.percentual_comissao)}% de comissão recorrente por cada cliente que assinar com seu código.`;
+
+    document.getElementById('afiliado-copiar-codigo').addEventListener('click', async () => {
+      await navigator.clipboard.writeText(afiliado.codigo);
+      showToast('Código copiado!', 'success');
+    });
+
+    document.getElementById('afiliado-copiar-link').addEventListener('click', async () => {
+      await navigator.clipboard.writeText(link);
+      showToast('Link copiado!', 'success');
+    });
+
+    const comissoes = await Api.afiliados.comissoes();
+    const wrap = document.getElementById('afiliado-comissoes-wrap');
+    if (comissoes.length === 0) {
+      wrap.classList.add('hidden');
+      return;
+    }
+
+    wrap.classList.remove('hidden');
+    document.getElementById('afiliado-comissoes-tbody').innerHTML = comissoes.map((c) => `
+      <tr>
+        <td>${escapeHtml(c.usuario_indicado_nome)}</td>
+        <td>${Number(c.valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+        <td><span class="status-pill ${c.status === 'paga' ? 'ativa' : 'pendente'}">${STATUS_COMISSAO_LABELS[c.status] || c.status}</span></td>
+      </tr>
+    `).join('');
+  } catch {
+    card.classList.add('hidden');
+  }
+}
+
 carregarPerfil();
 carregarAssinatura();
 carregarUso();
 carregarIntegracoes();
+carregarAfiliado();

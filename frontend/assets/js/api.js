@@ -249,6 +249,11 @@ const Api = {
     mudarPlano: (dados) => apiRequest('/assinaturas/mudar-plano', { method: 'POST', body: dados }),
   },
 
+  afiliados: {
+    meu: () => apiRequest('/afiliados/me'),
+    comissoes: () => apiRequest('/afiliados/me/comissoes'),
+  },
+
   integracoes: {
     listar: () => apiRequest('/integracoes'),
     criar: (dados) => apiRequest('/integracoes', { method: 'POST', body: dados }),
