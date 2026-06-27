@@ -38,6 +38,16 @@ describe('Suporte', () => {
     expect(resposta.body.video_url).toBe('https://exemplo.com/video.mp4');
   });
 
+  test('rejeita videoUrl com esquema que nao seja http(s), ex: javascript:', async () => {
+    const { token } = await criarUsuarioEToken(app, request);
+    const resposta = await request(app)
+      .post('/api/suporte')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ mensagem: 'Segue o video', videoUrl: 'javascript:alert(document.cookie)' });
+
+    expect(resposta.status).toBe(400);
+  });
+
   test('rejeita sem mensagem', async () => {
     const { token } = await criarUsuarioEToken(app, request);
     const resposta = await request(app).post('/api/suporte').set('Authorization', `Bearer ${token}`).send({});

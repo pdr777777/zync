@@ -1,6 +1,13 @@
 function escaparCampo(valor) {
   if (valor === null || valor === undefined) return '';
-  const texto = valor instanceof Date ? valor.toISOString() : String(valor);
+  let texto = valor instanceof Date ? valor.toISOString() : String(valor);
+
+  // Neutraliza injeção de fórmula: um valor começando com =, +, -, @ é
+  // interpretado como fórmula por Excel/Sheets ao abrir o CSV exportado.
+  if (/^[=+\-@]/.test(texto)) {
+    texto = `'${texto}`;
+  }
+
   if (/[",\n]/.test(texto)) {
     return `"${texto.replace(/"/g, '""')}"`;
   }

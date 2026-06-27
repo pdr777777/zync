@@ -7,6 +7,7 @@ async function criar(req, res) {
   if (!mensagem) return res.status(400).json({ error: 'mensagem é obrigatória' });
   if (!validators.dentroDoTamanho(mensagem, 2000)) return res.status(400).json({ error: 'mensagem deve ter no máximo 2000 caracteres' });
   if (!validators.dentroDoTamanho(videoUrl, 500)) return res.status(400).json({ error: 'videoUrl deve ter no máximo 500 caracteres' });
+  if (!validators.urlHttpValida(videoUrl)) return res.status(400).json({ error: 'videoUrl deve começar com http:// ou https://' });
 
   const item = await suporteModel.criar({ usuarioId: req.usuario.id, mensagem, videoUrl });
   res.status(201).json(item);

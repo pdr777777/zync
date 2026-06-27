@@ -31,6 +31,11 @@ function dentroDoTamanho(valor, max) {
   return valor === undefined || valor === null || (typeof valor === 'string' && valor.length <= max);
 }
 
+function urlHttpValida(valor) {
+  if (valor === undefined || valor === null || valor === '') return true;
+  return typeof valor === 'string' && /^https?:\/\//i.test(valor);
+}
+
 function cpfValido(cpf) {
   if (typeof cpf !== 'string') return false;
   const digitos = cpf.replace(/\D/g, '');
@@ -56,6 +61,7 @@ module.exports = {
   numeroValido,
   cpfValido,
   dentroDoTamanho,
+  urlHttpValida,
   STATUS_LEAD,
   STATUS_AGENDAMENTO,
   ENVIADO_POR,
