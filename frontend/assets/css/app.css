@@ -1524,7 +1524,6 @@ a:focus-visible,
   display: flex;
   gap: 0.4rem;
   margin-bottom: 1.6rem;
-  border-bottom: 1px solid var(--borda);
   flex-wrap: wrap;
 }
 
