@@ -1157,15 +1157,18 @@
     border: none;
     background: transparent;
     color: var(--cinza);
-    transition: color 0.2s;
+    filter: blur(3px);
+    transition: color 0.2s, filter 0.3s;
   }
 
   .toggle-btn.active {
     color: var(--branco);
+    filter: blur(0);
   }
 
   .toggle-btn:not(.active):hover {
     color: var(--branco);
+    filter: blur(0);
   }
 
   /* Moldura com cantos animados (inspirada no TrueFocus, do React Bits,
