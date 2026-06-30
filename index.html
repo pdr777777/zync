@@ -1137,6 +1137,7 @@
   }
 
   .toggle-wrap {
+    position: relative;
     display: inline-flex;
     background: var(--glass-bg-strong);
     border: 1px solid var(--borda);
@@ -1146,6 +1147,8 @@
   }
 
   .toggle-btn {
+    position: relative;
+    z-index: 1;
     padding: 0.5rem 1.5rem;
     border-radius: 10px;
     font-size: 0.85rem;
@@ -1154,18 +1157,43 @@
     border: none;
     background: transparent;
     color: var(--cinza);
-    transition: all 0.2s;
+    transition: color 0.2s;
   }
 
   .toggle-btn.active {
-    background: var(--azul);
     color: var(--branco);
-    box-shadow: 0 0 20px var(--azul-glow);
   }
 
   .toggle-btn:not(.active):hover {
     color: var(--branco);
   }
+
+  /* Moldura com cantos animados (inspirada no TrueFocus, do React Bits,
+     recriada em CSS/JS puro pra nao depender de React/motion). */
+  .toggle-focus-frame {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    border-radius: 10px;
+    background: var(--azul);
+    box-shadow: 0 0 20px var(--azul-glow);
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+  }
+
+  .toggle-corner {
+    position: absolute;
+    width: 0.85rem;
+    height: 0.85rem;
+    border: 2px solid var(--azul-claro);
+    filter: drop-shadow(0 0 4px var(--azul-claro));
+    border-radius: 3px;
+  }
+
+  .toggle-corner.top-left { top: -8px; left: -8px; border-right: none; border-bottom: none; }
+  .toggle-corner.top-right { top: -8px; right: -8px; border-left: none; border-bottom: none; }
+  .toggle-corner.bottom-left { bottom: -8px; left: -8px; border-right: none; border-top: none; }
+  .toggle-corner.bottom-right { bottom: -8px; right: -8px; border-left: none; border-top: none; }
 
   .pricing-grid {
     display: grid;
@@ -1901,9 +1929,15 @@
     <p class="section-sub" style="margin: 0 auto 2rem;">Escale conforme seu negócio cresce.</p>
   </div>
 
-  <div class="toggle-wrap reveal">
-    <button class="toggle-btn active" onclick="this.classList.add('active'); this.nextElementSibling.classList.remove('active')">Mensal</button>
-    <button class="toggle-btn" onclick="this.classList.add('active'); this.previousElementSibling.classList.remove('active')">Anual <span style="color:#4D8DFF;font-size:0.75rem;">-25%</span></button>
+  <div class="toggle-wrap reveal" id="pricingToggleWrap">
+    <button class="toggle-btn active" onclick="this.classList.add('active'); this.nextElementSibling.classList.remove('active'); posicionarFocoToggle(this)">Mensal</button>
+    <button class="toggle-btn" onclick="this.classList.add('active'); this.previousElementSibling.classList.remove('active'); posicionarFocoToggle(this)">Anual <span style="color:#4D8DFF;font-size:0.75rem;">-25%</span></button>
+    <div class="toggle-focus-frame" id="toggleFocusFrame">
+      <span class="toggle-corner top-left"></span>
+      <span class="toggle-corner top-right"></span>
+      <span class="toggle-corner bottom-left"></span>
+      <span class="toggle-corner bottom-right"></span>
+    </div>
   </div>
 
   <div class="pricing-grid pricing-grid-4 reveal">
@@ -2107,6 +2141,27 @@ s0.parentNode.insertBefore(s1,s0);
 
 <script src="frontend/assets/js/icons.js"></script>
 <script>
+  // Moldura animada do toggle Mensal/Anual (efeito inspirado no TrueFocus).
+  function posicionarFocoToggle(botaoAtivo) {
+    const wrap = document.getElementById('pricingToggleWrap');
+    const frame = document.getElementById('toggleFocusFrame');
+    if (!wrap || !frame || !botaoAtivo) return;
+
+    const wrapRect = wrap.getBoundingClientRect();
+    const btnRect = botaoAtivo.getBoundingClientRect();
+
+    frame.style.width = `${btnRect.width}px`;
+    frame.style.height = `${btnRect.height}px`;
+    frame.style.transform = `translate(${btnRect.left - wrapRect.left - 4}px, ${btnRect.top - wrapRect.top - 4}px)`;
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    posicionarFocoToggle(document.querySelector('#pricingToggleWrap .toggle-btn.active'));
+  });
+  window.addEventListener('resize', () => {
+    posicionarFocoToggle(document.querySelector('#pricingToggleWrap .toggle-btn.active'));
+  });
+
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry, i) => {
       if (entry.isIntersecting) {
