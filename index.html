@@ -1251,6 +1251,38 @@
     border-color: var(--azul-claro);
     box-shadow: 0 0 60px rgba(0,85,254,0.2);
     position: relative;
+    isolation: isolate;
+  }
+
+  /* Borda eletrica animada (inspirada no ElectricBorder, do React Bits,
+     recriada em canvas/JS puro - o original usa hooks do React, mas o
+     algoritmo de desenho em si nao depende de React, so portei direto). */
+  .eb-canvas-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 2;
+  }
+  .eb-canvas { display: block; }
+
+  .eb-layers { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 0; }
+  .eb-glow-1, .eb-glow-2, .eb-background-glow {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    box-sizing: border-box;
+  }
+  .eb-glow-1 { border: 2px solid var(--azul-claro); opacity: 0.6; filter: blur(1px); }
+  .eb-glow-2 { border: 2px solid var(--azul-claro); filter: blur(4px); }
+  .eb-background-glow {
+    z-index: -1;
+    transform: scale(1.1);
+    filter: blur(32px);
+    opacity: 0.3;
+    background: linear-gradient(-30deg, var(--azul-claro), transparent, var(--azul));
   }
 
   .featured-badge {
@@ -1956,7 +1988,13 @@
       <button class="price-btn" onclick="window.location.href='frontend/pages/checkout.html?plano=starter'">Começar agora</button>
     </div>
 
-    <div class="price-card featured">
+    <div class="price-card featured" id="proElectricBorder">
+      <div class="eb-canvas-container"><canvas class="eb-canvas"></canvas></div>
+      <div class="eb-layers">
+        <div class="eb-glow-1"></div>
+        <div class="eb-glow-2"></div>
+        <div class="eb-background-glow"></div>
+      </div>
       <div class="featured-badge" data-icon="sparkle" data-icon-size="12"> Mais popular</div>
       <div class="price-icon" data-icon="sparkles"></div>
       <div class="price-plan">Pro</div>
@@ -2588,6 +2626,167 @@ s0.parentNode.insertBefore(s1,s0);
   apply3DTilt('.feat-card', 8);
   apply3DTilt('.price-card', 6);
   apply3DTilt('.mockup', 5);
+
+  // BORDA ELETRICA ANIMADA (card "Mais popular")
+  function criarBordaEletrica(container, { color = '#4D8DFF', speed = 1.4, chaos = 0.08, borderRadius = 16 } = {}) {
+    const canvas = container.querySelector('.eb-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    const octaves = 10, lacunarity = 1.6, gain = 0.7, amplitude = chaos, frequency = 10, baseFlatness = 0;
+    const displacement = 60, borderOffset = 60;
+
+    function random(x) { return (Math.sin(x * 12.9898) * 43758.5453) % 1; }
+
+    function noise2D(x, y) {
+      const i = Math.floor(x), j = Math.floor(y);
+      const fx = x - i, fy = y - j;
+      const a = random(i + j * 57), b = random(i + 1 + j * 57);
+      const c = random(i + (j + 1) * 57), d = random(i + 1 + (j + 1) * 57);
+      const ux = fx * fx * (3 - 2 * fx), uy = fy * fy * (3 - 2 * fy);
+      return a * (1 - ux) * (1 - uy) + b * ux * (1 - uy) + c * (1 - ux) * uy + d * ux * uy;
+    }
+
+    function octavedNoise(x, time, seed) {
+      let y = 0, amp = amplitude, freq = frequency;
+      for (let i = 0; i < octaves; i++) {
+        let octAmp = amp;
+        if (i === 0) octAmp *= baseFlatness;
+        y += octAmp * noise2D(freq * x + seed * 100, time * freq * 0.3);
+        freq *= lacunarity;
+        amp *= gain;
+      }
+      return y;
+    }
+
+    function getCornerPoint(cx, cy, r, startAngle, arcLength, progress) {
+      const angle = startAngle + progress * arcLength;
+      return { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) };
+    }
+
+    function getRoundedRectPoint(t, left, top, width, height, radius) {
+      const straightWidth = width - 2 * radius;
+      const straightHeight = height - 2 * radius;
+      const cornerArc = (Math.PI * radius) / 2;
+      const totalPerimeter = 2 * straightWidth + 2 * straightHeight + 4 * cornerArc;
+      const distance = t * totalPerimeter;
+      let acc = 0;
+
+      if (distance <= acc + straightWidth) {
+        const p = (distance - acc) / straightWidth;
+        return { x: left + radius + p * straightWidth, y: top };
+      }
+      acc += straightWidth;
+
+      if (distance <= acc + cornerArc) {
+        const p = (distance - acc) / cornerArc;
+        return getCornerPoint(left + width - radius, top + radius, radius, -Math.PI / 2, Math.PI / 2, p);
+      }
+      acc += cornerArc;
+
+      if (distance <= acc + straightHeight) {
+        const p = (distance - acc) / straightHeight;
+        return { x: left + width, y: top + radius + p * straightHeight };
+      }
+      acc += straightHeight;
+
+      if (distance <= acc + cornerArc) {
+        const p = (distance - acc) / cornerArc;
+        return getCornerPoint(left + width - radius, top + height - radius, radius, 0, Math.PI / 2, p);
+      }
+      acc += cornerArc;
+
+      if (distance <= acc + straightWidth) {
+        const p = (distance - acc) / straightWidth;
+        return { x: left + width - radius - p * straightWidth, y: top + height };
+      }
+      acc += straightWidth;
+
+      if (distance <= acc + cornerArc) {
+        const p = (distance - acc) / cornerArc;
+        return getCornerPoint(left + radius, top + height - radius, radius, Math.PI / 2, Math.PI / 2, p);
+      }
+      acc += cornerArc;
+
+      if (distance <= acc + straightHeight) {
+        const p = (distance - acc) / straightHeight;
+        return { x: left, y: top + height - radius - p * straightHeight };
+      }
+      acc += straightHeight;
+
+      const p = (distance - acc) / cornerArc;
+      return getCornerPoint(left + radius, top + radius, radius, Math.PI, Math.PI / 2, p);
+    }
+
+    let width, height, lastDpr;
+    let time = 0, lastFrameTime = 0, rafId;
+
+    function updateSize() {
+      const rect = container.getBoundingClientRect();
+      width = rect.width + borderOffset * 2;
+      height = rect.height + borderOffset * 2;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      lastDpr = dpr;
+    }
+
+    updateSize();
+
+    function draw(currentTime) {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      if (dpr !== lastDpr) updateSize();
+
+      const deltaTime = (currentTime - lastFrameTime) / 1000;
+      time += deltaTime * speed;
+      lastFrameTime = currentTime;
+
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.scale(dpr, dpr);
+
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      const left = borderOffset, top = borderOffset;
+      const borderWidth = width - 2 * borderOffset;
+      const borderHeight = height - 2 * borderOffset;
+      const maxRadius = Math.min(borderWidth, borderHeight) / 2;
+      const radius = Math.min(borderRadius, maxRadius);
+
+      const approxPerimeter = 2 * (borderWidth + borderHeight) + 2 * Math.PI * radius;
+      const sampleCount = Math.floor(approxPerimeter / 2);
+
+      ctx.beginPath();
+      for (let i = 0; i <= sampleCount; i++) {
+        const progress = i / sampleCount;
+        const point = getRoundedRectPoint(progress, left, top, borderWidth, borderHeight, radius);
+        const xNoise = octavedNoise(progress * 8, time, 0);
+        const yNoise = octavedNoise(progress * 8, time, 1);
+        const dx = point.x + xNoise * displacement;
+        const dy = point.y + yNoise * displacement;
+        if (i === 0) ctx.moveTo(dx, dy); else ctx.lineTo(dx, dy);
+      }
+      ctx.closePath();
+      ctx.stroke();
+
+      rafId = requestAnimationFrame(draw);
+    }
+
+    rafId = requestAnimationFrame(draw);
+
+    const resizeObserver = new ResizeObserver(() => updateSize());
+    resizeObserver.observe(container);
+
+    return { destroy() { cancelAnimationFrame(rafId); resizeObserver.disconnect(); } };
+  }
+
+  const cardProEletrico = document.getElementById('proElectricBorder');
+  if (cardProEletrico) criarBordaEletrica(cardProEletrico);
 </script>
 
 </body>
